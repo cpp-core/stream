@@ -90,7 +90,6 @@ public:
 	profile_.time += end_tp - start_tp;
     }
 
-    
 private:
     Handle coro_;
     chron::TimeInNanos last_;

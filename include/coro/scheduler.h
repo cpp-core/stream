@@ -2,6 +2,7 @@
 //
 
 #pragma once
+#include <queue>
 #include "coro/strand.h"
 #include "core/chrono/timepoint.h"
 
@@ -9,6 +10,13 @@ namespace cot {
 
 class Scheduler {
 public:
+    struct StrandPriority {
+	constexpr bool operator()(const Strand *l, const Strand *r) const {
+	    return l->next_runtime() > r->next_runtime();
+	};
+    };
+    using RunQueue = std::priority_queue<Strand*, std::vector<Strand*>, StrandPriority>;
+    
     Scheduler(bool debug = false)
 	: debug_(debug) {
     }
@@ -18,7 +26,7 @@ public:
 
     bool run();
     Strand *active() { return active_; }
-    void unsuspend(Strand *s) { }
+    void unsuspend(Strand *s) { tasks().push(s); }
     
     void stop() { set_done(); }
     bool done() const { return done_; }
@@ -91,7 +99,88 @@ public:
 	on_tear_down(construct_strand(std::forward<L>(lambda)));
     }
 
+    struct AsyncPair {
+	struct ReadOp {
+	    ReadOp(AsyncPair *p)
+		: pair(p)
+	    { }
+	    AsyncPair *pair{nullptr};
+	    Strand *strand{nullptr};
+	    bool waiting_{false};
+	    chron::TimeInNanos tp_;
+	    string_view data_;
+	    struct Awaiter {
+		bool await_ready() const noexcept { return ready_; }
+		void await_suspend(cot::Strand::Handle coro) const noexcept {
+		    coro.promise().state_ = cot::Yield::Suspend{};
+		}
+		bool await_resume() const noexcept { return ready_; }
+		bool ready_;
+	    };
+	    Awaiter operator()(chron::TimeInNanos& tp, string_view& data) {
+		if (not pair->data_ready_) {
+		    waiting_ = true;
+		    return Awaiter{false};
+		}
+		tp = tp_;
+		data = data_;
+		pair->writer_.strand->next_runtime() = chron::nanopoint_from_now();
+		pair->scheduler_.unsuspend(pair->writer_.strand);
+		pair->data_ready_ = false;
+		return Awaiter{true};
+	    }
+	};
+
+	struct WriteOp {
+	    WriteOp(AsyncPair *p)
+		: pair(p)
+	    { }
+	    AsyncPair *pair{nullptr};
+	    Strand *strand{nullptr};
+	    struct Awaiter {
+		bool await_ready() const noexcept { return false; }
+		void await_suspend(cot::Strand::Handle coro) const noexcept {
+		    coro.promise().state_ = cot::Yield::Suspend{};
+		}
+		bool await_resume() const noexcept { return ready_; }
+		bool ready_;
+	    };
+	    Awaiter operator()(chron::TimeInNanos tp, string_view data) {
+		if (not pair->reader_.waiting_)
+		    return Awaiter{false};
+		pair->data_ready_ = true;
+		pair->reader_.tp_ = tp;
+		pair->reader_.data_ = data;
+		pair->reader_.strand->next_runtime() = chron::nanopoint_from_now();
+		pair->scheduler_.unsuspend(pair->reader_.strand);
+		return Awaiter{true};
+	    }
+	};
+
+	AsyncPair(Scheduler& scheduler)
+	    : scheduler_(scheduler)
+	    , reader_(this)
+	    , writer_(this)
+	    , data_ready_(false)
+	{ }
+	
+	Scheduler& scheduler_;
+	ReadOp reader_;
+	WriteOp writer_;
+	bool data_ready_;
+    };
+    using AsyncPairMap = std::map<string,AsyncPair>;
+    
+    AsyncPair::ReadOp *get_read_endpoint(const string& address);
+    AsyncPair::WriteOp *get_write_endpoint(const string& address);
+    
+
 protected:
+    RunQueue tasks_;
+    Strand *active_{nullptr};
+    const RunQueue& tasks() const { return tasks_; }
+    RunQueue& tasks() { return tasks_; }
+    
     void set_done() { done_ = true; }
     void set_eptr(std::exception_ptr ptr) { exception_ptr_ = ptr; }
     std::optional<chron::TimeInNanos> current_tp_, next_tp_;
@@ -115,7 +204,7 @@ private:
     chron::TimeInNanos now_;
     LambdaPtrs saved_;
     Strands setup_, loop_, tear_down_;
-    Strand *active_{nullptr};
+    AsyncPairMap endpoints_;
 };
 
 using SchedulerPtr = std::unique_ptr<Scheduler>;
