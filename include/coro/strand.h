@@ -71,6 +71,7 @@ public:
     auto& state() { return coro_.promise().state_; }
 
     const Handle& coro() const { return coro_; }
+    Handle& coro() { return coro_; }
     Frame *frame() { return &coro_.promise(); }
 
     const auto& last_runtime() const { return last_; }
@@ -80,17 +81,17 @@ public:
     auto& next_runtime() { return next_; }
     
     const auto& profile() const { return profile_; }
-    
-    void resume() {
-	auto start_tp = chron::nanopoint_from_now();
-	coro_.resume();
-	auto end_tp = chron::nanopoint_from_now();
+
+    auto clock() { return ++clock_; }
+
+    void update(chron::TimeInNanos start_tp, chron::TimeInNanos end_tp) {
 	last_runtime() = end_tp;
 	++profile_.calls;
 	profile_.time += end_tp - start_tp;
     }
 
 private:
+    inline static size_t clock_{0};
     Handle coro_;
     chron::TimeInNanos last_;
     chron::TimeInNanos next_;

@@ -19,13 +19,16 @@ public:
     
     Scheduler(bool debug = false)
 	: debug_(debug) {
+	auto tp = chron::nanopoint_from_now();
+	auto ticks = chron::nanopoint_from_nanos(__rdtsc());
+	offset_ = tp - ticks;
     }
 
     virtual ~Scheduler() {
     }
 
     bool run();
-    Strand *active() { return active_; }
+    Strand *active() { return active_task_; }
     void unsuspend(Strand *s) { tasks().push(s); }
     
     void stop() { set_done(); }
@@ -39,17 +42,6 @@ public:
     
     Strand::Profiles profiles() const;
     string info() const;
-
-    auto current_time() const { return current_tp_; }
-    auto next_time() const { return next_tp_; }
-    
-    bool try_advance_current_time(chron::TimeInNanos tp) {
-	if (current_time() and tp < *next_time()) {
-	    current_tp_ = tp;
-	    return true;
-	}
-	return false;
-    }
 
     void on_setup(Strand&& strand) {
 	setup_.emplace_back(Yield::Resume{}, std::move(strand));
@@ -174,16 +166,23 @@ public:
     AsyncPair::ReadOp *get_read_endpoint(const string& address);
     AsyncPair::WriteOp *get_write_endpoint(const string& address);
     
-
+    auto now() const { return now_; }
+    
 protected:
-    RunQueue tasks_;
-    Strand *active_{nullptr};
+    auto set_now_realtime() { now_ = offset_ + chron::nanopoint_from_nanos(__rdtsc()); }
+    
     const RunQueue& tasks() const { return tasks_; }
     RunQueue& tasks() { return tasks_; }
+
+    Strand *active_task() const { return active_task_; }
+    void active_task(Strand *s) { active_task_ = s; }
     
     void set_done() { done_ = true; }
     void set_eptr(std::exception_ptr ptr) { exception_ptr_ = ptr; }
-    std::optional<chron::TimeInNanos> current_tp_, next_tp_;
+    
+    chron::TimeInNanos now_;
+    RunQueue tasks_;
+    Strand *active_task_{nullptr};
 
 private:
     using Lambda = std::function<Strand()>;
@@ -201,10 +200,10 @@ private:
     
     bool done_, debug_;
     std::exception_ptr exception_ptr_;
-    chron::TimeInNanos now_;
     LambdaPtrs saved_;
     Strands setup_, loop_, tear_down_;
     AsyncPairMap endpoints_;
+    chron::InNanos offset_;
 };
 
 using SchedulerPtr = std::unique_ptr<Scheduler>;

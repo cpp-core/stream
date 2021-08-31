@@ -8,8 +8,7 @@
 
 namespace cot {
 
-static auto find_timepoint(Strand *s) {
-    auto tp = chron::nanopoint_from_now();
+static auto find_timepoint(Strand *s, chron::TimeInNanos tp) {
     return core::match
 	(s->state(),
 	 [&](const Yield::ResumeAt& state) { return state.tp; },
@@ -22,24 +21,23 @@ static auto find_timepoint(Strand *s) {
 }
 
 bool RealScheduler::run_group(Strands& strands) {
+    set_now_realtime();
     for (auto& s : strands) {
 	if (not s.done() and not std::holds_alternative<Yield::Suspend>(s.state())) {
-	    s.next_runtime() = find_timepoint(&s);
+	    s.next_runtime() = find_timepoint(&s, now());
 	    tasks().push(&s);
 	}
     }
 
+    set_now_realtime();
     while (not tasks().empty()) {
+	auto start_tp = now();
 	auto s = tasks().top();
 	tasks().pop();
 
-	auto tp = chron::nanopoint_from_now();
-	if (s->next_runtime() > tp)
-	    std::this_thread::sleep_for(s->next_runtime() - tp);
-
-	active_ = s;
-	s->resume();
-	active_ = nullptr;
+	active_task(s);
+	s->coro().resume();
+	active_task(nullptr);
 	
 	core::match(s->state(),
 		    [&](const Yield::Exception& state) {
@@ -74,6 +72,9 @@ bool RealScheduler::run_group(Strands& strands) {
 		    [&](const Yield::Terminate&) {
 			set_done();
 		    });
+
+	set_now_realtime();
+	s->update(start_tp, now());
 	
 	if (std::holds_alternative<Yield::Exception>(s->state()) or
 	    std::holds_alternative<Yield::Terminate>(s->state()))
