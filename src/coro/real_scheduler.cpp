@@ -30,7 +30,7 @@ bool RealScheduler::run_group(Strands& strands) {
     }
 
     set_now_realtime();
-    while (not tasks().empty()) {
+    while (not tasks().empty() and not done()) {
 	auto start_tp = now();
 	auto s = tasks().top();
 	tasks().pop();
@@ -80,7 +80,7 @@ bool RealScheduler::run_group(Strands& strands) {
 	    std::holds_alternative<Yield::Terminate>(s->state()))
 	    break;
     }
-    
+
     return not eptr();
 }
 
