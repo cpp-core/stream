@@ -39,6 +39,9 @@ bool RealScheduler::run_group(Strands& strands) {
 	s->coro().resume();
 	active_task(nullptr);
 	
+	set_now_realtime();
+	s->update(start_tp, now());
+	
 	core::match(s->state(),
 		    [&](const Yield::Exception& state) {
 			set_done();
@@ -73,9 +76,6 @@ bool RealScheduler::run_group(Strands& strands) {
 			set_done();
 		    });
 
-	set_now_realtime();
-	s->update(start_tp, now());
-	
 	if (std::holds_alternative<Yield::Exception>(s->state()) or
 	    std::holds_alternative<Yield::Terminate>(s->state()))
 	    break;

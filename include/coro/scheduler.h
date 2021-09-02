@@ -169,7 +169,7 @@ public:
     auto now() const { return now_; }
     
 protected:
-    auto set_now_realtime() { now_ = offset_ + chron::nanopoint_from_nanos(__rdtsc()); }
+    auto set_now_realtime() { now_ = chron::nanopoint_from_now(); }
     
     const RunQueue& tasks() const { return tasks_; }
     RunQueue& tasks() { return tasks_; }
