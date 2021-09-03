@@ -7,115 +7,77 @@
 
 namespace cot {
 
-// auto find_next_timepoint(Scheduler::Runnables& runnables) {
-    // Scheduler::Runnable *first_runnable{nullptr};
-    // auto first_tp = chron::TimeInNanos::max(), second_tp = chron::TimeInNanos::max();
-    // for (auto& runnable : runnables) {
-    // 	if (runnable.done())
-    // 	    continue;
-    // 	auto tp = core::match
-    // 	    (runnable.state(),
-    // 	     [&](const Yield::ResumeAt& value) {
-    // 		 return value.tp;
-    // 	     },
-    // 	     [&](const Yield::Resume& value) {
-    // 		 return chron::TimeInNanos{};
-    // 	     },
-    // 	     [&](const auto& other) {
-    // 		 return chron::TimeInNanos::max();
-    // 	     });
-    // 	if (tp < first_tp) {
-    // 	    second_tp = first_tp;
-    // 	    first_tp = tp;
-    // 	    first_runnable = &runnable;
-    // 	}
-    // 	else if (tp < second_tp)
-    // 	    second_tp = tp;
-    // }
-    // return std::make_tuple(first_runnable, first_tp, second_tp);
-// }
-
-// auto find_timepoint(Scheduler::Runnable *r) {
-//     return core::match
-// 	(r->state(),
-// 	 [&](const Yield::ResumeAt& value) { return value.tp; },
-// 	 [&](const Yield::Resume& value) { return chron::TimeInNanos{}; },
-// 	 [&](const auto& value) { return chron::TimeInNanos::max(); }
-// 	 );
-// }
-
-// void transform_durations(chron::TimeInNanos current_tp, Scheduler::Runnables& runnables) {
-//     for (auto& r : runnables)
-// 	if (std::holds_alternative<Yield::ResumeAfter>(r.state())) {
-// 	    auto tp = current_tp + std::get<Yield::ResumeAfter>(r.state()).duration;
-// 	    r.strand_.state() = Yield::ResumeAt{tp};
-// 	    r.next_ = tp;
-// 	}
-// }
+auto find_timepoint(Strand *s) {
+    return core::match
+	(s->state(),
+	 [&](const Yield::ResumeAt& state) { return state.tp; },
+	 [&](const Yield::ResumeAfter& state) { return chron::TimeInNanos{} + state.duration; },
+	 [&](const Yield::Resume& state) { return chron::TimeInNanos{}; },
+	 [&](const auto& state) {
+	     throw core::runtime_error("Invalid initial state: {}", state);
+	     return chron::TimeInNanos::max();
+	 });
+}
 
 bool VirtualScheduler::run_group(Strands& strands) {
-    // auto cmp = [](Runnable* left, Runnable* right) { return left->next_ > right->next_; };
-    // std::priority_queue<Runnable*, std::vector<Runnable*>, decltype(cmp)> tasks;
+    for (auto& s : strands) {
+	if (not s.done() and not std::holds_alternative<Yield::Suspend>(s.state())) {
+	    s.next_runtime() = find_timepoint(&s);
+	    tasks().push(&s);
+	}
+    }
 
-    // for (auto& runnable : runnables) {
-    // 	if (not runnable.strand_.done()) {
-    // 	    runnable.next_ = find_timepoint(&runnable);
-    // 	    tasks.push(&runnable);
-    // 	}
-    // }
+    while (not tasks().empty() and not done()) {
+	auto s = tasks().top();
+	tasks().pop();
 
-    // current_tp_ = std::nullopt;
-    // next_tp_ = std::nullopt;
-    // while (not tasks.empty()) {
-    // 	auto r = tasks.top();
-    // 	tasks.pop();
+	auto tp = s->next_runtime();
+	clock().now(tp);
 
-    // 	if (r->next_ != chron::TimeInNanos{} and
-    // 	    r->next_ != chron::TimeInNanos::max()) {
-    // 	    if (not current_time())
-    // 		transform_durations(r->next_, runnables);
-    // 	    current_tp_ = r->next_;
-    // 	}
-    // 	if (current_time())
-    // 	    next_tp_ = tasks.empty() ? chron::TimeInNanos::max() : tasks.top()->next_;
+	active_task(s);
+	auto start_tp = wallclock();
+	s->coro().resume();
+	s->update(start_tp, wallclock());
+	active_task(nullptr);
+    
+	core::match(s->state(),
+		    [&](const Yield::Exception& state) {
+			set_done();
+			set_eptr(state.eptr);
+		    },
+		    [&](const Yield::Finished&) {
+			s->next_runtime() = chron::TimeInNanos::max();
+		    },
+		    [&](const Yield::Resume&) {
+			s->next_runtime() = now() + 1ns;
+			tasks().push(s);
+		    },
+		    [&](const Yield::ResumeAfter& state) {
+			s->next_runtime() = now() + state.duration;
+			tasks().push(s);
+		    },
+		    [&](const Yield::ResumeAt& state) {
+			s->next_runtime() = state.tp;
+			tasks().push(s);
+		    },
+		    [&](const Yield::ResumeOnSocket& state) {
+			s->next_runtime() = now() + 10ms;
+			tasks().push(s);
+		    },
+		    [&](const Yield::Shutdown&) {
+			set_done();
+		    },
+		    [&](const Yield::Suspend&) {
+			s->next_runtime() = now() + 1ns;
+		    },
+		    [&](const Yield::Terminate&) {
+			set_done();
+		    });
 
-    // 	r->resume();
-
-    // 	core::match(r->state(),
-    // 		    [&](const Yield::ResumeAfter& value) {
-    // 			if (current_time()) {
-    // 			    auto dtp = std::get<Yield::ResumeAfter>(r->state()).duration;
-    // 			    auto tp = *current_time() + dtp;
-    // 			    r->strand_.state() = Yield::ResumeAt{tp};
-    // 			    r->next_ = tp;
-    // 			} else {
-    // 			    r->next_ = chron::TimeInNanos::max();
-    // 			}
-    // 			tasks.push(r);
-    // 		    },
-    // 		    [&](const Yield::ResumeAt& v) {
-    // 			r->next_ = v.tp;
-    // 			tasks.push(r);
-    // 		    },
-    // 		    [&](const Yield::Finished&) {
-    // 		    },
-    // 		    [&](const Yield::Resume&) {
-    // 			r->next_ = chron::TimeInNanos{};
-    // 			tasks.push(r);
-    // 		    },
-    // 		    [&](const Yield::Shutdown&) {
-    // 			set_done();
-    // 		    },
-    // 		    [&](const Yield::Terminate&) {
-    // 		    },
-    // 		    [&](const auto& other) {
-    // 			r->next_ = chron::TimeInNanos::max();
-    // 			tasks.push(r);
-    // 		    });
-
-    // 	if (std::holds_alternative<Yield::Terminate>(r->state()))
-    // 	    break;
-    // }
+	if (std::holds_alternative<Yield::Exception>(s->state()) or
+	    std::holds_alternative<Yield::Terminate>(s->state()))
+	    break;
+    }
 
     return not eptr();
 }
