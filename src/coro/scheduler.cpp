@@ -9,9 +9,10 @@ namespace cot
 {
 
 bool Scheduler::run() {
-    return pre_run_group(setup_) and
-	pre_run_group(loop_) and
-	pre_run_group(tear_down_);
+    // return pre_run_group(setup_) and
+    // 	pre_run_group(loop_) and
+    // 	pre_run_group(tear_down_);
+    return pre_run_group(loop_);
 }
 
 bool Scheduler::pre_run_group(Strands& strands) {

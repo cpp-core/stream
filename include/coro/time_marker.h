@@ -16,7 +16,8 @@ public:
     }
 	
     bool await_ready() const noexcept {
-	return scheduler_.try_advance_current_time(tp_);
+	return false;
+	// return scheduler_.try_advance_current_time(tp_);
     }
     
     void await_suspend(Strand::Handle coro) noexcept {
