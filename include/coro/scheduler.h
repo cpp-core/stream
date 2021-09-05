@@ -36,16 +36,22 @@ public:
 
     const std::exception_ptr& eptr() const { return exception_ptr_; }
 
-    Strand::Profiles profiles() const;
-    string info() const;
-
-    void on_setup(Strand&& strand) {
-	setup_.emplace_back(Yield::Resume{}, std::move(strand));
-    }
+    const auto& clock() const { return clock_; }
+    auto& clock() { return clock_; }
     
-    template<class L> requires StrandLambda<L>
-    void on_setup(L&& lambda) {
-	on_setup(construct_strand(std::forward<L>(lambda)));
+    auto now() const { return clock_.now(); }
+    auto wallclock() const { return clock_.wallclock(); }
+    
+    Strand::Profiles profiles() const;
+
+    template<class F>
+    void on_setup(F&& functor) {
+	setup_.emplace_back(std::move(functor));
+    }
+
+    template<class F>
+    void on_tear_down(F&& functor) {
+	tear_down_.emplace_back(std::move(functor));
     }
 
     auto& on_loop(Yield::Code&& state, Strand&& strand) {
@@ -78,22 +84,9 @@ public:
 	return on_loop(construct_strand(std::forward<L>(lambda)));
     }
 
-    void on_tear_down(Strand&& strand) {
-	tear_down_.emplace_back(Yield::Resume{}, std::move(strand));
-    }
-    
-    template<class L> requires StrandLambda<L>
-    void on_tear_down(L&& lambda) {
-	on_tear_down(construct_strand(std::forward<L>(lambda)));
-    }
-
-    const auto& clock() const { return clock_; }
-    auto& clock() { return clock_; }
-    
-    auto now() const { return clock_.now(); }
-    auto wallclock() const { return clock_.wallclock(); }
-    
 protected:
+    virtual bool run_group(Strands& strands) = 0;
+    
     const RunQueue& tasks() const { return tasks_; }
     RunQueue& tasks() { return tasks_; }
 
@@ -107,6 +100,12 @@ protected:
     Strand *active_task_{nullptr};
 
 private:
+    using SetupFunctor = std::function<void()>;
+    using SetupFunctors = std::vector<SetupFunctor>;
+    
+    using TearDownFunctor = std::function<void()>;
+    using TearDownFunctors = std::vector<TearDownFunctor>;
+    
     using Lambda = std::function<Strand()>;
     using LambdaPtr = std::unique_ptr<Lambda>;
     using LambdaPtrs = std::vector<LambdaPtr>;
@@ -117,13 +116,12 @@ private:
 	return (*saved_.back())();
     }
 
-    bool pre_run_group(Strands& strands);
-    virtual bool run_group(Strands& strands) = 0;
-    
-    bool done_;
+    bool done_{false};
     std::exception_ptr exception_ptr_;
     LambdaPtrs saved_;
-    Strands setup_, loop_, tear_down_;
+    Strands loop_;
+    SetupFunctors setup_;
+    TearDownFunctors tear_down_;
     LowResClock clock_;
 };
 
