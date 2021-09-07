@@ -8,8 +8,10 @@ namespace cot {
 
 class RealScheduler : public Scheduler {
 public:
-    RealScheduler(chron::InNanos resolution = 1ms)
-	: Scheduler(Mode::RealTime, resolution) {
+    RealScheduler(chron::TimeInNanos start = chron::TimeInNanos{},
+		  chron::TimeInNanos end = chron::TimeInNanos::max(),
+		  chron::InNanos resolution = 1ms)
+	: Scheduler(Mode::RealTime, start, end, resolution) {
     }
 
     virtual ~RealScheduler() {

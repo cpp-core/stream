@@ -7,12 +7,12 @@
 
 namespace cot {
 
-auto find_timepoint(Strand *s) {
+auto find_timepoint(Strand *s, chron::TimeInNanos tp) {
     return core::match
 	(s->state(),
 	 [&](const Yield::ResumeAt& state) { return state.tp; },
-	 [&](const Yield::ResumeAfter& state) { return chron::TimeInNanos{} + state.duration; },
-	 [&](const Yield::Resume& state) { return chron::TimeInNanos{}; },
+	 [&](const Yield::ResumeAfter& state) { return tp + state.duration; },
+	 [&](const Yield::Resume& state) { return tp; },
 	 [&](const auto& state) {
 	     throw core::runtime_error("Invalid initial state: {}", state);
 	     return chron::TimeInNanos::max();
@@ -22,7 +22,7 @@ auto find_timepoint(Strand *s) {
 bool VirtualScheduler::run_group(Strands& strands) {
     for (auto& s : strands) {
 	if (not s.done() and not std::holds_alternative<Yield::Suspend>(s.state())) {
-	    s.next_runtime() = find_timepoint(&s);
+	    s.next_runtime() = find_timepoint(&s, now());
 	    tasks().push(&s);
 	}
     }

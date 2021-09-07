@@ -20,8 +20,15 @@ public:
     };
     using RunQueue = std::priority_queue<Strand*, std::vector<Strand*>, StrandPriority>;
     
-    Scheduler(Mode mode, chron::InNanos resolution)
-	: clock_(mode, resolution) {
+    Scheduler(Mode mode,
+	      chron::TimeInNanos start,
+	      chron::TimeInNanos end,
+	      chron::InNanos resolution)
+	: clock_(mode, resolution) 
+	, start_(start)
+	, end_(end) {
+	if (mode == Mode::Virtual)
+	    clock().now(start);
     }
 
     virtual ~Scheduler() {
@@ -33,11 +40,12 @@ public:
     
     void stop() { set_done(); }
     bool done() const { return done_; }
+    bool fast_forward(chron::TimeInNanos tp);
 
     const std::exception_ptr& eptr() const { return exception_ptr_; }
 
-    const auto& clock() const { return clock_; }
-    auto& clock() { return clock_; }
+    const LowResClock& clock() const { return clock_; }
+    LowResClock& clock() { return clock_; }
     
     auto now() const { return clock_.now(); }
     auto wallclock() const { return clock_.wallclock(); }
@@ -123,6 +131,7 @@ private:
     SetupFunctors setup_;
     TearDownFunctors tear_down_;
     LowResClock clock_;
+    chron::TimeInNanos start_, end_;
 };
 
 using SchedulerPtr = std::unique_ptr<Scheduler>;

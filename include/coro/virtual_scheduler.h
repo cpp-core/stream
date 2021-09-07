@@ -8,8 +8,10 @@ namespace cot {
 
 class VirtualScheduler : public Scheduler {
 public:
-    VirtualScheduler(chron::InNanos resolution = 1ms)
-	: Scheduler(Mode::Virtual, resolution) {
+    VirtualScheduler(chron::TimeInNanos start = chron::TimeInNanos{},
+		     chron::TimeInNanos end = chron::TimeInNanos::max(),
+		     chron::InNanos resolution = 1ms)
+	: Scheduler(Mode::Virtual, start, end, resolution) {
     }
 
     virtual ~VirtualScheduler() {

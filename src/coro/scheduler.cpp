@@ -8,6 +8,16 @@
 namespace cot
 {
 
+bool Scheduler::fast_forward(chron::TimeInNanos tp) {
+    if (clock().mode() == Mode::RealTime)
+	return true;
+    if (tasks().empty() or tp < tasks().top()->next_runtime()) {
+	clock().now(tp);
+	return true;
+    }
+    return false;
+}
+
 bool Scheduler::run() {
     for (auto& f : setup_)
 	f();
