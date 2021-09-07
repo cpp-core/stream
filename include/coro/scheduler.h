@@ -28,7 +28,7 @@ public:
 	, start_(start)
 	, end_(end) {
 	if (mode == Mode::Virtual)
-	    clock().vnow(start);
+	    clock().virtual_now(start);
     }
 
     virtual ~Scheduler() {
@@ -47,8 +47,8 @@ public:
     const LowResClock& clock() const { return clock_; }
     LowResClock& clock() { return clock_; }
     
-    auto vnow() const { return clock_.vnow(); }
-    auto rnow() const { return clock_.rnow(); }
+    chron::TimeInNanos virtual_now() const { return clock_.virtual_now(); }
+    chron::TimeInNanos now() const { return clock_.now(); }
     
     Strand::Profiles profiles() const;
 
@@ -85,6 +85,11 @@ public:
     template<class L> requires StrandLambda<L>
     auto& after_duration(chron::InNanos duration, L&& lambda) {
 	return on_loop(Yield::ResumeAfter{duration}, std::forward<L>(lambda));
+    }
+
+    template<class L> requires StrandLambda<L>
+    auto& after_duration_wallclock(chron::InNanos duration, L&& lambda) {
+	return on_loop(Yield::ResumeAfterReal{duration}, std::forward<L>(lambda));
     }
 
     template<class L> requires StrandLambda<L>

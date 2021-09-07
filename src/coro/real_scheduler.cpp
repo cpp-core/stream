@@ -22,7 +22,7 @@ static auto find_timepoint(Strand *s, chron::TimeInNanos tp) {
 }
 
 bool RealScheduler::run_group(Strands& strands) {
-    auto tp = vnow();
+    auto tp = virtual_now();
     for (auto& s : strands) {
 	if (not s.done() and not std::holds_alternative<Yield::Suspend>(s.state())) {
 	    s.next_runtime() = find_timepoint(&s, tp);
@@ -35,9 +35,9 @@ bool RealScheduler::run_group(Strands& strands) {
 	tasks().pop();
 
 	active_task(s);
-	auto start_tp = rnow();
+	auto start_tp = now();
 	s->coro().resume();
-	s->update(start_tp, rnow());
+	s->update(start_tp, now());
 	active_task(nullptr);
 	
 	core::match(s->state(),

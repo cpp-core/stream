@@ -42,13 +42,13 @@ public:
     chron::InNanos resolution() const { return resolution_; }
 
     // Return the current virtual time.
-    chron::TimeInNanos vnow() const { return virtual_now_; }
+    chron::TimeInNanos virtual_now() const { return virtual_now_; }
     
     // Return the current actual time.
-    chron::TimeInNanos rnow() const { return real_now_; }
+    chron::TimeInNanos now() const { return now_; }
 
     // Set the current virtual time. Must be in Virtual mode.
-    void vnow(chron::TimeInNanos tp) {
+    void virtual_now(chron::TimeInNanos tp) {
 	assert(mode_ == Mode::Virtual);
 	virtual_now_ = tp;
     }
@@ -56,7 +56,7 @@ public:
 private:
     Mode mode_;
     chron::InNanos resolution_;
-    std::atomic<chron::TimeInNanos> real_now_, virtual_now_;
+    std::atomic<chron::TimeInNanos> now_, virtual_now_;
     std::thread thread_;
     std::atomic<bool> done_{false};
 };
