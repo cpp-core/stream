@@ -12,31 +12,51 @@ namespace cot
 // LowResClock provides very fast access to the current time with
 // configurable resolution (typically 1ms). This provides an
 // alternative to the standard system time which has high resolution
-// but require upwards of tens of nanos to access.
+// but requires upwards of tens of nanos to access.
+//
+// The clock has two modes of operation: RealTime and Virtual. In
+// RealTime mode, both rnow() and vnow() return the current time. In
+// Virtual mode, rnow() still returns the real time, but vnow()
+// returns the manually set virtual time.
+//
+// The clocks tracks real time modulo the given resolution using a
+// separate thread that is periodically awakened and updates the
+// internal time point using the high resolution system clock.
 class LowResClock {
 public:
     enum class Mode { RealTime, Virtual };
-    
+
+    // Construct a clock with the given <mode> and <resolution>.
     LowResClock(Mode mode, chron::InNanos resolution);
     ~LowResClock();
 
+    // Disable copy and move because of the internal thread that
+    // depends on the original object remaining valid.
     LowResClock(const LowResClock&) = delete;
     LowResClock& operator=(const LowResClock&) = delete;
 
+    // Return the clock mode: RealTime or Virtual.
     auto mode() const { return mode_; }
+
+    // Return the clock resolution.
     chron::InNanos resolution() const { return resolution_; }
-    chron::TimeInNanos now() const { return now_; }
-    chron::TimeInNanos wallclock() const { return wallclock_; }
+
+    // Return the current virtual time.
+    chron::TimeInNanos vnow() const { return virtual_now_; }
     
-    void now(chron::TimeInNanos tp) {
+    // Return the current actual time.
+    chron::TimeInNanos rnow() const { return real_now_; }
+
+    // Set the current virtual time. Must be in Virtual mode.
+    void vnow(chron::TimeInNanos tp) {
 	assert(mode_ == Mode::Virtual);
-	now_ = tp;
+	virtual_now_ = tp;
     }
     
 private:
     Mode mode_;
     chron::InNanos resolution_;
-    std::atomic<chron::TimeInNanos> wallclock_, now_;
+    std::atomic<chron::TimeInNanos> real_now_, virtual_now_;
     std::thread thread_;
     std::atomic<bool> done_{false};
 };

@@ -17,8 +17,12 @@ public:
     virtual ~VirtualScheduler() {
     }
 
+    RunQueue& rtasks() { return rtasks_; }
+    const RunQueue& rtasks() const { return rtasks_; }
+
 private:
     virtual bool run_group(Strands& strands) override;
+    RunQueue rtasks_;
 };
 
 }; // cot

@@ -13,9 +13,9 @@ struct Yield {
     struct Exception { std::exception_ptr eptr; };
     struct Finished {};
     struct Resume {};
-    struct ResumeAt { chron::TimeInNanos tp; };
     struct ResumeAfter { chron::InNanos duration; };
-    struct ResumeOnSocket {};
+    struct ResumeAfterReal { chron::InNanos duration; };
+    struct ResumeAt { chron::TimeInNanos tp; };
     struct Shutdown {};
     struct Suspend {};
     struct Terminate {};
@@ -23,14 +23,14 @@ struct Yield {
 			      Finished,
 			      Resume,
 			      ResumeAfter,
+			      ResumeAfterReal,
 			      ResumeAt,
-			      ResumeOnSocket,
 			      Shutdown,
 			      Suspend,
 			      Terminate>;
 
     using CoReturnTypes = std::tuple<Exception, Finished, Shutdown, Terminate>;
-    using CoYieldTypes = std::tuple<ResumeAt, ResumeAfter, Resume, ResumeOnSocket, Suspend>;
+    using CoYieldTypes = std::tuple<ResumeAfter, ResumeAfterReal, ResumeAt, Resume, Suspend>;
 };
 
 std::ostream& operator<<(std::ostream& os, const Yield::Code& yield);

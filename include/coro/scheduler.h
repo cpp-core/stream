@@ -28,7 +28,7 @@ public:
 	, start_(start)
 	, end_(end) {
 	if (mode == Mode::Virtual)
-	    clock().now(start);
+	    clock().vnow(start);
     }
 
     virtual ~Scheduler() {
@@ -47,8 +47,8 @@ public:
     const LowResClock& clock() const { return clock_; }
     LowResClock& clock() { return clock_; }
     
-    auto now() const { return clock_.now(); }
-    auto wallclock() const { return clock_.wallclock(); }
+    auto vnow() const { return clock_.vnow(); }
+    auto rnow() const { return clock_.rnow(); }
     
     Strand::Profiles profiles() const;
 

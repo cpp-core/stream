@@ -14,8 +14,8 @@ std::ostream& operator<<(std::ostream& os, const Yield::Code& yield) {
 	 [&](const Yield::Finished&) { os << "finished"; },
 	 [&](const Yield::Resume&) { os << "resume"; },
 	 [&](const Yield::ResumeAfter& v) { os << "resue-after-duration " << v.duration; },
+	 [&](const Yield::ResumeAfterReal& v) { os << "resue-after-real-duration " << v.duration;},
 	 [&](const Yield::ResumeAt& v) { os << "resume-at-time " << v.tp; },
-	 [&](const Yield::ResumeOnSocket&) { os << "resume-on-socket"; },
 	 [&](const Yield::Shutdown&) { os << "shutdown"; },
 	 [&](const Yield::Suspend&) { os << "suspend"; },
 	 [&](const Yield::Terminate&) { os << "terminate"; }

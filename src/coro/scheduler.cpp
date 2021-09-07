@@ -12,7 +12,7 @@ bool Scheduler::fast_forward(chron::TimeInNanos tp) {
     if (clock().mode() == Mode::RealTime)
 	return true;
     if (tasks().empty() or tp < tasks().top()->next_runtime()) {
-	clock().now(tp);
+	clock().vnow(tp);
 	return true;
     }
     return false;

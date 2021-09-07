@@ -13,6 +13,7 @@ static auto find_timepoint(Strand *s, chron::TimeInNanos tp) {
 	(s->state(),
 	 [&](const Yield::ResumeAt& state) { return state.tp; },
 	 [&](const Yield::ResumeAfter& state) { return tp + state.duration; },
+	 [&](const Yield::ResumeAfterReal& state) { return tp + state.duration; },
 	 [&](const Yield::Resume& state) { return tp; },
 	 [&](const auto& state) { 
 	     throw core::runtime_error("Invalid initial runnable state: {}", state);
@@ -21,7 +22,7 @@ static auto find_timepoint(Strand *s, chron::TimeInNanos tp) {
 }
 
 bool RealScheduler::run_group(Strands& strands) {
-    auto tp = now();
+    auto tp = vnow();
     for (auto& s : strands) {
 	if (not s.done() and not std::holds_alternative<Yield::Suspend>(s.state())) {
 	    s.next_runtime() = find_timepoint(&s, tp);
@@ -34,9 +35,9 @@ bool RealScheduler::run_group(Strands& strands) {
 	tasks().pop();
 
 	active_task(s);
-	auto start_tp = wallclock();
+	auto start_tp = rnow();
 	s->coro().resume();
-	s->update(start_tp, wallclock());
+	s->update(start_tp, rnow());
 	active_task(nullptr);
 	
 	core::match(s->state(),
@@ -55,12 +56,12 @@ bool RealScheduler::run_group(Strands& strands) {
 			s->next_runtime() = s->last_runtime() + state.duration;
 			tasks().push(s);
 		    },
-		    [&](const Yield::ResumeAt& state) {
-			s->next_runtime() = state.tp;
+		    [&](const Yield::ResumeAfterReal& state) {
+			s->next_runtime() = s->last_runtime() + state.duration;
 			tasks().push(s);
 		    },
-		    [&](const Yield::ResumeOnSocket& state) {
-			s->next_runtime() = s->last_runtime() + 10ms;
+		    [&](const Yield::ResumeAt& state) {
+			s->next_runtime() = state.tp;
 			tasks().push(s);
 		    },
 		    [&](const Yield::Shutdown&) {

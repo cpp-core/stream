@@ -14,17 +14,17 @@ LowResClock::LowResClock(Mode mode, chron::InNanos resolution)
     
     nanos /= count;
     nanos *= count;
-    wallclock_.store(chron::nanopoint_from_nanos(nanos), std::memory_order_release);
+    real_now_.store(chron::nanopoint_from_nanos(nanos), std::memory_order_release);
     if (mode_ == Mode::RealTime)
-	now_ = wallclock_.load(std::memory_order_acquire);
+	virtual_now_ = real_now_.load(std::memory_order_acquire);
     
     thread_ = std::thread([this]() {
 	while (not done_) {
-	    auto next = wallclock_.load(std::memory_order_acquire) + resolution_;
+	    auto next = real_now_.load(std::memory_order_acquire) + resolution_;
 	    std::this_thread::sleep_until(next);
-	    wallclock_ = wallclock_.load(std::memory_order_acquire) + resolution_;
+	    real_now_ = real_now_.load(std::memory_order_acquire) + resolution_;
 	    if (mode_ == Mode::RealTime)
-		now_ = wallclock_.load(std::memory_order_acquire);
+		virtual_now_ = real_now_.load(std::memory_order_acquire);
 	}
     });
 }

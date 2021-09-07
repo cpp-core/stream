@@ -13,11 +13,11 @@ public:
     LowResYield(const LowResClock& clock, chron::InNanos period)
 	: clock_(clock)
 	, period_(period)
-	, next_(clock_.wallclock() + period_) {
+	, next_(clock_.rnow() + period_) {
     }
 
     bool await_ready() noexcept {
-	auto tp = clock_.wallclock();
+	auto tp = clock_.rnow();
 	if (tp < next_)
 	    return true;
 	next_ = tp + period_;
