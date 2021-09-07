@@ -16,7 +16,8 @@ public:
     }
 	
     bool await_ready() const noexcept {
-	return false;
+	scheduler_.clock().now(tp_);
+	return true;
 	// return scheduler_.try_advance_current_time(tp_);
     }
     
