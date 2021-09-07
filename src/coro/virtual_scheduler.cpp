@@ -38,7 +38,7 @@ bool VirtualScheduler::run_group(Strands& strands) {
 	}
     }
 
-    while (not done() and (not tasks().empty() or not rtasks().empty())) {
+    while (not tasks().empty() or not rtasks().empty()) {
 	Strand *s{nullptr};
 	
 	if (not rtasks().empty() and rtasks().top()->next_runtime() <= now()) {
