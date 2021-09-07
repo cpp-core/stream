@@ -59,9 +59,9 @@ public:
 	std::swap(coro_, other.coro_);
     }
 
-    Strand(Yield::Code&& state, Strand&& other) noexcept {
+    Strand(Yield::Code state, Strand&& other) noexcept {
 	std::swap(coro_, other.coro_);
-	coro_.promise().state_ = std::move(state);
+	coro_.promise().state_ = state;
     }
 
     bool done() const { return coro_.done(); }

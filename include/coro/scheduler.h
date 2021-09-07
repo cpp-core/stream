@@ -62,8 +62,8 @@ public:
 	tear_down_.emplace_back(std::move(functor));
     }
 
-    auto& on_loop(Yield::Code&& state, Strand&& strand) {
-	loop_.emplace_back(std::move(state), std::move(strand));
+    auto& on_loop(Yield::Code state, Strand&& strand) {
+	loop_.emplace_back(state, std::move(strand));
 	return loop_.back();
     }
     
@@ -72,9 +72,8 @@ public:
     }
 
     template<class L> requires StrandLambda<L>
-    auto& on_loop(Yield::Code&& state, L&& lambda) {
-	return on_loop(std::forward<Yield::Code>(state),
-		       construct_strand(std::forward<L>(lambda)));
+    auto& on_loop(Yield::Code state, L&& lambda) {
+	return on_loop(state, construct_strand(std::forward<L>(lambda)));
     }
     
     template<class L> requires StrandLambda<L>
