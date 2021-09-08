@@ -15,7 +15,11 @@ public:
     using handle_type = std::experimental::coroutine_handle<promise_type>;
 
     struct promise_type {
-	T value_;
+	using value_type = std::remove_reference_t<T>;
+	using reference_type = std::conditional_t<std::is_reference_v<T>, T, T&>;
+	using pointer_type = value_type*;
+	
+	value_type value_;
 	std::exception_ptr exception_;
 
 	Generator get_return_object() { return Generator(handle_type::from_promise(*this)); }
@@ -30,10 +34,68 @@ public:
 	}
 
 	void return_void() { }
+
+	void rethrow_if_exception() {
+	    if (exception_)
+		std::rethrow_exception(exception_);
+	}
+    };
+
+    struct sentinel {};
+
+    struct iterator {
+    public:
+	using iterator_category = std::input_iterator_tag;
+	using difference_type = std::ptrdiff_t;
+	using value_type = typename promise_type::value_type;
+	using reference = typename promise_type::reference_type;
+	using pointer = typename promise_type::pointer_type;
+
+	iterator() noexcept
+	: coro_(nullptr) {
+	}
+
+	explicit iterator(handle_type coro) noexcept
+	    : coro_(coro) {
+	}
+
+	friend bool operator==(const iterator& iter, sentinel) noexcept {
+	    return not iter.coro_ or iter.coro_.done();
+	}
+
+	friend bool operator!=(const iterator& iter, sentinel s) noexcept {
+	    return not (iter == s);
+	}
+
+	friend bool operator==(sentinel s, const iterator& iter) noexcept {
+	    return iter == s;
+	}
+
+	friend bool operator!=(sentinel s, const iterator& iter) noexcept {
+	    return iter != s;
+	}
+
+	iterator& operator++() {
+	    coro_.resume();
+	    if (coro_.done())
+		coro_.promise().rethrow_if_exception();
+	    return *this;
+	}
+
+	reference operator*() const noexcept {
+	    return coro_.promise().value_;
+	}
+
+	pointer operator->() const noexcept {
+	    return std::addressof(operator*());
+	}
+	    
+    private:
+	handle_type coro_;
     };
 
     Generator(handle_type handle)
-	: handle_(handle)
+	: coro_(handle)
     { }
 
     // Generator's cannot be copied so disable copy construction and
@@ -42,28 +104,41 @@ public:
     Generator& operator=(const Generator& other) = delete;
     
     Generator(Generator&& other) {
-	std::swap(handle_, other.handle_);
+	std::swap(coro_, other.coro_);
 	std::swap(vacant_, other.vacant_);
     }
 
     Generator& operator=(Generator&& other) {
-	std::swap(handle_, other.handle_);
+	std::swap(coro_, other.coro_);
 	std::swap(vacant_, other.vacant_);
 	return *this;
     }
     
     ~Generator() {
-	if (handle_) {
-	    handle_.destroy();
-	    handle_ = nullptr;
+	if (coro_) {
+	    coro_.destroy();
+	    coro_ = nullptr;
 	}
+    }
+
+    iterator begin() {
+	if (coro_) {
+	    coro_.resume();
+	    if (coro_.done())
+		coro_.promise().rethrow_if_exception();
+	}
+	return iterator(coro_);
+    }
+
+    sentinel end() {
+	return sentinel{};
     }
 
     // Return false iff the generator is exhausted (i.e. it cannot be
     // invoked to compute another element); otherwise, return true.
     explicit operator bool() {
 	populate();
-	return not handle_.done();
+	return not coro_.done();
     }
 
     // Return the next element from the generator. If the generator is
@@ -71,7 +146,7 @@ public:
     T operator()() {
 	populate();
 	vacant_ = true;
-	return std::move(handle_.promise().value_);
+	return std::move(coro_.promise().value_);
     }
 
 private:
@@ -79,14 +154,14 @@ private:
     // next element and cache it to be returned by the call operator.
     void populate() {
 	if (vacant_) {
-	    handle_();
-	    if (handle_.promise().exception_)
-		std::rethrow_exception(handle_.promise().exception_);
+	    coro_();
+	    if (coro_.promise().exception_)
+		std::rethrow_exception(coro_.promise().exception_);
 	    vacant_ = false;
 	}
     }
     
-    handle_type handle_{nullptr};
+    handle_type coro_{nullptr};
     bool vacant_{true};
 };
 
