@@ -254,6 +254,10 @@ public:
 	return coro_ and not coro_.done();
     }
 
+    bool done() const {
+	return not coro_ or coro_.done();
+    }
+
     // Return the next value from the generator.
     Reference operator()() const {
 	return static_cast<Reference>(*coro_.promise().value_);
