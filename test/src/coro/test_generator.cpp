@@ -5,31 +5,36 @@
 #include "coro/generator.h"
 #include "core/range/sample.h"
 
-static const size_t NumberSamples = 64;
+static const size_t NumberSamples = 2;
 
 co::Generator<int> iota(size_t n) {
     for (auto i = 0; i < n; ++i)
 	co_yield i;
 }
 
-TEST(Coro, GeneratorCall)
+TEST(CoroGenerator, NextCall)
 {
     for (auto n : cr::uniform(0, 128) | v::take(NumberSamples)) {
 	auto loop = iota(n);
 	size_t count{0};
-	while (loop)
+	while (loop.next())
 	    EXPECT_EQ(count++, loop());
 	EXPECT_EQ(count, n);
     }
 }
 
-TEST(Coro, GeneratorForRange)
+TEST(CoroGenerator, RangeBasedForLoop)
 {
     size_t count{0};
     for (auto n : iota(5))
 	EXPECT_EQ(count++, n);
     EXPECT_EQ(count, 5);
 }
+
+// TEST(CoroGenerator, Range)
+// {
+//     auto g = iota(10) | v::take(5);
+// }
 
 int main(int argc, char *argv[])
 {

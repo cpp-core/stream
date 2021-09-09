@@ -8,37 +8,157 @@
 namespace co
 {
 
-template<class T>
+// (possibly recusrive) Generator using symmetric transfer.
+//
+template<class Reference, class Value = std::remove_cvref_t<Reference>>
 class Generator {
 public:
-    struct promise_type;
+    using always = std::experimental::suspend_always;
+    using never = std::experimental::suspend_never;
+    
+    class promise_type;
     using handle_type = std::experimental::coroutine_handle<promise_type>;
+    using generic_handle_type = std::experimental::coroutine_handle<>;
 
-    struct promise_type {
-	using value_type = std::remove_reference_t<T>;
-	using reference_type = std::conditional_t<std::is_reference_v<T>, T, T&>;
-	using pointer_type = value_type*;
+    class promise_type {
+    public:
+	promise_type() : root_or_leaf_(this) { }
 	
-	value_type value_;
-	std::exception_ptr exception_;
-
-	Generator get_return_object() { return Generator(handle_type::from_promise(*this)); }
-	auto initial_suspend() { return std::experimental::suspend_always(); }
-	auto final_suspend() noexcept { return std::experimental::suspend_always(); }
-	void unhandled_exception() { exception_ = std::current_exception(); }
-
-	template<class From>
-	auto yield_value(From&& from) {
-	    value_ = std::forward<From>(from);
-	    return std::experimental::suspend_always();
+	Generator get_return_object() noexcept {
+	    return Generator(handle_type::from_promise(*this));
+	}
+	
+	void unhandled_exception() {
+	    if (exception_ == nullptr)
+		throw;
+	    *exception_ = std::current_exception();
 	}
 
+	// co_return is a noop.
 	void return_void() { }
 
-	void rethrow_if_exception() {
-	    if (exception_)
-		std::rethrow_exception(exception_);
+	// Always suspend initially.
+	always initial_suspend() { return {}; }
+
+	// final_awaiter is returned when the generator is
+	// exhausted. If this is an inner generator, symmetric
+	// transfer is used to return control back to the parent
+	// generator. Otherwise, control is returned to the caller.
+	struct final_awaiter {
+	    // We always suspend.
+	    bool await_ready() noexcept { return false; }
+
+	    // If there is a parent generator, use symmetic transfer
+	    // to invoke the parent coroutine; otherwise, return to
+	    // the caller.
+	    generic_handle_type await_suspend(handle_type coro) noexcept {
+		auto& promise = coro.promise();
+		auto parent = coro.promise().parent_;
+		if (parent) {
+		    // Keep the root pointing to the leaf (most
+		    // nested) promise which the parent is about to
+		    // become as we pop-up one level of "recursion"
+		    // using symmetric transfer.
+		    promise.root_or_leaf_->root_or_leaf_ = parent;
+		    return handle_type::from_promise(*parent);
+		}
+		return std::experimental::noop_coroutine();
+	    }
+	    void await_resume() noexcept { }
+	};
+
+	// Return the final_awaiter.
+	final_awaiter final_suspend() noexcept { return {}; }
+
+	// Record the address of the yieled value.
+	always yield_value(Reference&& v) noexcept {
+	    root_or_leaf_->value_ = std::addressof(v);
+	    return {};
 	}
+
+	// Record the address of the yielded value.
+	always yield_value(Reference& v) noexcept {
+	    root_or_leaf_->value_ = std::addressof(v);
+	    return {};
+	}
+
+	// yield_sequence_awaiter is returned when a Generator is
+	// yielded from within a Generator. 
+	struct yield_sequence_awaiter {
+	    Generator generator_;
+	    std::exception_ptr exception_;
+
+	    // Taking ownership of the nested generator ensures frames
+	    // are destroyed in reverse order of creation.
+	    explicit yield_sequence_awaiter(Generator&& generator) noexcept
+		: generator_(std::move(generator)) {
+	    }
+
+	    // If the nested generator is exhausted, we skip
+	    // suspending and continue with the containing generator
+	    // yielding no values.
+	    bool await_ready() noexcept {
+		return not generator_.coro_;
+	    }
+
+	    // If the nested generator is non-empty, we do the
+	    // bookkeeping necessary to return to this generator later
+	    // and use symmetric transfer to invoke the inner
+	    // generator coroutine.
+	    generic_handle_type await_suspend(handle_type coro) noexcept {
+		auto& current = coro.promise();
+		auto& nested = generator_.coro_.promise();
+		auto& root = current.root_or_leaf_;
+
+		// The leaf (most nested) promise always points to the
+		// root promise.
+		nested.active_ = root;
+		
+		// The root promise always points to the leaf (most
+		// nested) promise.
+		root->root_or_leaf_ = &nested;
+
+		// Parent tracks the immediate parent promise.
+		nested.parent_ = &current;
+		nested.exception = &exception_;
+
+		return generator_.coro_;
+	    }
+
+	    // If there was an exception, throw it.
+	    void await_resume() {
+		if (exception_)
+		    std::rethrow_exception(std::move(exception_));
+	    }
+	};
+
+	// Yielding a generator. We transfer ownership to the awaiter
+	// so that coroutine lifetimes are appropriately nested.
+	yield_sequence_awaiter yield_value(Generator&& generator) noexcept {
+	    return yield_sequence_awaiter{std::move(generator)};
+	}
+
+	// Resume the active coroutine.
+	void resume() {
+	    handle_type::from_promise(*root_or_leaf_).resume();
+	}
+
+	// Disable use of co_await within generators.
+	void await_transform() = delete;
+	
+    private:
+	friend Generator;
+	
+	// Pointer to the promise for either the root generator (if
+	// this is a leaf generator) or the current leaf generator (if
+	// this is not a leaf generator). If this is both the root and
+	// leaf generator (i.e. non-recursive), then it points to
+	// `this` which is both.
+	promise_type *root_or_leaf_;
+	// Pointer to the promise for the parent generator, if any.
+	promise_type *parent_ = nullptr;
+	std::exception_ptr *exception_ = nullptr;
+	std::add_pointer_t<Reference> value_;
     };
 
     struct sentinel {};
@@ -47,17 +167,24 @@ public:
     public:
 	using iterator_category = std::input_iterator_tag;
 	using difference_type = std::ptrdiff_t;
-	using value_type = typename promise_type::value_type;
-	using reference = typename promise_type::reference_type;
-	using pointer = typename promise_type::pointer_type;
+	using value_type = Value;
+	using reference = Reference;
+	using pointer = std::add_pointer_t<Reference>;
 
-	iterator() noexcept
-	: coro_(nullptr) {
+	iterator() noexcept = default;
+	
+	iterator(const iterator&) = delete;
+
+	iterator(iterator&& other) {
+	    std::swap(coro_, other.coro_);
 	}
 
-	explicit iterator(handle_type coro) noexcept
-	    : coro_(coro) {
+	iterator& operator=(iterator&& other) {
+	    std::swap(coro_, other.coro_);
+	    return *this;
 	}
+
+	~iterator() { }
 
 	friend bool operator==(const iterator& iter, sentinel) noexcept {
 	    return not iter.coro_ or iter.coro_.done();
@@ -76,93 +203,91 @@ public:
 	}
 
 	iterator& operator++() {
-	    coro_.resume();
-	    if (coro_.done())
-		coro_.promise().rethrow_if_exception();
+	    coro_.promise().resume();
 	    return *this;
 	}
 
-	reference operator*() const noexcept {
-	    return coro_.promise().value_;
+	void operator++(int) {
+	    operator++();
 	}
 
-	pointer operator->() const noexcept {
+	reference operator*() const noexcept {
+	    return static_cast<reference>(*coro_.promise().value_);
+	}
+
+	pointer operator->() const noexcept
+	    requires std::is_reference_v<reference> {
 	    return std::addressof(operator*());
 	}
 	    
     private:
+	friend Generator;
+	
+	explicit iterator(handle_type coro) noexcept
+	    : coro_(coro) {
+	}
+	    
 	handle_type coro_;
     };
 
-    Generator(handle_type handle)
-	: coro_(handle)
-    { }
-
-    // Generator's cannot be copied so disable copy construction and
-    // assignment operations.
+    Generator() noexcept = default;
     Generator(const Generator& other) = delete;
-    Generator& operator=(const Generator& other) = delete;
     
-    Generator(Generator&& other) {
-	std::swap(coro_, other.coro_);
-	std::swap(vacant_, other.vacant_);
+    Generator(Generator&& other) noexcept 
+	: coro_(std::exchange(other.coro_, {})) {
     }
 
-    Generator& operator=(Generator&& other) {
+    Generator& operator=(Generator& other) noexcept {
 	std::swap(coro_, other.coro_);
-	std::swap(vacant_, other.vacant_);
 	return *this;
     }
     
     ~Generator() {
-	if (coro_) {
+	if (coro_)
 	    coro_.destroy();
-	    coro_ = nullptr;
-	}
+    }
+
+    // Return false iff the generator is exhausted (i.e. there are no
+    // more values to be yielded).
+    bool next() {
+	coro_.promise().resume();
+	return coro_ and not coro_.done();
+    }
+
+    // Return the next value from the generator.
+    Reference operator()() const {
+	return static_cast<Reference>(*coro_.promise().value_);
     }
 
     iterator begin() {
-	if (coro_) {
+	if (coro_) 
 	    coro_.resume();
-	    if (coro_.done())
-		coro_.promise().rethrow_if_exception();
-	}
-	return iterator(coro_);
+	return iterator{coro_};
     }
 
     sentinel end() {
-	return sentinel{};
-    }
-
-    // Return false iff the generator is exhausted (i.e. it cannot be
-    // invoked to compute another element); otherwise, return true.
-    explicit operator bool() {
-	populate();
-	return not coro_.done();
-    }
-
-    // Return the next element from the generator. If the generator is
-    // exhausted, return the last element.
-    T operator()() {
-	populate();
-	vacant_ = true;
-	return std::move(coro_.promise().value_);
+	return {};
     }
 
 private:
-    // If the generator has not computed the next element, compute the
-    // next element and cache it to be returned by the call operator.
-    void populate() {
-	if (vacant_) {
-	    coro_();
-	    if (coro_.promise().exception_)
-		std::rethrow_exception(coro_.promise().exception_);
-	    vacant_ = false;
-	}
-    }
+    // This should only be called by the promise.
+    Generator(handle_type coro)
+	: coro_(coro)
+    { }
+
+    // // If the generator has not computed the next element, compute the
+    // // next element and cache it to be returned by the call operator.
+    // void populate() {
+    // 	if (vacant_) {
+    // 	    coro_();
+    // 	    if (coro_.promise().exception_)
+    // 		std::rethrow_exception(coro_.promise().exception_);
+    // 	    vacant_ = false;
+    // 	}
+    // }
     
     handle_type coro_{nullptr};
-    bool vacant_{true};
+    // bool vacant_{true};
 };
 
 }; // co
