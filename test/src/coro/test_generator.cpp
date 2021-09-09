@@ -31,23 +31,34 @@ TEST(CoroGenerator, RangeBasedForLoop)
     EXPECT_EQ(count, 5);
 }
 
-// TEST(CoroGenerator, Range)
-// {
-//     auto g = iota(10) | v::take(5);
-// }
-
 coro::Generator<int> recursive_counter(int n) {
     if (n > 0)
 	co_yield recursive_counter(n - 1);
     co_yield n;
 }
 
-TEST(CoroGenerator, Recursive)
+TEST(CoroGenerator, RecursiveCounter)
 {
     size_t count{0}, max_count{1'000'000};
     for (auto i : recursive_counter(max_count)) 
 	EXPECT_EQ(count++, i);
     EXPECT_EQ(count - 1, max_count);
+}
+
+coro::Generator<int> fibonacci(int count, int a = 0, int b = 1) {
+    co_yield a;
+    if (--count > 0)
+	co_yield fibonacci(count, b, a + b);
+}
+
+TEST(CoroGenerator, RecursiveFibonacci)
+{
+    size_t idx{0};
+    ints fibs = { 0, 1, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89, 144 };
+    for (auto i : fibonacci(fibs.size())) {
+	EXPECT_EQ(i, fibs[idx]);
+	++idx;
+    }
 }
 
 int main(int argc, char *argv[])
