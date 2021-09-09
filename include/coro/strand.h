@@ -12,7 +12,7 @@ namespace cot
 class Strand {
 public:
     struct Frame;
-    using Handle = co::handle<Frame>;
+    using Handle = coro::handle<Frame>;
     
     struct Profile {
 	size_t calls{0};
@@ -22,13 +22,13 @@ public:
     
     struct Frame {
 	Strand get_return_object() { return Strand{Handle::from_promise(*this)}; }
-	co::suspend_always initial_suspend() noexcept { return {}; }
-	co::suspend_always final_suspend() noexcept { return {}; }
+	coro::suspend_always initial_suspend() noexcept { return {}; }
+	coro::suspend_always final_suspend() noexcept { return {}; }
 	void unhandled_exception() { state_ = Yield::Exception{std::current_exception()}; }
 	
 	template<class T>
 	requires (core::mp::contains_v<T, Yield::CoYieldTypes>)
-	co::suspend_always yield_value(T&& value) {
+	coro::suspend_always yield_value(T&& value) {
 	    state_ = std::move(value);
 	    return {};
 	}

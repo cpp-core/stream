@@ -7,7 +7,7 @@
 
 static const size_t NumberSamples = 2;
 
-co::Generator<int> iota(size_t n) {
+coro::Generator<int> iota(size_t n) {
     for (auto i = 0; i < n; ++i)
 	co_yield i;
 }
@@ -35,6 +35,20 @@ TEST(CoroGenerator, RangeBasedForLoop)
 // {
 //     auto g = iota(10) | v::take(5);
 // }
+
+coro::Generator<int> recursive_counter(int n) {
+    if (n > 0)
+	co_yield recursive_counter(n - 1);
+    co_yield n;
+}
+
+TEST(CoroGenerator, Recursive)
+{
+    size_t count{0}, max_count{1'000'000};
+    for (auto i : recursive_counter(max_count)) 
+	EXPECT_EQ(count++, i);
+    EXPECT_EQ(count - 1, max_count);
+}
 
 int main(int argc, char *argv[])
 {

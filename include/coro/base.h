@@ -5,7 +5,7 @@
 #include <experimental/coroutine>
 #include "core/common.h"
 
-namespace co
+namespace coro
 {
 
 template<class P>

@@ -5,7 +5,7 @@
 #include <experimental/coroutine>
 #include "core/common.h"
 
-namespace co
+namespace coro
 {
 
 // (possibly recusrive) Generator using symmetric transfer.
@@ -112,7 +112,7 @@ public:
 
 		// The leaf (most nested) promise always points to the
 		// root promise.
-		nested.active_ = root;
+		nested.root_or_leaf_ = root;
 		
 		// The root promise always points to the leaf (most
 		// nested) promise.
@@ -120,7 +120,7 @@ public:
 
 		// Parent tracks the immediate parent promise.
 		nested.parent_ = &current;
-		nested.exception = &exception_;
+		nested.exception_ = &exception_;
 
 		return generator_.coro_;
 	    }
@@ -259,12 +259,15 @@ public:
 	return static_cast<Reference>(*coro_.promise().value_);
     }
 
+    // Return the begin iterator resuming the coroutine which will
+    // populate the promise with the first value.
     iterator begin() {
 	if (coro_) 
 	    coro_.resume();
 	return iterator{coro_};
     }
 
+    // Return the end iterator.
     sentinel end() {
 	return {};
     }
@@ -275,19 +278,7 @@ private:
 	: coro_(coro)
     { }
 
-    // // If the generator has not computed the next element, compute the
-    // // next element and cache it to be returned by the call operator.
-    // void populate() {
-    // 	if (vacant_) {
-    // 	    coro_();
-    // 	    if (coro_.promise().exception_)
-    // 		std::rethrow_exception(coro_.promise().exception_);
-    // 	    vacant_ = false;
-    // 	}
-    // }
-    
     handle_type coro_{nullptr};
-    // bool vacant_{true};
 };
 
-}; // co
+}; // coro
