@@ -61,6 +61,22 @@ TEST(CoroGenerator, RecursiveFibonacci)
     }
 }
 
+// #include <range/v3/range.hpp>
+// template <typename T, typename U>
+// constexpr inline bool ranges::enable_view<coro::Generator<T,U>> = true;
+
+// coro::Generator<const int> counter(int n) {
+//     for (auto i = 0; i < n; ++i)
+// 	co_yield i;
+// }
+
+TEST(CoroGenerator, Ranges)
+{
+    // auto g = counter(20) | v::take(5);
+    // for (auto i : g)
+    // 	cout << i << endl;
+}
+
 int main(int argc, char *argv[])
 {
     ::testing::InitGoogleTest(&argc, argv);
