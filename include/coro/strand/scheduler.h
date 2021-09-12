@@ -3,8 +3,8 @@
 
 #pragma once
 #include <queue>
-#include "coro/strand.h"
-#include "coro/lowres_clock.h"
+#include "coro/strand/strand.h"
+#include "core/chrono/lowres_clock.h"
 #include "core/chrono/timepoint.h"
 
 namespace coros {
@@ -140,5 +140,5 @@ private:
 
 using SchedulerPtr = std::unique_ptr<Scheduler>;
 
-}; // cot
+}; // coros
 

@@ -3,7 +3,7 @@
 
 #pragma once
 #include "coro/base.h"
-#include "coro/yield.h"
+#include "coro/strand/yield.h"
 #include "core/mp/contains.h"
 
 namespace coros
@@ -103,4 +103,4 @@ using Strands = std::vector<Strand>;
 template<class T>
 concept StrandLambda = requires (T a) { requires std::is_same_v<decltype(a()), Strand>; };
 
-}; // cot
+}; // coros

@@ -2,7 +2,7 @@
 //
 
 #pragma once
-#include "coro/scheduler.h"
+#include "coro/strand/scheduler.h"
 
 namespace coros {
 
@@ -20,5 +20,5 @@ public:
     virtual bool run_group(Strands& strands) override;
 };
 
-}; // cot
+}; // coros
 

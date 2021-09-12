@@ -2,8 +2,8 @@
 //
 
 #pragma once
-#include "coro/strand.h"
-#include "coro/lowres_clock.h"
+#include "coro/strand/strand.h"
+#include "core/chrono/lowres_clock.h"
 
 namespace coros
 {
@@ -37,4 +37,4 @@ private:
     chron::TimeInNanos next_;
 };
 
-}; // cot
+}; // coros

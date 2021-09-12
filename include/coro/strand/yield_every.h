@@ -2,9 +2,9 @@
 //
 
 #pragma once
-#include "coro/strand.h"
+#include "coro/strand/strand.h"
 
-namespace cot
+namespace coros
 {
 
 class YieldEvery {
@@ -34,4 +34,4 @@ private:
     size_t every_, count_, next_;
 };
 
-}; // cot
+}; // coros

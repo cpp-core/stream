@@ -2,8 +2,7 @@
 //
 
 #include <thread>
-#include <queue>
-#include "coro/real_scheduler.h"
+#include "coro/strand/real_scheduler.h"
 #include "core/match.h"
 
 namespace coros {
@@ -82,5 +81,5 @@ bool RealScheduler::run_group(Strands& strands) {
     return not eptr();
 }
 
-}; // cot
+}; // coros
 

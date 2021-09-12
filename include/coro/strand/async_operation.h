@@ -2,9 +2,9 @@
 //
 
 #pragma once
-#include "coro/strand.h"
+#include "coro/strand/strand.h"
 
-namespace cot
+namespace coros
 {
 
 template<class F>
@@ -37,4 +37,4 @@ private:
     ReturnType result_;
 };
 
-}; // cot
+}; // coros

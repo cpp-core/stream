@@ -35,4 +35,4 @@ struct Yield {
 
 std::ostream& operator<<(std::ostream& os, const Yield::Code& yield);
 
-}; // cot
+}; // coros

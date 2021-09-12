@@ -2,7 +2,7 @@
 //
 
 #pragma once
-#include "coro/scheduler.h"
+#include "coro/strand/scheduler.h"
 
 namespace coros {
 
@@ -25,5 +25,5 @@ private:
     RunQueue rtasks_;
 };
 
-}; // cot
+}; // coros
 

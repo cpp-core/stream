@@ -2,7 +2,7 @@
 //
 
 #include <thread>
-#include "coro/scheduler.h"
+#include "coro/strand/scheduler.h"
 #include "core/match.h"
 
 namespace coros
@@ -34,5 +34,5 @@ Strand::Profiles Scheduler::profiles() const {
     return p;
 }
 
-}; // cot
+}; // coros
 

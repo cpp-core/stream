@@ -2,10 +2,10 @@
 //
 
 #pragma once
-#include "coro/strand.h"
-#include "coro/scheduler.h"
+#include "coro/strand/strand.h"
+#include "coro/strand/scheduler.h"
 
-namespace cot
+namespace coros
 {
 
 class TimeMarker {
@@ -31,4 +31,4 @@ private:
     Scheduler& scheduler_;
 };
 
-}; // cot
+}; // coros

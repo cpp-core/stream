@@ -2,9 +2,9 @@
 //
 
 #pragma once
-#include "coro/strand.h"
+#include "coro/stand/strand.h"
 
-namespace cot
+namespace coros
 {
 
 class PeriodicallyYield {
@@ -35,4 +35,4 @@ private:
     chron::TimeInNanos next_;
 };
 
-}; // cot
+}; // coros
