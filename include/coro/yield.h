@@ -6,7 +6,7 @@
 #include "core/chrono.h"
 #include "core/mp/list.h"
 
-namespace cot
+namespace coros
 {
 
 struct Yield {

@@ -6,7 +6,7 @@
 #include "coro/yield.h"
 #include "core/mp/contains.h"
 
-namespace cot
+namespace coros
 {
 
 class Strand {

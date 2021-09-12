@@ -5,7 +5,7 @@
 #include "coro/strand.h"
 #include "coro/lowres_clock.h"
 
-namespace cot
+namespace coros
 {
 
 class LowResYield {

@@ -5,7 +5,7 @@
 #include "coro/scheduler.h"
 #include "core/match.h"
 
-namespace cot
+namespace coros
 {
 
 bool Scheduler::fast_forward(chron::TimeInNanos tp) {

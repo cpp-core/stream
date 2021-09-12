@@ -7,7 +7,7 @@
 #include "coro/lowres_clock.h"
 #include "core/chrono/timepoint.h"
 
-namespace cot {
+namespace coros {
 
 class Scheduler {
 public:

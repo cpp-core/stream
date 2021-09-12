@@ -4,7 +4,7 @@
 #include "coro/yield.h"
 #include "core/match.h"
 
-namespace cot
+namespace coros
 {
 
 std::ostream& operator<<(std::ostream& os, const Yield::Code& yield) {

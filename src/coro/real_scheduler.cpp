@@ -6,7 +6,7 @@
 #include "coro/real_scheduler.h"
 #include "core/match.h"
 
-namespace cot {
+namespace coros {
 
 static auto find_timepoint(Strand *s, chron::TimeInNanos tp) {
     return core::match

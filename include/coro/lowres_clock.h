@@ -6,7 +6,7 @@
 #include "coro/base.h"
 #include "core/chrono.h"
 
-namespace cot
+namespace coros
 {
 
 // LowResClock provides very fast access to the current time with

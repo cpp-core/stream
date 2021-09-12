@@ -5,7 +5,7 @@
 #include "coro/virtual_scheduler.h"
 #include "core/match.h"
 
-namespace cot {
+namespace coros {
 
 auto find_timepoint(Strand *s, chron::TimeInNanos vtp, chron::TimeInNanos rtp) {
     return core::match

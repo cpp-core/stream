@@ -4,7 +4,7 @@
 #pragma once
 #include "coro/scheduler.h"
 
-namespace cot {
+namespace coros {
 
 class RealScheduler : public Scheduler {
 public:

@@ -3,7 +3,7 @@
 
 #include "coro/lowres_clock.h"
 
-namespace cot
+namespace coros
 {
 
 LowResClock::LowResClock(Mode mode, chron::InNanos resolution)
