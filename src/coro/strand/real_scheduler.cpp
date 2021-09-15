@@ -33,6 +33,9 @@ bool RealScheduler::run_group(Strands& strands) {
 	auto s = tasks().top();
 	tasks().pop();
 
+	if (s->next_runtime() > now())
+	    std::this_thread::sleep_until(s->next_runtime());
+
 	active_task(s);
 	auto start_tp = now();
 	s->coro().resume();
