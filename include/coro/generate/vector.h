@@ -28,4 +28,10 @@ coro::Generator<T> uniform(coro::Generator<U> g_elem, coro::Generator<size_t> g_
     co_return;
 }
 
+template<class T, class U>
+requires std::is_same_v<vector<U>, T>
+coro::Generator<T> uniform(const U& min, const U& max, size_t min_count, size_t max_count) {
+    return uniform<T>(uniform(min, max), uniform(min_count, max_count));
+}
+
 }; // cogen
