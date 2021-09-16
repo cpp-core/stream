@@ -233,8 +233,8 @@ public:
     Generator() noexcept = default;
     Generator(const Generator& other) = delete;
     
-    Generator(Generator&& other) noexcept 
-	: coro_(std::exchange(other.coro_, {})) {
+    Generator(Generator&& other) noexcept {
+	std::swap(coro_, other.coro_);
     }
 
     Generator& operator=(Generator& other) noexcept {
