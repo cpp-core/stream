@@ -3,6 +3,7 @@
 
 #pragma once
 #include "coro/generate/char.h"
+#include "coro/generate/constant.h"
 #include "coro/generate/filter.h"
 #include "coro/generate/floating.h"
 #include "coro/generate/integral.h"
