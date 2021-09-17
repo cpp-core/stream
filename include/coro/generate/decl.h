@@ -2,6 +2,7 @@
 //
 
 #pragma once
+#include "coro/generate/util.h"
 #include "coro/generate/char_decl.h"
 #include "coro/generate/floating_decl.h"
 #include "coro/generate/integral_decl.h"

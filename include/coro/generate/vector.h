@@ -8,7 +8,7 @@ namespace cogen {
 
 template<class T, class U>
 requires std::is_same_v<vector<U>, T>
-coro::Generator<T> uniform(coro::Generator<size_t> g_size, coro::Generator<U> g_elem) {
+Gen<T> uniform(Gen<size_t> g_size, Gen<U> g_elem) {
     auto iter_elem = g_elem.begin();
     auto iter_size = g_size.begin();
 
@@ -30,20 +30,20 @@ coro::Generator<T> uniform(coro::Generator<size_t> g_size, coro::Generator<U> g_
 
 template<class T, class U>
 requires std::is_same_v<vector<U>, T>
-coro::Generator<T> uniform(size_t min_count, size_t max_count, const U& min, const U& max) {
+Gen<T> uniform(size_t min_count, size_t max_count, const U& min, const U& max) {
     return uniform<T>(uniform(min_count, max_count), uniform(min, max));
 }
 
 template<class T, class U>
 requires std::is_same_v<vector<U>, T>
-coro::Generator<T> uniform(size_t min_count, size_t max_count, coro::Generator<T> g_elem) {
-    return uniform<T>(uniform(min_count, max_count), g_elem);
+Gen<T> uniform(size_t min_count, size_t max_count, Gen<U>&& g_elem) {
+    return uniform<T>(uniform(min_count, max_count), std::forward<Gen<U>>(g_elem));
 }
 
 template<class T, class U>
 requires std::is_same_v<vector<U>, T>
-coro::Generator<T> uniform(coro::Generator<T> g_elem) {
-    return uniform<T>(uniform(0, 20), g_elem);
+Gen<T> uniform(Gen<U>&& g_elem) {
+    return uniform<T>(uniform<size_t>(0, 20), std::forward<Gen<U>>(g_elem));
 }
 
 }; // cogen

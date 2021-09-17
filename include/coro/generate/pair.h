@@ -6,6 +6,28 @@
 
 namespace cogen {
 
+template<class T, class U>
+Gen<std::pair<T, U>> pair(Gen<T> first, Gen<U> second) {
+    auto iter_first = first.begin();
+    auto iter_second = second.begin();
+    while (true) {
+	co_yield std::make_pair(*iter_first, *iter_second);
+	++iter_first;
+	++iter_second;
+    }
+    co_return;
+}
+
+template<class T, class U>
+Gen<std::pair<T, U>> pair() {
+    return pair(uniform<T>(), uniform<U>());
+}
+
+template<class T, class U>
+Gen<std::pair<T, U>> pair(T first_min, T first_max, U second_min, U second_max) {
+    return pair(uniform<T>(first_min, first_max), uniform<U>(second_min, second_max));
+}
+
 template<class T, class U, class V>
 requires std::is_same_v<T, std::pair<U,V>>
 coro::Generator<T> uniform(coro::Generator<U> g_first, coro::Generator<V> g_second) {

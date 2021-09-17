@@ -5,6 +5,9 @@
 #include "coro/generate.h"
 #include "core/json/nljson.h"
 #include "core/mp/foreach.h"
+#include "core/mp/same.h"
+#include "core/tuple/apply.h"
+#include "core/tuple/map.h"
 
 static const size_t NumberSamples = 64;
 
@@ -63,6 +66,32 @@ TEST(Cogen, Pair)
 	});
 }
 
+TEST(Cogen, Zip)
+{
+    auto g0 = uniform<int>(-20, +20);
+    auto g1 = uniform<real>(-1.0, +1.0);
+    auto g = zip(std::move(g0), std::move(g1));
+    for (const auto& [a, b] : take(std::move(g), NumberSamples)) {
+	EXPECT_GE(a, -20);
+	EXPECT_LE(a, +20);
+	EXPECT_GE(b, -1.0);
+	EXPECT_LE(b, +1.0);
+    }
+}
+
+TEST(Cogen, PairFunc)
+{
+    auto g0 = uniform<int>(-20, +20);
+    auto g1 = uniform<real>(-1.0, +1.0);
+    auto g = pair(std::move(g0), std::move(g1));
+    for (const auto& [a, b] : take(std::move(g), NumberSamples)) {
+	EXPECT_GE(a, -20);
+	EXPECT_LE(a, +20);
+	EXPECT_GE(b, -1.0);
+	EXPECT_LE(b, +1.0);
+    }
+}
+
 TEST(Cogen, Vector)
 {
     auto g = uniform<std::vector<int>>(0, 10, -20, 20);
@@ -73,21 +102,53 @@ TEST(Cogen, Vector)
 	    EXPECT_LE(elem, +20);
 	}
     }
+
+    auto gv = uniform<std::vector<int>>(0, 10, -20, 20);
+    auto gvv = uniform<std::vector<std::vector<int>>>(0, 10, std::move(gv));
+    for (auto vvec : take(std::move(gvv), NumberSamples)) {
+	EXPECT_LE(vvec.size(), 10);
+	for (const auto& vec : vvec) {
+	    EXPECT_LE(vec.size(), 10);
+	    for (const auto& elem : vec) {
+		EXPECT_GE(elem, -20);
+		EXPECT_LE(elem, +20);
+	    }
+	}
+    }
 }
 
 TEST(Cogen, VectorPair)
 {
-    // auto gp = uniform<std::pair<int,real>>(-10, +10, -1.0, +1.0);
-    // auto g = uniform<std::vector<std::pair<int,real>>>(std::move(gp));
-    // for (auto vec : take(std::move(g), NumberSamples)) {
-    // 	EXPECT_LE(vec.size(), 20);
-    // 	for (const auto& [a, b] : vec) {
-    // 	    EXPECT_GE(a, -10);
-    // 	    EXPECT_LE(a, +10);
-    // 	    EXPECT_GE(b, -1.0);
-    // 	    EXPECT_LE(b, +1.0);
-    // 	}
-    // }
+    auto gp = uniform<std::pair<int,real>>(-10, +10, -1.0, +1.0);
+    auto g = uniform<std::vector<std::pair<int,real>>>(std::move(gp));
+    for (auto vec : take(std::move(g), NumberSamples)) {
+	EXPECT_LE(vec.size(), 20);
+	for (const auto& [a, b] : vec) {
+	    EXPECT_GE(a, -10);
+	    EXPECT_LE(a, +10);
+	    EXPECT_GE(b, -1.0);
+	    EXPECT_LE(b, +1.0);
+	}
+    }
+}
+
+TEST(Cogen, PairVector)
+{
+    auto gv0 = uniform<vector<int>>(0, 10, -100, +100);
+    auto gv1 = uniform<vector<real>>(0, 5, -1.0, +1.0);
+    auto g = uniform<std::pair<vector<int>,vector<real>>>(std::move(gv0), std::move(gv1));
+    for (const auto& [v0, v1] : take(std::move(g), NumberSamples)) {
+	EXPECT_LE(v0.size(), 10);
+	EXPECT_LE(v1.size(), 5);
+	for (const auto& elem : v0) {
+	    EXPECT_GE(elem, -100);
+	    EXPECT_LE(elem, +100);
+	}
+	for (const auto& elem : v1) {
+	    EXPECT_GE(elem, -1.0);
+	    EXPECT_LE(elem, +1.0);
+	}
+    }
 }
 
 int main(int argc, char *argv[])

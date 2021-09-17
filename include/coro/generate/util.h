@@ -7,6 +7,9 @@
 namespace cogen {
 
 template<class T>
+using Gen = coro::Generator<T>;
+
+template<class T>
 coro::Generator<T> nil() {
     co_return;
 }

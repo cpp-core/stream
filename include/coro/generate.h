@@ -10,3 +10,5 @@
 #include "coro/generate/pair.h"
 #include "coro/generate/take.h"
 #include "coro/generate/vector.h"
+#include "coro/generate/zip.h"
+
