@@ -21,18 +21,18 @@ concept Container =
 
 template<class T, class U = typename T::value_type>
 requires Container<T>
-Gen<T> uniform(size_t min_count, size_t max_count, const U& min, const U& max);
+Gen<T> sample(size_t min_count, size_t max_count, Gen<U>&& g_elem);
 
 template<class T, class U = typename T::value_type>
 requires Container<T>
-Gen<T> uniform(size_t min_count, size_t max_count, Gen<U>&& g_elem);
-
-template<class T, class U = typename T::value_type>
-requires Container<T>
-Gen<T> uniform(Gen<U>&& g_elem);
+Gen<T> sample(Gen<U>&& g_elem);
 
 template<class T, class U = typename T::value_type>
 requires Container<T>
 Gen<T> uniform();
+
+template<class T, class U = typename T::value_type>
+requires Container<T>
+Gen<T> uniform(size_t min_count, size_t max_count, const U& min, const U& max);
 
 }; // cogen

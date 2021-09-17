@@ -79,11 +79,11 @@ TEST(Cogen, Zip)
     }
 }
 
-TEST(Cogen, PairFunc)
+TEST(Cogen, ZipPair)
 {
     auto g0 = uniform<int>(-20, +20);
     auto g1 = uniform<real>(-1.0, +1.0);
-    auto g = pair(std::move(g0), std::move(g1));
+    auto g = zip_pair(std::move(g0), std::move(g1));
     for (const auto& [a, b] : take(std::move(g), NumberSamples)) {
 	EXPECT_GE(a, -20);
 	EXPECT_LE(a, +20);
@@ -104,7 +104,7 @@ TEST(Cogen, Vector)
     }
 
     auto gv = uniform<std::vector<int>>(0, 10, -20, 20);
-    auto gvv = uniform<std::vector<std::vector<int>>>(0, 10, std::move(gv));
+    auto gvv = sample<std::vector<std::vector<int>>>(0, 10, std::move(gv));
     for (auto vvec : take(std::move(gvv), NumberSamples)) {
 	EXPECT_LE(vvec.size(), 10);
 	for (const auto& vec : vvec) {
@@ -129,7 +129,7 @@ TEST(Cogen, List)
     }
 
     auto gv = uniform<std::list<int>>(0, 10, -20, 20);
-    auto gvv = uniform<std::list<std::list<int>>>(0, 10, std::move(gv));
+    auto gvv = sample<std::list<std::list<int>>>(0, 10, std::move(gv));
     for (auto vvec : take(std::move(gvv), NumberSamples)) {
 	EXPECT_LE(vvec.size(), 10);
 	for (const auto& vec : vvec) {
@@ -154,7 +154,7 @@ TEST(Cogen, Deque)
     }
 
     auto gv = uniform<std::deque<int>>(0, 10, -20, 20);
-    auto gvv = uniform<std::deque<std::deque<int>>>(0, 10, std::move(gv));
+    auto gvv = sample<std::deque<std::deque<int>>>(0, 10, std::move(gv));
     for (auto vvec : take(std::move(gvv), NumberSamples)) {
 	EXPECT_LE(vvec.size(), 10);
 	for (const auto& vec : vvec) {
@@ -170,7 +170,7 @@ TEST(Cogen, Deque)
 TEST(Cogen, VectorPair)
 {
     auto gp = uniform<std::pair<int,real>>(-10, +10, -1.0, +1.0);
-    auto g = uniform<std::vector<std::pair<int,real>>>(std::move(gp));
+    auto g = sample<std::vector<std::pair<int,real>>>(std::move(gp));
     for (auto vec : take(std::move(g), NumberSamples)) {
 	EXPECT_LE(vec.size(), 20);
 	for (const auto& [a, b] : vec) {
@@ -186,7 +186,7 @@ TEST(Cogen, PairVector)
 {
     auto gv0 = uniform<vector<int>>(0, 10, -100, +100);
     auto gv1 = uniform<vector<real>>(0, 5, -1.0, +1.0);
-    auto g = uniform<std::pair<vector<int>,vector<real>>>(std::move(gv0), std::move(gv1));
+    auto g = zip_pair(std::move(gv0), std::move(gv1));
     for (const auto& [v0, v1] : take(std::move(g), NumberSamples)) {
 	EXPECT_LE(v0.size(), 10);
 	EXPECT_LE(v1.size(), 5);

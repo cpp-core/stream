@@ -9,7 +9,7 @@ namespace cogen {
 
 template<class T, class U>
 requires SequenceContainer<T>
-Gen<T> uniform(Gen<size_t> g_size, Gen<U> g_elem) {
+Gen<T> sample(Gen<size_t> g_size, Gen<U> g_elem) {
     auto iter_elem = g_elem.begin();
     auto iter_size = g_size.begin();
 	

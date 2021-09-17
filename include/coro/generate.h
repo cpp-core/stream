@@ -2,6 +2,7 @@
 //
 
 #pragma once
+#include "coro/generate/decl.h"
 #include "coro/generate/char.h"
 #include "coro/generate/constant.h"
 #include "coro/generate/container.h"
@@ -12,3 +13,4 @@
 #include "coro/generate/take.h"
 #include "coro/generate/sequence.h"
 #include "coro/generate/zip.h"
+#include "coro/generate/zip_pair.h"

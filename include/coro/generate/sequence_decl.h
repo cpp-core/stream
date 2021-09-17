@@ -16,6 +16,6 @@ concept SequenceContainer = is_kind<T, std::vector> ||
 
 template<class T, class U = typename T::value_type>
 requires SequenceContainer<T>
-Gen<T> uniform(Gen<size_t> g_size, Gen<U> g_elem);
+Gen<T> sample(Gen<size_t> g_size, Gen<U> g_elem);
 
 }; // cogen

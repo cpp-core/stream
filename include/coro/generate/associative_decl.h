@@ -14,6 +14,6 @@ concept AssociativeContainer = is_kind<T, std::set> ||
 
 template<class T, class U = typename T::value_type>
 requires AssociativeContainer<T>
-Gen<T> uniform(Gen<size_t> g_size, Gen<U> g_elem);
+Gen<T> sample(Gen<size_t> g_size, Gen<U> g_elem);
 
 }; // cogen
