@@ -9,6 +9,5 @@
 #include "coro/generate/integral.h"
 #include "coro/generate/pair.h"
 #include "coro/generate/take.h"
-#include "coro/generate/vector.h"
+#include "coro/generate/sequence.h"
 #include "coro/generate/zip.h"
-

@@ -117,6 +117,56 @@ TEST(Cogen, Vector)
     }
 }
 
+TEST(Cogen, List)
+{
+    auto g = uniform<std::list<int>>(0, 10, -20, 20);
+    for (auto vec : take(std::move(g), NumberSamples)) {
+	EXPECT_LE(vec.size(), 10);
+	for (const auto& elem : vec) {
+	    EXPECT_GE(elem, -20);
+	    EXPECT_LE(elem, +20);
+	}
+    }
+
+    auto gv = uniform<std::list<int>>(0, 10, -20, 20);
+    auto gvv = uniform<std::list<std::list<int>>>(0, 10, std::move(gv));
+    for (auto vvec : take(std::move(gvv), NumberSamples)) {
+	EXPECT_LE(vvec.size(), 10);
+	for (const auto& vec : vvec) {
+	    EXPECT_LE(vec.size(), 10);
+	    for (const auto& elem : vec) {
+		EXPECT_GE(elem, -20);
+		EXPECT_LE(elem, +20);
+	    }
+	}
+    }
+}
+
+TEST(Cogen, Deque)
+{
+    auto g = uniform<std::deque<int>>(0, 10, -20, 20);
+    for (auto vec : take(std::move(g), NumberSamples)) {
+	EXPECT_LE(vec.size(), 10);
+	for (const auto& elem : vec) {
+	    EXPECT_GE(elem, -20);
+	    EXPECT_LE(elem, +20);
+	}
+    }
+
+    auto gv = uniform<std::deque<int>>(0, 10, -20, 20);
+    auto gvv = uniform<std::deque<std::deque<int>>>(0, 10, std::move(gv));
+    for (auto vvec : take(std::move(gvv), NumberSamples)) {
+	EXPECT_LE(vvec.size(), 10);
+	for (const auto& vec : vvec) {
+	    EXPECT_LE(vec.size(), 10);
+	    for (const auto& elem : vec) {
+		EXPECT_GE(elem, -20);
+		EXPECT_LE(elem, +20);
+	    }
+	}
+    }
+}
+
 TEST(Cogen, VectorPair)
 {
     auto gp = uniform<std::pair<int,real>>(-10, +10, -1.0, +1.0);
