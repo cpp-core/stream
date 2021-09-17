@@ -10,12 +10,13 @@ namespace costr {
 template<class T, class U>
 requires SequenceContainer<T>
 Gen<T> sample(Gen<size_t> g_size, Gen<U> g_elem) {
-    auto iter_elem = g_elem.begin();
     auto iter_size = g_size.begin();
+    auto iter_elem = g_elem.begin();
 	
-    while (g_size.next()) {
+    while (true) {
+	auto count = *iter_size;
+	++iter_size;
 	T container;
-	auto count = g_size();
 	for (auto i = 0; i < count; ++i, ++iter_elem)
 	    container.push_back(*iter_elem);
 	co_yield container;

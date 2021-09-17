@@ -20,6 +20,12 @@ coro::Generator<T> sample(coro::Generator<U> first, coro::Generator<V> second) {
 
 template<class T, class U, class V>
 requires is_kind<T, std::pair>
+coro::Generator<T> uniform() {
+    return sample<T>(uniform<U>(), uniform<V>());
+}
+
+template<class T, class U, class V>
+requires is_kind<T, std::pair>
 coro::Generator<T> uniform(const U& first_min, const U& first_max,
 			   const V& second_min, const V& second_max) {
     return sample<T>(uniform<U>(first_min, first_max), uniform<V>(second_min, second_max));

@@ -5,7 +5,8 @@
 #include "coro/stream/string_decl.h"
 #include "coro/stream/char_decl.h"
 
-namespace costr::str {
+namespace costr {
+namespace str {
 
 Gen<string> sample(Gen<size_t> size, Gen<char> src) {
     auto iter_size = size.begin();
@@ -42,8 +43,13 @@ Gen<string> alphanum(Gen<size_t>&& size) {
     return sample(std::forward<Gen<size_t>>(size), costr::chr::alphanum());
 }
 
-// Gen<string> ident(Gen<size_t> size) {
-//     return sample(std::forward<Gen<size_t>>(size), costr::chr::ident());
-// }
+}; // str
+
+template<class T>
+requires std::is_same_v<T, std::string>
+Gen<T> uniform(Gen<size_t>&& size) {
+    return str::uniform(std::forward<Gen<size_t>>(size));
+}
+
 
 }; // costr

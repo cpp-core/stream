@@ -10,12 +10,13 @@ namespace costr {
 template<class T, class U>
 requires AssociativeContainer<T>
 Gen<T> sample(Gen<size_t> size, Gen<U> src) {
-    auto iter_elem = src.begin();
     auto iter_size = size.begin();
+    auto iter_elem = src.begin();
 	
-    while (size.next()) {
+    while (true) {
 	T container;
-	auto count = size();
+	auto count = *iter_size;
+	++iter_size;
 	for (auto i = 0; i < count; ++i, ++iter_elem)
 	    container.insert(*iter_elem);
 	co_yield container;
