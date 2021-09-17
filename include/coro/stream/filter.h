@@ -4,7 +4,7 @@
 #pragma once
 #include "coro/generator.h"
 
-namespace cogen {
+namespace costr {
 
 template<class T, class F>
 coro::Generator<T> filter(coro::Generator<T> generator, F&& func) {
@@ -14,4 +14,4 @@ coro::Generator<T> filter(coro::Generator<T> generator, F&& func) {
     co_return;
 }
 
-}; // cogen
+}; // costr

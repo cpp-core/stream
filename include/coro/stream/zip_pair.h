@@ -2,9 +2,9 @@
 //
 
 #pragma once
-#include "coro/generate/util.h"
+#include "coro/stream/util.h"
 
-namespace cogen {
+namespace costr {
 
 template<class T, class U>
 Gen<std::pair<T, U>> zip_pair(Gen<T> first, Gen<U> second) {
@@ -18,4 +18,4 @@ Gen<std::pair<T, U>> zip_pair(Gen<T> first, Gen<U> second) {
     co_return;
 }
 
-}; // cogen
+}; // costr

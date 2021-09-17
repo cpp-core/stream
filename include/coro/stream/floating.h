@@ -2,10 +2,10 @@
 //
 
 #pragma once
-#include "coro/generate/floating_decl.h"
+#include "coro/stream/floating_decl.h"
 #include "core/algo/random.h"
 
-namespace cogen {
+namespace costr {
 
 template<class T>
 requires std::is_floating_point_v<T>
@@ -18,4 +18,4 @@ coro::Generator<T> uniform(T min, T max) {
     co_return;
 }
 
-}; // cogen
+}; // costr

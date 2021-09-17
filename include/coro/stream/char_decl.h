@@ -2,11 +2,11 @@
 //
 
 #pragma once
-#include "coro/generate/integral.h"
+#include "coro/stream/integral.h"
 
-namespace cogen {
+namespace costr {
 
 coro::Generator<char> uniform_lowercase();
 coro::Generator<char> uniform_uppercase();
 
-}; // cogen
+}; // costr

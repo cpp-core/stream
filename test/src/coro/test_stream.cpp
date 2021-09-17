@@ -2,7 +2,7 @@
 //
 
 #include <gtest/gtest.h>
-#include "coro/generate.h"
+#include "coro/stream/stream.h"
 #include "core/json/nljson.h"
 #include "core/mp/foreach.h"
 #include "core/mp/same.h"
@@ -11,7 +11,7 @@
 
 static const size_t NumberSamples = 64;
 
-using namespace cogen;
+using namespace costr;
 
 using IntegralTypes = std::tuple<int16,int32,int64,uint16,uint32,uint64>;
 using FloatingTypes = std::tuple<float,real>;

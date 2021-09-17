@@ -4,7 +4,7 @@
 #pragma once
 #include "coro/generator.h"
 
-namespace cogen {
+namespace costr {
 
 template<class T>
 coro::Generator<T> take(coro::Generator<T> generator, size_t count) {
@@ -13,4 +13,4 @@ coro::Generator<T> take(coro::Generator<T> generator, size_t count) {
     co_return;
 }
 
-}; // cogen
+}; // costr

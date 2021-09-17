@@ -5,9 +5,9 @@
 #include <deque>
 #include <list>
 #include <vector>
-#include "coro/generate/util.h"
+#include "coro/stream/util.h"
 
-namespace cogen {
+namespace costr {
 
 template<class T>
 concept SequenceContainer = is_kind<T, std::vector> ||
@@ -18,4 +18,4 @@ template<class T, class U = typename T::value_type>
 requires SequenceContainer<T>
 Gen<T> sample(Gen<size_t> g_size, Gen<U> g_elem);
 
-}; // cogen
+}; // costr

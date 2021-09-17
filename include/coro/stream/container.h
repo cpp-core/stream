@@ -2,10 +2,10 @@
 //
 
 #pragma once
-#include "coro/generate/container_decl.h"
-#include "coro/generate/decl.h"
+#include "coro/stream/container_decl.h"
+#include "coro/stream/decl.h"
 
-namespace cogen {
+namespace costr {
 
 template<class T, class U>
 requires Container<T>
@@ -31,4 +31,4 @@ Gen<T> uniform(size_t min_count, size_t max_count, const U& min, const U& max) {
     return sample<T>(uniform(min_count, max_count), uniform(min, max));
 }
 
-}; // cogen
+}; // costr

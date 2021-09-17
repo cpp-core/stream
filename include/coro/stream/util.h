@@ -5,7 +5,7 @@
 #include "coro/generator.h"
 #include "core/mp/same.h"
 
-namespace cogen {
+namespace costr {
 
 template<class T, template<class...> class C>
 constexpr bool is_kind = core::mp::is_same_template_v<T,C>;
@@ -18,4 +18,4 @@ coro::Generator<T> nil() {
     co_return;
 }
 
-}; // cogen
+}; // costr

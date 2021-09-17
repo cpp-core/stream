@@ -2,11 +2,11 @@
 //
 
 #pragma once
-#include "coro/generate/util.h"
+#include "coro/stream/util.h"
 #include "core/tuple/apply.h"
 #include "core/tuple/map.h"
 
-namespace cogen {
+namespace costr {
 
 template<class T, class... Ts>
 Gen<std::tuple<T,Ts...>> zip(Gen<T>&& g, Gen<Ts>&&... gs) {
@@ -18,4 +18,4 @@ Gen<std::tuple<T,Ts...>> zip(Gen<T>&& g, Gen<Ts>&&... gs) {
     co_return;
 }
 
-}; // cogen
+}; // costr

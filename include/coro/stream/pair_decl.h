@@ -2,10 +2,10 @@
 //
 
 #pragma once
-#include "coro/generate/util.h"
+#include "coro/stream/util.h"
 #include "core/traits/extrema.h"
 
-namespace cogen {
+namespace costr {
 
 template<class T, class U = typename T::first_type, class V = typename T::second_type>
 requires is_kind<T, std::pair>
@@ -18,4 +18,4 @@ coro::Generator<T> uniform(const U& first_min = core::extrema<U>::min(),
 			   const V& second_min = core::extrema<V>::min(),
 			   const V& second_max = core::extrema<V>::max());
 
-}; // cogen
+}; // costr

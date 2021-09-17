@@ -2,10 +2,10 @@
 //
 
 #pragma once
-#include "coro/generate/integral_decl.h"
+#include "coro/stream/integral_decl.h"
 #include "core/algo/random.h"
 
-namespace cogen {
+namespace costr {
 
 template<class T>
 requires std::is_integral_v<T>
@@ -16,4 +16,4 @@ coro::Generator<T> uniform(T min, T max) {
     co_return;
 }
 
-}; // cogen
+}; // costr

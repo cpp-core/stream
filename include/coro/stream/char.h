@@ -2,9 +2,9 @@
 //
 
 #pragma once
-#include "coro/generate/char_decl.h"
+#include "coro/stream/char_decl.h"
 
-namespace cogen {
+namespace costr {
 
 coro::Generator<char> uniform_lowercase() {
     return uniform('a', 'z');
@@ -14,4 +14,4 @@ coro::Generator<char> uniform_uppercase() {
     return uniform('A', 'Z');
 }
 
-}; // cogen
+}; // costr

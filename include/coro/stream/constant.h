@@ -4,7 +4,7 @@
 #pragma once
 #include "coro/generator.h"
 
-namespace cogen {
+namespace costr {
 
 template<class T>
 coro::Generator<T> constant(T value) {
@@ -13,4 +13,4 @@ coro::Generator<T> constant(T value) {
     co_return;
 }
 
-}; // cogen
+}; // costr

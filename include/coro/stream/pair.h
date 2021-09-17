@@ -2,9 +2,9 @@
 //
 
 #pragma once
-#include "coro/generate/decl.h"
+#include "coro/stream/decl.h"
 
-namespace cogen {
+namespace costr {
 
 template<class T, class U, class V>
 requires is_kind<T, std::pair>
@@ -25,4 +25,4 @@ coro::Generator<T> uniform(const U& first_min, const U& first_max,
     return sample<T>(uniform<U>(first_min, first_max), uniform<V>(second_min, second_max));
 }
 
-}; // cogen
+}; // costr

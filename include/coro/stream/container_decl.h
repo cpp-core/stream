@@ -7,9 +7,9 @@
 #include <map>
 #include <set>
 #include <vector>
-#include "coro/generate/util.h"
+#include "coro/stream/util.h"
 
-namespace cogen {
+namespace costr {
 
 template<class T>
 concept Container =
@@ -35,4 +35,4 @@ template<class T, class U = typename T::value_type>
 requires Container<T>
 Gen<T> uniform(size_t min_count, size_t max_count, const U& min, const U& max);
 
-}; // cogen
+}; // costr

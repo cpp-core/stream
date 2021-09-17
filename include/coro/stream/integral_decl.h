@@ -5,10 +5,10 @@
 #include "coro/generator.h"
 #include "core/traits/extrema.h"
 
-namespace cogen {
+namespace costr {
 
 template<class T>
 requires std::is_integral_v<T>
 coro::Generator<T> uniform(T min = core::extrema<T>::min(), T max = core::extrema<T>::max());
 
-}; // cogen
+}; // costr
