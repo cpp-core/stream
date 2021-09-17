@@ -124,14 +124,16 @@ TEST(Costr, ZipPair)
 
 TEST(Costr, Container)
 {
-    using Types = std::tuple<std::vector<int>,
-			     std::list<int>,
-			     std::deque<int>>;
+    using Types = std::tuple<std::vector<int>
+			     ,std::list<int>
+			     ,std::deque<int>
+			     ,std::set<int>
+			     >;
     core::mp::foreach<Types>([]<class T>() {
 	    auto g = uniform<T>(0, 10, -20, 20);
-	    for (auto vec : take(std::move(g), NumberSamples)) {
-		EXPECT_LE(vec.size(), 10);
-		for (const auto& elem : vec) {
+	    for (auto container : take(std::move(g), NumberSamples)) {
+		EXPECT_LE(container.size(), 10);
+		for (const auto& elem : container) {
 		    EXPECT_GE(elem, -20);
 		    EXPECT_LE(elem, +20);
 		}
@@ -139,79 +141,51 @@ TEST(Costr, Container)
 	});
 }
 
-TEST(Costr, Vector)
+TEST(Costr, ContainerMap)
 {
-    auto g = uniform<std::vector<int>>(0, 10, -20, 20);
-    for (auto vec : take(std::move(g), NumberSamples)) {
-	EXPECT_LE(vec.size(), 10);
-	for (const auto& elem : vec) {
-	    EXPECT_GE(elem, -20);
-	    EXPECT_LE(elem, +20);
-	}
-    }
-
-    auto gv = uniform<std::vector<int>>(0, 10, -20, 20);
-    auto gvv = sample<std::vector<std::vector<int>>>(0, 10, std::move(gv));
-    for (auto vvec : take(std::move(gvv), NumberSamples)) {
-	EXPECT_LE(vvec.size(), 10);
-	for (const auto& vec : vvec) {
-	    EXPECT_LE(vec.size(), 10);
-	    for (const auto& elem : vec) {
-		EXPECT_GE(elem, -20);
-		EXPECT_LE(elem, +20);
-	    }
+    auto size = uniform<size_t>(0, 20);
+    auto key = uniform<int>(0, 100);
+    auto mapped = str::alpha();
+    auto value = zip_pair(std::move(key), std::move(mapped));
+    auto g = sample<std::map<int,string>>(std::move(size), std::move(value));
+    for (auto map : take(std::move(g), NumberSamples)) {
+	EXPECT_LE(map.size(), 20);
+	for (const auto& [key, value] : map) {
+	    EXPECT_GE(key, 0);
+	    EXPECT_LE(key, 100);
+	    EXPECT_LE(value.size(), 20);
+	    for (auto c : value)
+		EXPECT_TRUE(std::isalpha(c));
 	}
     }
 }
 
-TEST(Costr, List)
+TEST(Costr, ContainerContainer)
 {
-    auto g = uniform<std::list<int>>(0, 10, -20, 20);
-    for (auto vec : take(std::move(g), NumberSamples)) {
-	EXPECT_LE(vec.size(), 10);
-	for (const auto& elem : vec) {
-	    EXPECT_GE(elem, -20);
-	    EXPECT_LE(elem, +20);
-	}
-    }
-
-    auto gv = uniform<std::list<int>>(0, 10, -20, 20);
-    auto gvv = sample<std::list<std::list<int>>>(0, 10, std::move(gv));
-    for (auto vvec : take(std::move(gvv), NumberSamples)) {
-	EXPECT_LE(vvec.size(), 10);
-	for (const auto& vec : vvec) {
-	    EXPECT_LE(vec.size(), 10);
-	    for (const auto& elem : vec) {
-		EXPECT_GE(elem, -20);
-		EXPECT_LE(elem, +20);
+    using Types = std::tuple<std::vector<std::vector<int>>
+			     ,std::vector<std::list<int>>
+			     ,std::vector<std::deque<int>>
+			     ,std::list<std::vector<int>>
+			     ,std::list<std::list<int>>
+			     ,std::list<std::deque<int>>
+			     ,std::deque<std::vector<int>>
+			     ,std::deque<std::list<int>>
+			     ,std::deque<std::deque<int>>
+			     >;
+    core::mp::foreach<Types>([]<class T>() {
+	    auto elem_src = uniform<typename T::value_type>(0, 10, -20, 20);
+	    auto src = sample<T>(0, 10, std::move(elem_src));
+	    for (auto outer : take(std::move(src), NumberSamples)) {
+		EXPECT_LE(outer.size(), 10);
+		for (const auto& inner : outer) {
+		    EXPECT_LE(inner.size(), 10);
+		    for (const auto& elem : inner) {
+			EXPECT_GE(elem, -20);
+			EXPECT_LE(elem, +20);
+		    }
+		}
 	    }
-	}
-    }
-}
-
-TEST(Costr, Deque)
-{
-    auto g = uniform<std::deque<int>>(0, 10, -20, 20);
-    for (auto vec : take(std::move(g), NumberSamples)) {
-	EXPECT_LE(vec.size(), 10);
-	for (const auto& elem : vec) {
-	    EXPECT_GE(elem, -20);
-	    EXPECT_LE(elem, +20);
-	}
-    }
-
-    auto gv = uniform<std::deque<int>>(0, 10, -20, 20);
-    auto gvv = sample<std::deque<std::deque<int>>>(0, 10, std::move(gv));
-    for (auto vvec : take(std::move(gvv), NumberSamples)) {
-	EXPECT_LE(vvec.size(), 10);
-	for (const auto& vec : vvec) {
-	    EXPECT_LE(vec.size(), 10);
-	    for (const auto& elem : vec) {
-		EXPECT_GE(elem, -20);
-		EXPECT_LE(elem, +20);
-	    }
-	}
-    }
+	});
 }
 
 TEST(Costr, VectorPair)

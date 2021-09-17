@@ -3,6 +3,7 @@
 
 #pragma once
 #include "coro/stream/decl.h"
+#include "coro/stream/associative.h"
 #include "coro/stream/char.h"
 #include "coro/stream/constant.h"
 #include "coro/stream/container.h"
