@@ -2,20 +2,18 @@
 //
 
 #pragma once
-#include <deque>
-#include <list>
-#include <vector>
+#include <set>
+#include <map>
 #include "coro/generate/util.h"
 
 namespace cogen {
 
 template<class T>
-concept SequenceContainer = is_kind<T, std::vector> ||
-    is_kind<T, std::list> ||
-    is_kind<T, std::deque>;
+concept AssociativeContainer = is_kind<T, std::set> || 
+    is_kind<T, std::map>;
 
 template<class T, class U = typename T::value_type>
-requires SequenceContainer<T>
+requires AssociativeContainer<T>
 Gen<T> uniform(Gen<size_t> g_size, Gen<U> g_elem);
 
 }; // cogen
