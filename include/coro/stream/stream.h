@@ -12,5 +12,6 @@
 #include "coro/stream/pair.h"
 #include "coro/stream/take.h"
 #include "coro/stream/sequence.h"
+#include "coro/stream/string.h"
 #include "coro/stream/zip.h"
 #include "coro/stream/zip_pair.h"

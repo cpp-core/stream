@@ -16,7 +16,7 @@ using namespace costr;
 using IntegralTypes = std::tuple<int16,int32,int64,uint16,uint32,uint64>;
 using FloatingTypes = std::tuple<float,real>;
 
-TEST(Cogen, Constant)
+TEST(Costr, Constant)
 {
     core::mp::foreach<IntegralTypes>([]<class T>() {
 	    auto value = *uniform<T>().begin();
@@ -26,7 +26,7 @@ TEST(Cogen, Constant)
 	});
 }
 
-TEST(Cogen, Integral)
+TEST(Costr, Integral)
 {
     core::mp::foreach<IntegralTypes>([]<class T>() {
 	    auto iter = uniform<T>().begin();
@@ -41,7 +41,7 @@ TEST(Cogen, Integral)
 	});
 }
 
-TEST(Cogen, Floating)
+TEST(Costr, Floating)
 {
     core::mp::foreach<FloatingTypes>([]<class T>() {
 	    for (auto elem : take(uniform<T>(-1.0, +1.0), NumberSamples)) {
@@ -51,7 +51,37 @@ TEST(Cogen, Floating)
 	});
 }
 
-TEST(Cogen, Pair)
+TEST(Costr, String)
+{
+    for (auto str : take(str::uniform(uniform<size_t>(0, 20)), NumberSamples))
+	EXPECT_LE(str.size(), 20);
+    
+    for (auto str : take(str::lowercase(uniform<size_t>(0, 20)), NumberSamples)) {
+	EXPECT_LE(str.size(), 20);
+	for (auto c : str) 
+	    EXPECT_TRUE(std::isalpha(c) and std::islower(c));
+    }
+    
+    for (auto str : take(str::uppercase(uniform<size_t>(0, 20)), NumberSamples)) {
+	EXPECT_LE(str.size(), 20);
+	for (auto c : str)
+	    EXPECT_TRUE(std::isalpha(c) and std::isupper(c));
+    }
+    
+    for (auto str : take(str::alpha(uniform<size_t>(0, 20)), NumberSamples)) {
+	EXPECT_LE(str.size(), 20);
+	for (auto c : str)
+	    EXPECT_TRUE(std::isalpha(c));
+    }
+    
+    for (auto str : take(str::alphanum(uniform<size_t>(0, 20)), NumberSamples)) {
+	EXPECT_LE(str.size(), 20);
+	for (auto c : str)
+	    EXPECT_TRUE(std::isalnum(c));
+    }
+}
+
+TEST(Costr, Pair)
 {
     core::mp::foreach<std::tuple<int,real>>([]<class T>() {
 	    core::mp::foreach<std::tuple<int,real>>([]<class U>() {
@@ -66,7 +96,7 @@ TEST(Cogen, Pair)
 	});
 }
 
-TEST(Cogen, Zip)
+TEST(Costr, Zip)
 {
     auto g0 = uniform<int>(-20, +20);
     auto g1 = uniform<real>(-1.0, +1.0);
@@ -79,7 +109,7 @@ TEST(Cogen, Zip)
     }
 }
 
-TEST(Cogen, ZipPair)
+TEST(Costr, ZipPair)
 {
     auto g0 = uniform<int>(-20, +20);
     auto g1 = uniform<real>(-1.0, +1.0);
@@ -92,7 +122,24 @@ TEST(Cogen, ZipPair)
     }
 }
 
-TEST(Cogen, Vector)
+TEST(Costr, Container)
+{
+    using Types = std::tuple<std::vector<int>,
+			     std::list<int>,
+			     std::deque<int>>;
+    core::mp::foreach<Types>([]<class T>() {
+	    auto g = uniform<T>(0, 10, -20, 20);
+	    for (auto vec : take(std::move(g), NumberSamples)) {
+		EXPECT_LE(vec.size(), 10);
+		for (const auto& elem : vec) {
+		    EXPECT_GE(elem, -20);
+		    EXPECT_LE(elem, +20);
+		}
+	    }
+	});
+}
+
+TEST(Costr, Vector)
 {
     auto g = uniform<std::vector<int>>(0, 10, -20, 20);
     for (auto vec : take(std::move(g), NumberSamples)) {
@@ -117,7 +164,7 @@ TEST(Cogen, Vector)
     }
 }
 
-TEST(Cogen, List)
+TEST(Costr, List)
 {
     auto g = uniform<std::list<int>>(0, 10, -20, 20);
     for (auto vec : take(std::move(g), NumberSamples)) {
@@ -142,7 +189,7 @@ TEST(Cogen, List)
     }
 }
 
-TEST(Cogen, Deque)
+TEST(Costr, Deque)
 {
     auto g = uniform<std::deque<int>>(0, 10, -20, 20);
     for (auto vec : take(std::move(g), NumberSamples)) {
@@ -167,7 +214,7 @@ TEST(Cogen, Deque)
     }
 }
 
-TEST(Cogen, VectorPair)
+TEST(Costr, VectorPair)
 {
     auto gp = uniform<std::pair<int,real>>(-10, +10, -1.0, +1.0);
     auto g = sample<std::vector<std::pair<int,real>>>(std::move(gp));
@@ -182,7 +229,7 @@ TEST(Cogen, VectorPair)
     }
 }
 
-TEST(Cogen, PairVector)
+TEST(Costr, PairVector)
 {
     auto gv0 = uniform<vector<int>>(0, 10, -100, +100);
     auto gv1 = uniform<vector<real>>(0, 5, -1.0, +1.0);

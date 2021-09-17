@@ -10,3 +10,4 @@
 #include "coro/stream/integral_decl.h"
 #include "coro/stream/pair_decl.h"
 #include "coro/stream/sequence_decl.h"
+#include "coro/stream/string_decl.h"

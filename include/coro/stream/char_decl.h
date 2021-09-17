@@ -2,11 +2,15 @@
 //
 
 #pragma once
-#include "coro/stream/integral.h"
+#include "coro/stream/util.h"
 
-namespace costr {
+namespace costr::chr {
 
-coro::Generator<char> uniform_lowercase();
-coro::Generator<char> uniform_uppercase();
+Gen<char> uniform();
+Gen<char> lowercase();
+Gen<char> uppercase();
+Gen<char> alpha();
+Gen<char> alphanum();
+Gen<char> ident();
 
 }; // costr
