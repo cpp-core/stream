@@ -7,10 +7,11 @@
 namespace coro
 {
 
-// (possibly recusrive) Generator using symmetric transfer.
+// Consumer - consumes values of type Input optionally yielding values
+// of type Output analogous to a Generator.
 //
-template<class Output, class Input>
-class Processor {
+template<class Input, class Output = bool>
+class Consumer {
 public:
     using always = std::experimental::suspend_always;
     using never = std::experimental::suspend_never;
@@ -23,8 +24,8 @@ public:
     public:
 	promise_type() { }
 	
-	Processor get_return_object() noexcept {
-	    return Processor(handle_type::from_promise(*this));
+	Consumer get_return_object() noexcept {
+	    return Consumer(handle_type::from_promise(*this));
 	}
 	
 	void unhandled_exception() {
@@ -54,12 +55,12 @@ public:
 	
 	// If an `input_token` is yieled, return the current input via
 	// the input awaiter without suspending.
-	input_awaiter yield_value(input_token) noexcept {
+	input_awaiter yield_value(input) noexcept {
 	    return {input_};
 	}
 
 	// If a `ready_token` is yielded, always suspend.
-	always yield_value(ready_token) noexcept { return {}; }
+	always yield_value(input_done) noexcept { return {}; }
 	
 	// Record the address of the yieled value and suspend.
 	always yield_value(Output&& v) noexcept {
@@ -77,41 +78,43 @@ public:
 	void await_transform() = delete;
 	
     private:
-	friend Processor;
+	friend Consumer;
 	std::exception_ptr *exception_ = nullptr;
 	std::add_pointer_t<Output> value_;
 	std::add_pointer_t<Input> input_;
     };
 
-    Processor() noexcept = default;
-    Processor(const Processor& other) = delete;
+    Consumer() noexcept = default;
+    Consumer(const Consumer& other) = delete;
     
-    Processor(Processor&& other) noexcept {
+    Consumer(Consumer&& other) noexcept {
 	std::swap(coro_, other.coro_);
     }
 
-    Processor& operator=(Processor& other) noexcept {
+    Consumer& operator=(Consumer& other) noexcept {
 	std::swap(coro_, other.coro_);
 	return *this;
     }
     
-    ~Processor() {
+    ~Consumer() {
 	if (coro_)
 	    coro_.destroy();
     }
 
-    // Return false iff the processor is exhausted.
-    bool sink(Input input) {
+    // Consume the given <input> and return false iff the consumer is
+    // exhausted.
+    bool push(Input input) {
 	coro_.promise().input_ = std::addressof(input);
 	coro_.resume();
-	return coro_ and not coro_.done();
+	return not done();
     }
 
+    // Return true iff the consumer is exhausted.
     bool done() const {
 	return not coro_ or coro_.done();
     }
 
-    // Return the next value from the processor.
+    // Return the last output value yieled by the consumer.
     Output operator()() const {
 	assert(coro_.promise().value_);
 	return static_cast<Output>(*coro_.promise().value_);
@@ -119,7 +122,7 @@ public:
 
 private:
     // This should only be called by the promise.
-    Processor(handle_type coro)
+    Consumer(handle_type coro)
 	: coro_(coro)
     { }
 

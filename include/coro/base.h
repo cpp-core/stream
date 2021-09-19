@@ -14,7 +14,7 @@ using handle = std::experimental::coroutine_handle<P>;
 using suspend_always = std::experimental::suspend_always;
 using suspend_never = std::experimental::suspend_never;
 
-struct input_token {};
-struct ready_token {};
+struct input {};
+struct input_done {};
 
 }; // coro
