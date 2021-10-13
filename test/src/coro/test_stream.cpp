@@ -222,6 +222,24 @@ TEST(Costr, PairVector)
     }
 }
 
+TEST(Costr, Iota)
+{
+    auto c = to_container(iota(3, 10, 2));
+    ASSERT_EQ(c.size(), 3);
+    EXPECT_EQ(c[0], 10);
+    EXPECT_EQ(c[1], 12);
+    EXPECT_EQ(c[2], 14);
+}
+
+TEST(Costr, Range)
+{
+    auto c = to_container(range(10, 14, 2));
+    ASSERT_EQ(c.size(), 3);
+    EXPECT_EQ(c[0], 10);
+    EXPECT_EQ(c[1], 12);
+    EXPECT_EQ(c[2], 14);
+}
+
 int main(int argc, char *argv[])
 {
     ::testing::InitGoogleTest(&argc, argv);
