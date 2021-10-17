@@ -13,16 +13,20 @@ template<class T>
 requires core::mp::is_same_template_v<T, std::pair>
 struct Uniform<T> {
     using G = coro::Generator<T>;
+    
     using First = typename T::first_type;
+    using FirstRef = const First&;
     using FirstG = coro::Generator<First>;
+    
     using Second = typename T::second_type;
+    using SecondRef = const Second&;
     using SecondG = coro::Generator<Second>;
 
-    static T min_pair() {
+    static std::pair<First,First> min_pair() {
 	return std::make_pair(core::extrema<First>::min(), core::extrema<Second>::min());
     }
     
-    static T max_pair() {
+    static std::pair<Second,Second> max_pair() {
 	return std::make_pair(core::extrema<First>::max(), core::extrema<Second>::max());
     }
 
@@ -38,9 +42,15 @@ struct Uniform<T> {
 	co_return;
     }
     
-    G operator()(T min = min_pair(), T max = max_pair()) const {
-	auto g_first = uniform<First>(min.first, max.first);
-	auto g_second = uniform<Second>(min.second, max.second);
+    G operator()(T min, T max) const {
+	auto g_first = Uniform<First>{}(min.first, max.first);
+	auto g_second = Uniform<Second>{}(min.second, max.second);
+	return this->operator()(std::move(g_first), std::move(g_second));
+    }
+    
+    G operator()() const {
+	auto g_first = Uniform<First>{}();
+	auto g_second = Uniform<Second>{}();
 	return this->operator()(std::move(g_first), std::move(g_second));
     }
 };

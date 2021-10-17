@@ -35,12 +35,15 @@ struct Uniform<T> {
 	co_return;
     }
     
-    G operator()(size_t min_size = 0,
-		 size_t max_size = 20,
-		 ValueRef min_value = core::extrema<Value>::min(),
-		 ValueRef max_value = core::extrema<Value>::max()) const {
+    G operator()(size_t min_size, size_t max_size, ValueRef min_value, ValueRef max_value) const {
 	auto g_size = uniform<size_t>(min_size, max_size);
 	auto g_elem = uniform<Value>(min_value, max_value);
+	return this->operator()(std::move(g_size), std::move(g_elem));
+    }
+    
+    G operator()(size_t min_size = 0, size_t max_size = 20) const {
+	auto g_size = uniform<size_t>(min_size, max_size);
+	auto g_elem = uniform<Value>();
 	return this->operator()(std::move(g_size), std::move(g_elem));
     }
 };
@@ -69,12 +72,15 @@ struct Uniform<T> {
 	co_return;
     }
     
-    G operator()(size_t min_size = 0,
-		 size_t max_size = 20,
-		 ValueRef min_value = core::extrema<Value>::min(),
-		 ValueRef max_value = core::extrema<Value>::max()) const {
+    G operator()(size_t min_size, size_t max_size, ValueRef min_value, ValueRef max_value) const {
 	auto g_size = uniform<size_t>(min_size, max_size);
 	auto g_elem = uniform<Value>(min_value, max_value);
+	return this->operator()(std::move(g_size), std::move(g_elem));
+    }
+    
+    G operator()(size_t min_size = 0, size_t max_size = 20) const {
+	auto g_size = uniform<size_t>(min_size, max_size);
+	auto g_elem = uniform<Value>();
 	return this->operator()(std::move(g_size), std::move(g_elem));
     }
 };

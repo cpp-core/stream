@@ -9,7 +9,9 @@ namespace costr {
 
 template<>
 struct Uniform<string> {
-    coro::Generator<string> operator()(char min = 'a', char max = 'z') const {
+    using G = coro::Generator<string>;
+    
+    G operator()(char min = 'a', char max = 'z') const {
 	std::uniform_int_distribution<int> size(0, 20);
 	std::uniform_int_distribution<int> elem(min, max);
 	while (true) {
