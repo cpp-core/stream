@@ -11,7 +11,7 @@ namespace costr {
 
 template<class T>
 requires core::mp::is_same_template_v<T, std::pair>
-struct Uniform<T> {
+struct Sampler<T> {
     using G = coro::Generator<T>;
     
     using First = typename T::first_type;
@@ -43,14 +43,14 @@ struct Uniform<T> {
     }
     
     G operator()(T min, T max) const {
-	auto g_first = Uniform<First>{}(min.first, max.first);
-	auto g_second = Uniform<Second>{}(min.second, max.second);
+	auto g_first = Sampler<First>{}(min.first, max.first);
+	auto g_second = Sampler<Second>{}(min.second, max.second);
 	return this->operator()(std::move(g_first), std::move(g_second));
     }
     
     G operator()() const {
-	auto g_first = Uniform<First>{}();
-	auto g_second = Uniform<Second>{}();
+	auto g_first = Sampler<First>{}();
+	auto g_second = Sampler<Second>{}();
 	return this->operator()(std::move(g_first), std::move(g_second));
     }
 };

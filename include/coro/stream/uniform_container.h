@@ -14,7 +14,7 @@ template<class T>
 requires (core::mp::is_same_template_v<T, vector>
 	  or core::mp::is_same_template_v<T, list>
 	  or core::mp::is_same_template_v<T, std::deque>)
-struct Uniform<T> {
+struct Sampler<T> {
     using G = coro::Generator<T>;
     using SizeG = coro::Generator<size_t>;
     using Value = typename T::value_type;
@@ -36,14 +36,14 @@ struct Uniform<T> {
     }
     
     G operator()(size_t min_size, size_t max_size, ValueRef min_value, ValueRef max_value) const {
-	auto g_size = uniform<size_t>(min_size, max_size);
-	auto g_elem = uniform<Value>(min_value, max_value);
+	auto g_size = sampler<size_t>(min_size, max_size);
+	auto g_elem = sampler<Value>(min_value, max_value);
 	return this->operator()(std::move(g_size), std::move(g_elem));
     }
     
     G operator()(size_t min_size = 0, size_t max_size = 20) const {
-	auto g_size = uniform<size_t>(min_size, max_size);
-	auto g_elem = uniform<Value>();
+	auto g_size = sampler<size_t>(min_size, max_size);
+	auto g_elem = sampler<Value>();
 	return this->operator()(std::move(g_size), std::move(g_elem));
     }
 };
@@ -51,7 +51,7 @@ struct Uniform<T> {
 template<class T>
 requires (core::mp::is_same_template_v<T, set>
 	  or core::mp::is_same_template_v<T, map>)
-struct Uniform<T> {
+struct Sampler<T> {
     using G = coro::Generator<T>;
     using SizeG = coro::Generator<size_t>;
     using Value = typename T::value_type;
@@ -73,14 +73,14 @@ struct Uniform<T> {
     }
     
     G operator()(size_t min_size, size_t max_size, ValueRef min_value, ValueRef max_value) const {
-	auto g_size = uniform<size_t>(min_size, max_size);
-	auto g_elem = uniform<Value>(min_value, max_value);
+	auto g_size = sampler<size_t>(min_size, max_size);
+	auto g_elem = sampler<Value>(min_value, max_value);
 	return this->operator()(std::move(g_size), std::move(g_elem));
     }
     
     G operator()(size_t min_size = 0, size_t max_size = 20) const {
-	auto g_size = uniform<size_t>(min_size, max_size);
-	auto g_elem = uniform<Value>();
+	auto g_size = sampler<size_t>(min_size, max_size);
+	auto g_elem = sampler<Value>();
 	return this->operator()(std::move(g_size), std::move(g_elem));
     }
 };

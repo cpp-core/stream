@@ -8,7 +8,7 @@
 namespace costr {
 
 template<>
-struct Uniform<string> {
+struct Sampler<string> {
     using G = coro::Generator<string>;
     
     G operator()(char min = 'a', char max = 'z') const {

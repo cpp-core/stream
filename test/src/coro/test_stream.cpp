@@ -3,23 +3,9 @@
 
 #include <gtest/gtest.h>
 #include <deque>
-#include "coro/stream/constant.h"
-#include "coro/stream/iota.h"
-#include "coro/stream/range.h"
-#include "coro/stream/take.h"
-#include "coro/stream/to_container.h"
-#include "coro/stream/uniform_string.h"
-#include "coro/stream/uniform_integral.h"
-#include "coro/stream/uniform_floating.h"
-#include "coro/stream/uniform_pair.h"
-#include "coro/stream/uniform_container.h"
-#include "coro/stream/zip.h"
-#include "coro/stream/zip_pair.h"
-#include "core/json/nljson.h"
+#include "coro/stream/stream.h"
 #include "core/mp/foreach.h"
-#include "core/mp/same.h"
-#include "core/tuple/apply.h"
-#include "core/tuple/map.h"
+
 
 static const size_t NumberSamples = 64;
 
@@ -31,7 +17,7 @@ using FloatingTypes = std::tuple<float,real>;
 TEST(Costr, Constant)
 {
     core::mp::foreach<IntegralTypes>([]<class T>() {
-	    auto value = uniform<T>().sample();
+	    auto value = sampler<T>().sample();
 	    auto g = constant(value);
 	    for (auto elem : take(std::move(g), NumberSamples))
 		EXPECT_EQ(elem, value);
@@ -41,13 +27,13 @@ TEST(Costr, Constant)
 TEST(Costr, Integral)
 {
     core::mp::foreach<IntegralTypes>([]<class T>() {
-	    auto rangeG = uniform<T>();
+	    auto rangeG = sampler<T>();
 	    auto min = rangeG.sample();
 	    auto max = rangeG.sample();
 	    if (min > max)
 		std::swap(min, max);
 
-	    for (auto elem : take(uniform<T>(min, max), NumberSamples)) {
+	    for (auto elem : take(sampler<T>(min, max), NumberSamples)) {
 		EXPECT_GE(elem, min);
 		EXPECT_LE(elem, max);
 	    }
@@ -57,7 +43,7 @@ TEST(Costr, Integral)
 TEST(Costr, Floating)
 {
     core::mp::foreach<FloatingTypes>([]<class T>() {
-	    for (auto elem : take(uniform<T>(-1.0, +1.0), NumberSamples)) {
+	    for (auto elem : take(sampler<T>(-1.0, +1.0), NumberSamples)) {
 		EXPECT_GE(elem, -1.0);
 		EXPECT_LE(elem, +1.0);
 	    }
@@ -66,7 +52,7 @@ TEST(Costr, Floating)
 
 TEST(Costr, String)
 {
-    for (auto str : take(uniform<string>(), 20))
+    for (auto str : take(sampler<string>(), 20))
 	cout << str << endl;
 //     for (auto str : take(str::uniform(uniform<size_t>(0, 20)), NumberSamples))
 // 	EXPECT_LE(str.size(), 20);
@@ -100,7 +86,7 @@ TEST(Costr, Pair)
 {
     core::mp::foreach<std::tuple<int,real>>([]<class T>() {
 	    core::mp::foreach<std::tuple<int,real>>([]<class U>() {
-		    auto g = Uniform<std::pair<T,U>>{}({0,0}, {10,10});
+		    auto g = Sampler<std::pair<T,U>>{}({0,0}, {10,10});
 		    for (auto elem : take(std::move(g), NumberSamples)) {
 			EXPECT_GE(elem.first, 0);
 			EXPECT_LE(elem.first, 10);
@@ -113,8 +99,8 @@ TEST(Costr, Pair)
 
 TEST(Costr, Zip)
 {
-    auto g0 = uniform<int>(-20, +20);
-    auto g1 = uniform<real>(-1.0, +1.0);
+    auto g0 = sampler<int>(-20, +20);
+    auto g1 = sampler<real>(-1.0, +1.0);
     auto g = zip(std::move(g0), std::move(g1));
     for (const auto& [a, b] : take(std::move(g), NumberSamples)) {
 	EXPECT_GE(a, -20);
@@ -126,8 +112,8 @@ TEST(Costr, Zip)
 
 TEST(Costr, ZipPair)
 {
-    auto g0 = uniform<int>(-20, +20);
-    auto g1 = uniform<real>(-1.0, +1.0);
+    auto g0 = sampler<int>(-20, +20);
+    auto g1 = sampler<real>(-1.0, +1.0);
     auto g = zip_pair(std::move(g0), std::move(g1));
     for (const auto& [a, b] : take(std::move(g), NumberSamples)) {
 	EXPECT_GE(a, -20);
@@ -145,7 +131,7 @@ TEST(Costr, Container)
 			     ,std::set<int>
 			     >;
     core::mp::foreach<Types>([]<class T>() {
-	    auto g = uniform<T>(0, 10, -20, 20);
+	    auto g = sampler<T>(0, 10, -20, 20);
 	    for (auto container : take(std::move(g), NumberSamples)) {
 		EXPECT_LE(container.size(), 10);
 		for (const auto& elem : container) {
@@ -158,7 +144,7 @@ TEST(Costr, Container)
 
 TEST(Costr, ContainerMap)
 {
-    auto g = Uniform<std::map<int,real>>{}(0, 20, {0,-1.0}, {100,+1.0});
+    auto g = Sampler<std::map<int,real>>{}(0, 20, {0,-1.0}, {100,+1.0});
     for (auto map : take(std::move(g), NumberSamples)) {
 	EXPECT_LE(map.size(), 20);
 	for (const auto& [key, value] : map) {
@@ -183,9 +169,9 @@ TEST(Costr, ContainerContainer)
 			     ,std::deque<std::deque<int>>
 			     >;
     core::mp::foreach<Types>([]<class T>() {
-	    auto g_size = Uniform<size_t>{}(0, 10);
-	    auto g_elem = Uniform<typename T::value_type>{}(0, 10, -20, 20);
-	    auto src = Uniform<T>{}(std::move(g_size), std::move(g_elem));
+	    auto g_size = Sampler<size_t>{}(0, 10);
+	    auto g_elem = Sampler<typename T::value_type>{}(0, 10, -20, 20);
+	    auto src = Sampler<T>{}(std::move(g_size), std::move(g_elem));
 	    for (auto outer : take(std::move(src), NumberSamples)) {
 		EXPECT_LE(outer.size(), 10);
 		for (const auto& inner : outer) {
@@ -201,9 +187,9 @@ TEST(Costr, ContainerContainer)
 
 TEST(Costr, VectorPair)
 {
-    auto g_size = Uniform<size_t>{}(0, 20);
-    auto g_elem = Uniform<std::pair<int,real>>{}({-10,-1.0}, {+10,+1.0});
-    auto g = Uniform<std::vector<std::pair<int,real>>>{}(std::move(g_size), std::move(g_elem));
+    auto g_size = Sampler<size_t>{}(0, 20);
+    auto g_elem = Sampler<std::pair<int,real>>{}({-10,-1.0}, {+10,+1.0});
+    auto g = Sampler<std::vector<std::pair<int,real>>>{}(std::move(g_size), std::move(g_elem));
     for (auto vec : take(std::move(g), NumberSamples)) {
 	EXPECT_LE(vec.size(), 20);
 	for (const auto& [a, b] : vec) {
@@ -217,8 +203,8 @@ TEST(Costr, VectorPair)
 
 TEST(Costr, PairVector)
 {
-    auto gv0 = uniform<vector<int>>(0, 10, -100, +100);
-    auto gv1 = uniform<vector<real>>(0, 5, -1.0, +1.0);
+    auto gv0 = sampler<vector<int>>(0, 10, -100, +100);
+    auto gv1 = sampler<vector<real>>(0, 5, -1.0, +1.0);
     auto g = zip_pair(std::move(gv0), std::move(gv1));
     for (const auto& [v0, v1] : take(std::move(g), NumberSamples)) {
 	EXPECT_LE(v0.size(), 10);

@@ -9,7 +9,7 @@ namespace costr {
 
 using namespace chron;
 
-coro::Generator<Date> Uniform<Date>::operator()(Date start, Date end) const {
+coro::Generator<Date> Sampler<Date>::operator()(Date start, Date end) const {
     auto sday = sys_days(start).time_since_epoch().count();
     auto eday = sys_days(end).time_since_epoch().count();
     auto dist = std::uniform_int_distribution<int>(0, eday - sday);

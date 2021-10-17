@@ -27,7 +27,7 @@ coro::Consumer<char> append(string& s) {
 TEST(CoroConsumer, Base)
 {
     auto p = add_one();
-    for (auto input : take(uniform<int>(), NumberSamples)) {
+    for (auto input : take(sampler<int>(), NumberSamples)) {
 	p.push(input);
 	EXPECT_EQ(p(), input + 1);
     }

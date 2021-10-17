@@ -7,11 +7,11 @@
 namespace costr {
 
 template<class T>
-struct Uniform;
+struct Sampler;
 
 template<class T, class... Args>
-coro::Generator<T> uniform(Args&&... args) {
-    return Uniform<T>{}(std::forward<Args>(args)...);
+coro::Generator<T> sampler(Args&&... args) {
+    return Sampler<T>{}(std::forward<Args>(args)...);
 }
 
 }; // costr

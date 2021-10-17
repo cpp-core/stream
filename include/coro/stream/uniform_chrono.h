@@ -10,7 +10,7 @@
 namespace costr {
 
 template<>
-struct Uniform<chron::Date> {
+struct Sampler<chron::Date> {
     using Date = chron::Date;
     coro::Generator<Date> operator()(Date start = chron::jan/1/1990,
 				     Date end = chron::jan/1/2040) const;
@@ -18,7 +18,7 @@ struct Uniform<chron::Date> {
 
 template<class T>
 requires core::mp::is_same_template_v<T, std::chrono::time_point>
-struct Uniform<T> {
+struct Sampler<T> {
     // coro::Generator<T> operator()(T start = T::min(), T end = T::max()) const;
 
     coro::Generator<T> operator()(T start = T::min(), T end = T::max()) const {
@@ -36,7 +36,7 @@ struct Uniform<T> {
 
 template<class T>
 requires core::mp::is_same_template_v<T, std::chrono::duration>
-struct Uniform<T> {
+struct Sampler<T> {
     coro::Generator<T> operator()(T start = T::min(), T end = T::max()) const {
 	auto sn = start.count();
 	auto en = end.count();

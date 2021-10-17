@@ -10,7 +10,7 @@ namespace costr {
 
 template<class T>
 requires std::is_floating_point_v<T>
-struct Uniform<T> {
+struct Sampler<T> {
     coro::Generator<T> operator()(T min = core::extrema<T>::min(),
 				  T max = core::extrema<T>::max()) const {
 	std::uniform_real_distribution<T> dist(0.0, 1.0);
