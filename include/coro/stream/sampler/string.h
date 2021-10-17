@@ -2,7 +2,7 @@
 //
 
 #pragma once
-#include "coro/stream/uniform.h"
+#include "coro/stream/sampler.h"
 #include "core/algo/random.h"
 
 namespace costr {

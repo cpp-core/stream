@@ -2,7 +2,7 @@
 //
 
 #pragma once
-#include "coro/stream/uniform.h"
+#include "coro/stream/sampler.h"
 #include "core/chrono.h"
 #include "core/mp/same.h"
 #include "core/algo/random.h"

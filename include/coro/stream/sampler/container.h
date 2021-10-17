@@ -3,7 +3,7 @@
 
 #pragma once
 #include <deque>
-#include "coro/stream/uniform.h"
+#include "coro/stream/sampler.h"
 #include "core/algo/random.h"
 #include "core/traits/extrema.h"
 #include "core/mp/same.h"

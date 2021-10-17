@@ -1,7 +1,7 @@
 // Copyright (C) 2021 by Mark Melton
 //
 
-#include "coro/stream/uniform_chrono.h"
+#include "coro/stream/sampler/chrono.h"
 #include "core/chrono.h"
 #include "core/algo/random.h"
 
