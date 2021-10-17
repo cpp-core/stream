@@ -276,6 +276,15 @@ public:
 	return {};
     }
 
+    // Return the next value from the generator unconditionally. Throw
+    // an exception if the generator is exhausted.
+    Reference sample() {
+	if (not coro_ or coro_.done())
+	    throw std::runtime_error("generator is exhausted");
+	coro_.resume();
+	return static_cast<Reference>(*coro_.promise().value_);
+    }
+
 private:
     // This should only be called by the promise.
     Generator(handle_type coro)

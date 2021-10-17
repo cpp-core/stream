@@ -2,6 +2,7 @@
 //
 
 #pragma once
+#include <deque>
 #include "coro/stream/uniform.h"
 #include "core/algo/random.h"
 #include "core/traits/extrema.h"
@@ -11,22 +12,70 @@ namespace costr {
 
 template<class T>
 requires (core::mp::is_same_template_v<T, vector>
-	  or core::mp::is_same_template_v<T, list>)
+	  or core::mp::is_same_template_v<T, list>
+	  or core::mp::is_same_template_v<T, std::deque>)
 struct Uniform<T> {
+    using G = coro::Generator<T>;
+    using SizeG = coro::Generator<size_t>;
     using Value = typename T::value_type;
+    using ValueRef = const Value&;
+    using ValueG = coro::Generator<Value>;
     
-    coro::Generator<T> operator()() const {
-	std::uniform_int_distribution<size_t> dist(0, 20);
-	auto elemG = Uniform<Value>{}();
-	auto iter = elemG.begin();
-	while (true) {
-	    auto count = dist(core::rng());
+    G operator()(SizeG g_size, ValueG g_value) const {
+	auto iter_size = g_size.begin();
+	auto iter_value = g_value.begin();
+	while (iter_size != g_size.end()) {
+	    auto count = *iter_size;
 	    T container;
-	    for (auto i = 0; i < count; ++i, ++iter)
-		container.push_back(*iter);
+	    for (auto i = 0; i < count; ++i, ++iter_value)
+		container.push_back(*iter_value);
 	    co_yield container;
+	    ++iter_size;
 	}
 	co_return;
+    }
+    
+    G operator()(size_t min_size = 0,
+		 size_t max_size = 20,
+		 ValueRef min_value = core::extrema<Value>::min(),
+		 ValueRef max_value = core::extrema<Value>::max()) const {
+	auto g_size = uniform<size_t>(min_size, max_size);
+	auto g_elem = uniform<Value>(min_value, max_value);
+	return this->operator()(std::move(g_size), std::move(g_elem));
+    }
+};
+
+template<class T>
+requires (core::mp::is_same_template_v<T, set>
+	  or core::mp::is_same_template_v<T, map>)
+struct Uniform<T> {
+    using G = coro::Generator<T>;
+    using SizeG = coro::Generator<size_t>;
+    using Value = typename T::value_type;
+    using ValueRef = const Value&;
+    using ValueG = coro::Generator<Value>;
+    
+    G operator()(SizeG g_size, ValueG g_value) const {
+	auto iter_size = g_size.begin();
+	auto iter_value = g_value.begin();
+	while (iter_size != g_size.end()) {
+	    auto count = *iter_size;
+	    T container;
+	    for (auto i = 0; i < count; ++i, ++iter_value)
+		container.insert(*iter_value);
+	    co_yield container;
+	    ++iter_size;
+	}
+	co_return;
+    }
+    
+    G operator()(size_t min_size = 0,
+		 size_t max_size = 20,
+		 ValueRef min_value = core::extrema<Value>::min(),
+		 ValueRef max_value = core::extrema<Value>::max()) const {
+	auto g_size = uniform<size_t>(min_size, max_size);
+	auto g_elem = uniform<Value>(min_value, max_value);
+	return this->operator()(std::move(g_size), std::move(g_elem));
     }
 };
 
