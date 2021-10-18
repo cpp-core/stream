@@ -2,6 +2,7 @@
 //
 
 #pragma once
+#include "coro/stream/sampler/char.h"
 #include "coro/stream/sampler/chrono.h"
 #include "coro/stream/sampler/container.h"
 #include "coro/stream/sampler/floating.h"

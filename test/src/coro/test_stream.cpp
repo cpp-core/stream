@@ -14,6 +14,42 @@ using namespace costr;
 using IntegralTypes = std::tuple<int16,int32,int64,uint16,uint32,uint64>;
 using FloatingTypes = std::tuple<float,real>;
 
+TEST(Costr, Char)
+{
+    for (auto elem : take(sampler<char>(-10, 10), NumberSamples)) {
+	EXPECT_GE(elem, -10);
+	EXPECT_LE(elem, 10);
+    }
+
+    for (auto elem : take(chr::lower(), NumberSamples)) {
+	EXPECT_TRUE(std::isalpha(elem));
+	EXPECT_TRUE(std::islower(elem));
+    }
+    
+    for (auto elem : take(chr::upper(), NumberSamples)) {
+	EXPECT_TRUE(std::isalpha(elem));
+	EXPECT_TRUE(std::isupper(elem));
+    }
+    
+    for (auto elem : take(chr::alpha(), NumberSamples))
+	EXPECT_TRUE(std::isalpha(elem));
+    
+    for (auto elem : take(chr::alphanum(), NumberSamples))
+	EXPECT_TRUE(std::isalnum(elem));
+    
+    for (auto elem : take(chr::hex(), NumberSamples)) {
+	auto dec = elem >= '0' and elem <= '9';
+	auto alpha = elem >= 'a' and elem <= 'f';
+	EXPECT_TRUE(dec or alpha);
+    }
+
+    for (auto elem : take(chr::hex(true), NumberSamples)) {
+	auto dec = elem >= '0' and elem <= '9';
+	auto alpha = elem >= 'A' and elem <= 'F';
+	EXPECT_TRUE(dec or alpha);
+    }
+}
+
 TEST(Costr, Constant)
 {
     core::mp::foreach<IntegralTypes>([]<class T>() {
@@ -52,34 +88,57 @@ TEST(Costr, Floating)
 
 TEST(Costr, String)
 {
-    for (auto str : take(sampler<string>(), 20))
-	cout << str << endl;
-//     for (auto str : take(str::uniform(uniform<size_t>(0, 20)), NumberSamples))
-// 	EXPECT_LE(str.size(), 20);
+    for (auto str : take(sampler<string>(), 16)) {
+	EXPECT_LE(str.size(), 20);
+	for (auto c : str)
+	    EXPECT_TRUE(std::isalpha(c));
+    }
+
+    for (auto str : take(str::lower(), 16)) {
+	EXPECT_LE(str.size(), 20);
+	for (auto c : str) {
+	    EXPECT_TRUE(std::isalpha(c));
+	    EXPECT_TRUE(std::islower(c));
+	}
+    }
     
-//     for (auto str : take(str::lowercase(uniform<size_t>(0, 20)), NumberSamples)) {
-// 	EXPECT_LE(str.size(), 20);
-// 	for (auto c : str) 
-// 	    EXPECT_TRUE(std::isalpha(c) and std::islower(c));
-//     }
+    for (auto str : take(str::upper(), 16)) {
+	EXPECT_LE(str.size(), 20);
+	for (auto c : str) {
+	    EXPECT_TRUE(std::isalpha(c));
+	    EXPECT_TRUE(std::isupper(c));
+	}
+    }
     
-//     for (auto str : take(str::uppercase(uniform<size_t>(0, 20)), NumberSamples)) {
-// 	EXPECT_LE(str.size(), 20);
-// 	for (auto c : str)
-// 	    EXPECT_TRUE(std::isalpha(c) and std::isupper(c));
-//     }
+    for (auto str : take(str::alpha(), 16)) {
+	EXPECT_LE(str.size(), 20);
+	for (auto c : str) 
+	    EXPECT_TRUE(std::isalpha(c));
+    }
     
-//     for (auto str : take(str::alpha(uniform<size_t>(0, 20)), NumberSamples)) {
-// 	EXPECT_LE(str.size(), 20);
-// 	for (auto c : str)
-// 	    EXPECT_TRUE(std::isalpha(c));
-//     }
+    for (auto str : take(str::alphanum(), 16)) {
+	EXPECT_LE(str.size(), 20);
+	for (auto c : str) 
+	    EXPECT_TRUE(std::isalnum(c));
+    }
+
+    for (auto str : take(str::hex(), 16)) {
+	EXPECT_LE(str.size(), 20);
+	for (auto c : str) {
+	    auto dec = c >= '0' and c <= '9';
+	    auto alpha = c>= 'a' and c <= 'f';
+	    EXPECT_TRUE(dec or alpha);
+	}
+    }
     
-//     for (auto str : take(str::alphanum(uniform<size_t>(0, 20)), NumberSamples)) {
-// 	EXPECT_LE(str.size(), 20);
-// 	for (auto c : str)
-// 	    EXPECT_TRUE(std::isalnum(c));
-//     }
+    for (auto str : take(str::hex(true), 16)) {
+	EXPECT_LE(str.size(), 20);
+	for (auto c : str) {
+	    auto dec = c >= '0' and c <= '9';
+	    auto alpha = c>= 'A' and c <= 'F';
+	    EXPECT_TRUE(dec or alpha);
+	}
+    }
 }
 
 TEST(Costr, Pair)

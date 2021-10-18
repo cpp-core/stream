@@ -3,26 +3,36 @@
 
 #pragma once
 #include "coro/stream/sampler.h"
-#include "core/algo/random.h"
 
 namespace costr {
 
 template<>
 struct Sampler<string> {
     using G = coro::Generator<string>;
+    using SizeG = coro::Generator<size_t>;
+    using ElemG = coro::Generator<char>;
     
-    G operator()(char min = 'a', char max = 'z') const {
-	std::uniform_int_distribution<int> size(0, 20);
-	std::uniform_int_distribution<int> elem(min, max);
-	while (true) {
-	    auto count = size(core::rng());
-	    string s;
-	    for (auto i = 0; i < count; ++i)
-		s.push_back(elem(core::rng()));
-	    co_yield s;
-	}
-	co_return;
-    }
+    G operator()(SizeG g_size, ElemG g_elem) const;
+    G operator()(char min = 'a', char max = 'z') const;
 };
+
+namespace str {
+
+// Return a generator of lowercase strings with size in the range (min,max).
+coro::Generator<string> lower(size_t min = 0, size_t max = 20);
+
+// Return a generator of uppercase strings with size in the range (min,max).
+coro::Generator<string> upper(size_t min = 0, size_t max = 20);
+
+// Return a generator of alpha strings with size in the range (min,max).
+coro::Generator<string> alpha(size_t min = 0, size_t max = 20);
+
+// Return a generator of alpha-numeric strings with size in the range (min,max).
+coro::Generator<string> alphanum(size_t min = 0, size_t max = 20);
+
+// Return a generator of hex strings with size in the range (min,max).
+coro::Generator<string> hex(bool upper = false, size_t min = 0, size_t max = 20);
+
+}; // str
 
 }; // costr
