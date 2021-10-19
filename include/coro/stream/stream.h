@@ -9,5 +9,6 @@
 #include "coro/stream/sampler/all.h"
 #include "coro/stream/take.h"
 #include "coro/stream/to_container.h"
+#include "coro/stream/to_stream.h"
 #include "coro/stream/zip.h"
 #include "coro/stream/zip_pair.h"
