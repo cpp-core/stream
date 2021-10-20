@@ -3,6 +3,7 @@
 
 #pragma once
 #include "coro/stream/util.h"
+#include "coro/stream/to_stream.h"
 #include "core/tuple/apply.h"
 #include "core/tuple/map.h"
 
@@ -19,6 +20,11 @@ Gen<std::tuple<T,Ts...>> zip(Gen<T> g, Gen<Ts>... gs) {
 	apply([](auto& iter) { ++iter; }, iterators);
     }
     co_return;
+}
+
+template<class C, class... Cs>
+auto zip(const C& c, const Cs&... cs) {
+    return zip(to_stream(c), to_stream(cs)...);
 }
 
 }; // costr
