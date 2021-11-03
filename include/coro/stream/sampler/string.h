@@ -33,6 +33,9 @@ coro::Generator<string> alphanum(size_t min = 0, size_t max = 20);
 // Return a generator of hex strings with size in the range (min,max).
 coro::Generator<string> hex(bool upper = false, size_t min = 0, size_t max = 20);
 
+// Return a generator of random strings with size in the range (min, max).
+coro::Generator<string> any(size_t min = 0, size_t max = 20);
+
 }; // str
 
 }; // costr

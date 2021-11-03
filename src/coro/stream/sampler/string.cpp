@@ -45,6 +45,10 @@ coro::Generator<string> hex(bool upper, size_t min, size_t max) {
     return Sampler<string>{}(sampler<size_t>(min, max), chr::hex(upper));
 }
 
+coro::Generator<string> any(size_t min, size_t max) {
+    return Sampler<string>{}(sampler<size_t>(min, max), sampler<char>());
+}
+
 }; // str
 
 }; // costr
