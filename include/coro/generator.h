@@ -13,6 +13,8 @@ namespace coro
 template<class Reference, class Value = std::remove_cvref_t<Reference>>
 class Generator {
 public:
+    using value_type = Value;
+    
     using always = std::experimental::suspend_always;
     using never = std::experimental::suspend_never;
     
