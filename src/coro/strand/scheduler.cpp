@@ -3,7 +3,6 @@
 
 #include <thread>
 #include "coro/strand/scheduler.h"
-#include "core/match.h"
 
 namespace coros
 {

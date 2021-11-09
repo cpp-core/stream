@@ -2,7 +2,7 @@
 //
 
 #include "coro/strand/yield.h"
-#include "core/match.h"
+#include "core/utility/match.h"
 
 namespace coros
 {
