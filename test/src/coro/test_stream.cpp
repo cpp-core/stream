@@ -216,11 +216,18 @@ TEST(CoroStream, String)
 
 TEST(CoroStream, Sequence)
 {
-    auto g0 = (sampler<int>(0, 9) | take(10))
-	& (sampler<int>(10, 19) | take(10));
-    auto g = sequence(std::move(g0));
-    for (auto elem : g)
-	cout << elem << endl;
+    auto g = (sampler<int>(0, 9) | take(10))
+	+ (sampler<int>(10, 19) | take(10))
+	+ (sampler<int>(20, 29) | take(10))
+	+ (sampler<int>(30, 39) | take(10))
+	| sequence();
+    int count{0};
+    for (auto elem : g) {
+	++count;
+	auto delta = std::abs(elem - count);
+	EXPECT_LE(delta, 10);
+    }
+    EXPECT_EQ(count, 40);
 }
 
 TEST(CoroStream, Transform)
