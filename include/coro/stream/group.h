@@ -33,7 +33,7 @@ Generator<std::vector<T>> group(Generator<T> generator, Generator<size_t> gsize)
 // **std::vector<`G::value_type`>**'s. For each count yielded from
 // **H**, the generator yields a vector with count elements yielded
 // from **G**.
-auto group() {
+inline auto group() {
     return [=]<class G, class H>(std::tuple<G,H>&& tup) {
 	return group(std::move(std::get<0>(tup)), std::move(std::get<1>(tup)));
     };
@@ -43,7 +43,7 @@ auto group() {
 // `group` generator. The new `group` generator yields
 // **std::vector<`G::value_type`>**'s with the size `count`
 // constructed from the elements yielded from **G**.
-auto group(size_t count) {
+inline auto group(size_t count) {
     return [=]<class G>(G&& g) {
 	return group(std::move(g), constant(count));
     };

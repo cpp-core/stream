@@ -36,7 +36,7 @@ auto zip(const C& c, const Cs&... cs) {
 // returns a new `zip` generator. The `zip` generator yields tuples of
 // values zipped together from the values yielded from the underlying
 // generators **Gs**.
-auto zip() {
+inline auto zip() {
     return [=]<class T, class I = core::tp::make_tuple_index<T>>(T&& tup) {
 	return core::mp::invoke_with_pack(I{}, [&](auto... Is) {
 	    return zip(std::move(std::get<Is>(tup))...);
