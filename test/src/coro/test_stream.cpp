@@ -119,7 +119,7 @@ TEST(CoroStream, Group)
 	}
     }
 
-    auto g = sampler<real>(-1, +1) ^ sampler<size_t>(1, 8) | group() | take(NumberSamples);
+    auto g = sampler<real>(-1, +1) * sampler<size_t>(1, 8) | group() | take(NumberSamples);
     for (const auto& vec : g) {
 	EXPECT_GT(vec.size(), 0);
 	EXPECT_LE(vec.size(), 8);
@@ -302,7 +302,7 @@ TEST(CoroStream, ContainerContainer)
 			     ,std::deque<std::deque<int>>
 			     >;
     core::mp::foreach<Types>([]<class T>() {
-	    auto g = Sampler<size_t>{}(0, 10) ^ Sampler<typename T::value_type>{}(0, 10, -20, 20)
+	    auto g = Sampler<size_t>{}(0, 10) * Sampler<typename T::value_type>{}(0, 10, -20, 20)
 	        | samplerG<T>()
 	        | take(NumberSamples);
 	    for (auto outer : g) {
@@ -321,7 +321,7 @@ TEST(CoroStream, ContainerContainer)
 TEST(CoroStream, VectorPair)
 {
     using Pair = std::pair<int,real>;
-    auto g = sampler<size_t>(0, 20) ^ sampler_pair(Pair{-10,-1.0}, Pair{+10,+1.0})
+    auto g = sampler<size_t>(0, 20) * sampler_pair(Pair{-10,-1.0}, Pair{+10,+1.0})
 	| sampler_vector()
 	| take(NumberSamples);
     size_t count{0};
@@ -340,7 +340,7 @@ TEST(CoroStream, VectorPair)
 
 TEST(CoroStream, PairVector)
 {
-    auto g = sampler<vector<int>>(0, 10, -100, +100) ^ sampler<vector<real>>(0, 5, -1.0, +1.0)
+    auto g = sampler<vector<int>>(0, 10, -100, +100) * sampler<vector<real>>(0, 5, -1.0, +1.0)
 	| zip()
 	| take(NumberSamples);
     for (const auto& [v0, v1] : g) {
@@ -359,7 +359,7 @@ TEST(CoroStream, PairVector)
 
 TEST(CoroStream, Zip)
 {
-    auto g = sampler<int>(-20, +20) ^ sampler<real>(-1, +1) | zip() | take(NumberSamples);
+    auto g = sampler<int>(-20, +20) * sampler<real>(-1, +1) | zip() | take(NumberSamples);
     size_t count{0};
     for (const auto& [a, b] : g) {
 	++count;
