@@ -5,7 +5,7 @@
 #include "core/chrono.h"
 #include "core/algo/random.h"
 
-namespace costr {
+namespace coro {
 
 using namespace chron;
 

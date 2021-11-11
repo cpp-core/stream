@@ -4,7 +4,7 @@
 #pragma once
 #include "coro/generator.h"
 
-namespace costr {
+namespace coro {
 
 template<class T>
 coro::Generator<T> range(T start, T stop, T step = T{1}) {

@@ -7,7 +7,7 @@
 #include "core/tuple/apply.h"
 #include "core/tuple/map.h"
 
-namespace costr {
+namespace coro {
 
 template<class T, class... Ts>
 Gen<std::tuple<T,Ts...>> zip(Gen<T> g, Gen<Ts>... gs) {
@@ -27,4 +27,10 @@ auto zip(const C& c, const Cs&... cs) {
     return zip(to_stream(c), to_stream(cs)...);
 }
 
-}; // costr
+auto zip() {
+    return [=]<class G, class H>(std::tuple<G,H>&& tup) {
+	return zip(std::move(std::get<0>(tup)), std::move(std::get<1>(tup)));
+    };
+}
+
+}; // coro

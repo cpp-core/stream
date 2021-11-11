@@ -4,7 +4,7 @@
 #pragma once
 #include "coro/generator.h"
 
-namespace costr {
+namespace coro {
 
 template<class T>
 coro::Generator<T> iota(size_t count, T start = T{0}, T step = T{1}) {

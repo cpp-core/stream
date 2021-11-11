@@ -9,58 +9,57 @@
 
 static const size_t NumberSamples = 64;
 
-using namespace costr;
+using namespace coro;
 
 using IntegralTypes = std::tuple<int16,int32,int64,uint16,uint32,uint64>;
 using FloatingTypes = std::tuple<float,real>;
 
-TEST(Costr, Char)
+TEST(CoroStream, Char)
 {
-    for (auto elem : take(sampler<char>(-10, 10), NumberSamples)) {
+    for (auto elem : sampler<char>(-10, 10) | take(NumberSamples)) {
 	EXPECT_GE(elem, -10);
 	EXPECT_LE(elem, 10);
     }
 
-    for (auto elem : take(chr::lower(), NumberSamples)) {
+    for (auto elem : chr::lower() | take(NumberSamples)) {
 	EXPECT_TRUE(std::isalpha(elem));
 	EXPECT_TRUE(std::islower(elem));
     }
     
-    for (auto elem : take(chr::upper(), NumberSamples)) {
+    for (auto elem : chr::upper() | take(NumberSamples)) {
 	EXPECT_TRUE(std::isalpha(elem));
 	EXPECT_TRUE(std::isupper(elem));
     }
     
-    for (auto elem : take(chr::alpha(), NumberSamples))
+    for (auto elem : chr::alpha() | take(NumberSamples))
 	EXPECT_TRUE(std::isalpha(elem));
     
-    for (auto elem : take(chr::alphanum(), NumberSamples))
+    for (auto elem : chr::alphanum() | take(NumberSamples))
 	EXPECT_TRUE(std::isalnum(elem));
     
-    for (auto elem : take(chr::hex(), NumberSamples)) {
+    for (auto elem : chr::hex() | take(NumberSamples)) {
 	auto dec = elem >= '0' and elem <= '9';
 	auto alpha = elem >= 'a' and elem <= 'f';
 	EXPECT_TRUE(dec or alpha);
     }
 
-    for (auto elem : take(chr::hex(true), NumberSamples)) {
+    for (auto elem : chr::hex(true) | take(NumberSamples)) {
 	auto dec = elem >= '0' and elem <= '9';
 	auto alpha = elem >= 'A' and elem <= 'F';
 	EXPECT_TRUE(dec or alpha);
     }
 }
 
-TEST(Costr, Constant)
+TEST(CoroStream, Constant)
 {
     core::mp::foreach<IntegralTypes>([]<class T>() {
 	    auto value = sampler<T>().sample();
-	    auto g = constant(value);
-	    for (auto elem : take(std::move(g), NumberSamples))
+	    for (auto elem : constant(value) | take(NumberSamples))
 		EXPECT_EQ(elem, value);
 	});
 }
 
-TEST(Costr, Integral)
+TEST(CoroStream, Integral)
 {
     core::mp::foreach<IntegralTypes>([]<class T>() {
 	    auto rangeG = sampler<T>();
@@ -69,32 +68,32 @@ TEST(Costr, Integral)
 	    if (min > max)
 		std::swap(min, max);
 
-	    for (auto elem : take(sampler<T>(min, max), NumberSamples)) {
+	    for (auto elem : sampler<T>(min, max) | take(NumberSamples)) {
 		EXPECT_GE(elem, min);
 		EXPECT_LE(elem, max);
 	    }
 	});
 }
 
-TEST(Costr, Floating)
+TEST(CoroStream, Floating)
 {
     core::mp::foreach<FloatingTypes>([]<class T>() {
-	    for (auto elem : take(sampler<T>(-1.0, +1.0), NumberSamples)) {
+	    for (auto elem : sampler<T>(-1.0, +1.0) | take(NumberSamples)) {
 		EXPECT_GE(elem, -1.0);
 		EXPECT_LE(elem, +1.0);
 	    }
 	});
 }
 
-TEST(Costr, String)
+TEST(CoroStream, String)
 {
-    for (auto str : take(sampler<string>(), 16)) {
+    for (auto str : sampler<string>() | take(16)) {
 	EXPECT_LE(str.size(), 20);
 	for (auto c : str)
 	    EXPECT_TRUE(std::isalpha(c));
     }
 
-    for (auto str : take(str::lower(), 16)) {
+    for (auto str : str::lower() | take(16)) {
 	EXPECT_LE(str.size(), 20);
 	for (auto c : str) {
 	    EXPECT_TRUE(std::isalpha(c));
@@ -102,7 +101,7 @@ TEST(Costr, String)
 	}
     }
     
-    for (auto str : take(str::upper(), 16)) {
+    for (auto str : str::upper() | take(16)) {
 	EXPECT_LE(str.size(), 20);
 	for (auto c : str) {
 	    EXPECT_TRUE(std::isalpha(c));
@@ -110,19 +109,19 @@ TEST(Costr, String)
 	}
     }
     
-    for (auto str : take(str::alpha(), 16)) {
+    for (auto str : str::alpha() | take(16)) {
 	EXPECT_LE(str.size(), 20);
 	for (auto c : str) 
 	    EXPECT_TRUE(std::isalpha(c));
     }
     
-    for (auto str : take(str::alphanum(), 16)) {
+    for (auto str : str::alphanum() | take(16)) {
 	EXPECT_LE(str.size(), 20);
 	for (auto c : str) 
 	    EXPECT_TRUE(std::isalnum(c));
     }
 
-    for (auto str : take(str::hex(), 16)) {
+    for (auto str : str::hex() | take(16)) {
 	EXPECT_LE(str.size(), 20);
 	for (auto c : str) {
 	    auto dec = c >= '0' and c <= '9';
@@ -131,7 +130,7 @@ TEST(Costr, String)
 	}
     }
     
-    for (auto str : take(str::hex(true), 16)) {
+    for (auto str : str::hex(true) | take(16)) {
 	EXPECT_LE(str.size(), 20);
 	for (auto c : str) {
 	    auto dec = c >= '0' and c <= '9';
@@ -141,12 +140,12 @@ TEST(Costr, String)
     }
 }
 
-TEST(Costr, Pair)
+TEST(CoroStream, Pair)
 {
     core::mp::foreach<std::tuple<int,real>>([]<class T>() {
 	    core::mp::foreach<std::tuple<int,real>>([]<class U>() {
-		    auto g = Sampler<std::pair<T,U>>{}({0,0}, {10,10});
-		    for (auto elem : take(std::move(g), NumberSamples)) {
+		    auto g = Sampler<std::pair<T,U>>{}({0,0}, {10,10}) | take(NumberSamples);
+		    for (auto elem : g) {
 			EXPECT_GE(elem.first, 0);
 			EXPECT_LE(elem.first, 10);
 			EXPECT_GE(elem.second, 0);
@@ -156,33 +155,35 @@ TEST(Costr, Pair)
 	});
 }
 
-TEST(Costr, Zip)
+TEST(CoroStream, Zip)
 {
-    auto g0 = sampler<int>(-20, +20);
-    auto g1 = sampler<real>(-1.0, +1.0);
-    auto g = zip(std::move(g0), std::move(g1));
-    for (const auto& [a, b] : take(std::move(g), NumberSamples)) {
+    auto g = sampler<int>(-20, +20) ^ sampler<real>(-1, +1) | zip() | take(NumberSamples);
+    size_t count{0};
+    for (const auto& [a, b] : g) {
+	++count;
 	EXPECT_GE(a, -20);
 	EXPECT_LE(a, +20);
 	EXPECT_GE(b, -1.0);
 	EXPECT_LE(b, +1.0);
     }
+    EXPECT_EQ(count, NumberSamples);
 }
 
-TEST(Costr, ZipPair)
+TEST(CoroStream, ZipPair)
 {
-    auto g0 = sampler<int>(-20, +20);
-    auto g1 = sampler<real>(-1.0, +1.0);
-    auto g = zip_pair(std::move(g0), std::move(g1));
-    for (const auto& [a, b] : take(std::move(g), NumberSamples)) {
+    auto g = sampler<int>(-20, +20) ^ sampler<real>(-1.0, +1.0) | zip_pair() | take(NumberSamples);
+    size_t count{0};
+    for (const auto& [a, b] : g) {
+	++count;
 	EXPECT_GE(a, -20);
 	EXPECT_LE(a, +20);
 	EXPECT_GE(b, -1.0);
 	EXPECT_LE(b, +1.0);
     }
+    EXPECT_EQ(count, NumberSamples);
 }
 
-TEST(Costr, Container)
+TEST(CoroStream, Container)
 {
     using Types = std::tuple<std::vector<int>
 			     ,std::list<int>
@@ -190,8 +191,8 @@ TEST(Costr, Container)
 			     ,std::set<int>
 			     >;
     core::mp::foreach<Types>([]<class T>() {
-	    auto g = sampler<T>(0, 10, -20, 20);
-	    for (auto container : take(std::move(g), NumberSamples)) {
+	    auto g = sampler<T>(0, 10, -20, 20) | take(NumberSamples);
+	    for (auto container : g) {
 		EXPECT_LE(container.size(), 10);
 		for (const auto& elem : container) {
 		    EXPECT_GE(elem, -20);
@@ -201,10 +202,10 @@ TEST(Costr, Container)
 	});
 }
 
-TEST(Costr, ContainerMap)
+TEST(CoroStream, ContainerMap)
 {
     auto g = Sampler<std::map<int,real>>{}(0, 20, {0,-1.0}, {100,+1.0});
-    for (auto map : take(std::move(g), NumberSamples)) {
+    for (auto map : std::move(g) | take(NumberSamples)) {
 	EXPECT_LE(map.size(), 20);
 	for (const auto& [key, value] : map) {
 	    EXPECT_GE(key, 0);
@@ -215,7 +216,7 @@ TEST(Costr, ContainerMap)
     }
 }
 
-TEST(Costr, ContainerContainer)
+TEST(CoroStream, ContainerContainer)
 {
     using Types = std::tuple<std::vector<std::vector<int>>
 			     ,std::vector<std::list<int>>
@@ -244,7 +245,7 @@ TEST(Costr, ContainerContainer)
 	});
 }
 
-TEST(Costr, VectorPair)
+TEST(CoroStream, VectorPair)
 {
     auto g_size = Sampler<size_t>{}(0, 20);
     auto g_elem = Sampler<std::pair<int,real>>{}({-10,-1.0}, {+10,+1.0});
@@ -260,12 +261,12 @@ TEST(Costr, VectorPair)
     }
 }
 
-TEST(Costr, PairVector)
+TEST(CoroStream, PairVector)
 {
-    auto gv0 = sampler<vector<int>>(0, 10, -100, +100);
-    auto gv1 = sampler<vector<real>>(0, 5, -1.0, +1.0);
-    auto g = zip_pair(std::move(gv0), std::move(gv1));
-    for (const auto& [v0, v1] : take(std::move(g), NumberSamples)) {
+    auto g = sampler<vector<int>>(0, 10, -100, +100) ^ sampler<vector<real>>(0, 5, -1.0, +1.0)
+	| zip_pair()
+	| take(NumberSamples);
+    for (const auto& [v0, v1] : g) {
 	EXPECT_LE(v0.size(), 10);
 	EXPECT_LE(v1.size(), 5);
 	for (const auto& elem : v0) {
@@ -279,22 +280,47 @@ TEST(Costr, PairVector)
     }
 }
 
-TEST(Costr, Iota)
+TEST(CoroStream, Iota)
 {
-    auto c = to_container(iota(3, 10, 2));
+    auto c = iota(3, 10, 2) | to_container();
     ASSERT_EQ(c.size(), 3);
     EXPECT_EQ(c[0], 10);
     EXPECT_EQ(c[1], 12);
     EXPECT_EQ(c[2], 14);
 }
 
-TEST(Costr, Range)
+TEST(CoroStream, Range)
 {
-    auto c = to_container(range(10, 14, 2));
+    auto c = range(10, 14, 2) | to_container();
     ASSERT_EQ(c.size(), 3);
     EXPECT_EQ(c[0], 10);
     EXPECT_EQ(c[1], 12);
     EXPECT_EQ(c[2], 14);
+}
+
+TEST(CoroStream, Group)
+{
+    auto g = sampler<real>(-1, +1) ^ sampler<size_t>(1, 8) | group() | take(NumberSamples);
+    for (const auto& vec : g) {
+	EXPECT_GT(vec.size(), 0);
+	EXPECT_LE(vec.size(), 8);
+	for (auto x : vec) {
+	    EXPECT_GE(x, -1);
+	    EXPECT_LE(x, +1);
+	}
+    }
+}
+
+TEST(CoroStream, GroupN)
+{
+    auto g = sampler<real>(-1, +1) | group(5) | take(NumberSamples);
+    for (const auto& vec : g) {
+	EXPECT_EQ(vec.size(), 5);
+	for (auto x : vec) {
+	    EXPECT_GE(x, -1);
+	    EXPECT_LE(x, +1);
+	}
+    }
 }
 
 int main(int argc, char *argv[])

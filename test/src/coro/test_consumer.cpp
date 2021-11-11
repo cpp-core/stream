@@ -5,7 +5,7 @@
 #include "coro/consumer.h"
 #include "coro/stream/stream.h"
 
-using namespace costr;
+using namespace coro;
 static const size_t NumberSamples = 64;
 
 coro::Consumer<int,int> add_one() {

@@ -7,7 +7,7 @@
 #include "core/mp/same.h"
 #include "core/algo/random.h"
 
-namespace costr {
+namespace coro {
 
 template<>
 struct Sampler<chron::Date> {

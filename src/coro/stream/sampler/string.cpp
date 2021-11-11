@@ -4,7 +4,7 @@
 #include "coro/stream/sampler/string.h"
 #include "coro/stream/sampler/char.h"
 
-namespace costr {
+namespace coro {
 
 Sampler<string>::G Sampler<string>::operator()(SizeG g_size, ElemG g_elem) const {
     while (true) {

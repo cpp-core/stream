@@ -6,7 +6,7 @@
 #include "core/algo/random.h"
 #include "core/traits/extrema.h"
 
-namespace costr {
+namespace coro {
 
 template<class T>
 requires std::is_floating_point_v<T>

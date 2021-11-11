@@ -3,7 +3,7 @@
 
 #include "coro/stream/sampler/char.h"
 
-namespace costr::chr {
+namespace coro::chr {
 
 Gen<char> lower() {
     return sampler<char>('a', 'z');

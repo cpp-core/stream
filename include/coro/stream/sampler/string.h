@@ -4,7 +4,7 @@
 #pragma once
 #include "coro/stream/sampler.h"
 
-namespace costr {
+namespace coro {
 
 template<>
 struct Sampler<string> {

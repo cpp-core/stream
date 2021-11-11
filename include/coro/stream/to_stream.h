@@ -4,7 +4,7 @@
 #pragma once
 #include "coro/generator.h"
 
-namespace costr {
+namespace coro {
 
 template<class C>
 coro::Generator<typename C::value_type> to_stream(const C& container) {

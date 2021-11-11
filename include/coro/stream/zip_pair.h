@@ -4,7 +4,7 @@
 #pragma once
 #include "coro/stream/util.h"
 
-namespace costr {
+namespace coro {
 
 template<class T, class U>
 Gen<std::pair<T, U>> zip_pair(Gen<T> first, Gen<U> second) {
@@ -17,5 +17,12 @@ Gen<std::pair<T, U>> zip_pair(Gen<T> first, Gen<U> second) {
     }
     co_return;
 }
+
+auto zip_pair() {
+    return [=]<class G, class H>(std::tuple<G,H>&& tup) {
+	return zip_pair(std::move(std::get<0>(tup)), std::move(std::get<1>(tup)));
+    };
+}
+
 
 }; // costr

@@ -4,7 +4,7 @@
 #pragma once
 #include "coro/generator.h"
 
-namespace costr {
+namespace coro {
 
 template<class T>
 vector<T> to_container(coro::Generator<T> generator) {
@@ -12,6 +12,12 @@ vector<T> to_container(coro::Generator<T> generator) {
     for (auto&& value : generator)
 	c.emplace_back(value);
     return c;
+}
+
+auto to_container() {
+    return []<class G>(G&& g) {
+	return to_container(std::forward<G>(g));
+    };
 }
 
 }; // costr

@@ -8,7 +8,7 @@
 #include "core/traits/extrema.h"
 #include "core/mp/same.h"
 
-namespace costr {
+namespace coro {
 
 template<class T>
 requires (core::mp::is_same_template_v<T, vector>

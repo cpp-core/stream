@@ -5,7 +5,7 @@
 #include "coro/stream/util.h"
 #include "coro/stream/sampler/integral.h"
 
-namespace costr::chr {
+namespace coro::chr {
 
 // Return a generator of lowercase alpha characters, i.e. a-z.
 Gen<char> lower();
