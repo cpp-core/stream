@@ -12,6 +12,7 @@
 #include "coro/stream/iota.h"
 #include "coro/stream/range.h"
 #include "coro/stream/sampler/all.h"
+#include "coro/stream/sequence.h"
 #include "coro/stream/take.h"
 #include "coro/stream/transform.h"
 #include "coro/stream/zip.h"

@@ -9,7 +9,7 @@ namespace coro {
 
 // Evaluates to true if **G** is a **Generator<...>**
 template<class G>
-constexpr bool is_generator_v = core::mp::is_same_template_v<G,Generator>;
+constexpr bool is_generator_v = core::mp::is_same_template_v<std::decay_t<G>,Generator>;
 
 template<class T>
 using Gen = Generator<T>;

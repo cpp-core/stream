@@ -214,6 +214,15 @@ TEST(CoroStream, String)
     }
 }
 
+TEST(CoroStream, Sequence)
+{
+    auto g0 = (sampler<int>(0, 9) | take(10))
+	& (sampler<int>(10, 19) | take(10));
+    auto g = sequence(std::move(g0));
+    for (auto elem : g)
+	cout << elem << endl;
+}
+
 TEST(CoroStream, Transform)
 {
     auto g = sampler<int>(0, 100)
