@@ -29,7 +29,7 @@ Gen<std::tuple<T,Ts...>> zip(Gen<T> g, Gen<Ts>... gs) {
 // underlying containers and yields each set of elements as a tuple.
 template<class C, class... Cs>
 auto zip(const C& c, const Cs&... cs) {
-    return zip(adapt(c), adapt(cs)...);
+    return zip(::coro::adapt(c), ::coro::adapt(cs)...);
 }
 
 // Return a function that accepts a tuple of generators **Gs** and
