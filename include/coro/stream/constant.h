@@ -6,11 +6,12 @@
 
 namespace coro {
 
+// Return a generator that yields `value` indefinitely.
 template<class T>
-coro::Generator<T> constant(T value) {
+Generator<T> constant(T value) {
     while (true)
 	co_yield value;
     co_return;
 }
 
-}; // costr
+}; // coro

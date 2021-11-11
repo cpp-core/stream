@@ -10,9 +10,10 @@ namespace coro {
 template<class T>
 struct Sampler;
 
+// Return a generator that yields randomly sampled **T**'s.
 template<class T, class... Args>
 Generator<T> sampler(Args&&... args) {
     return Sampler<T>{}(std::forward<Args>(args)...);
 }
 
-}; // costr
+}; // coro

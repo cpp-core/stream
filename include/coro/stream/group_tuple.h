@@ -8,8 +8,9 @@
 
 namespace coro {
 
-// Yield values from the supplied `generator` grouped into
-// **std::tuple**'s of `N` elements of type `T`.
+// Return a generator that yields **std::tuple<`T`,..>**'s with arity
+// `N`. The generator groups elements yielded from the supplied
+// `generator` into `N`-tuples and yields them.
 template<size_t N, class T>
 Generator<core::tp::generate_t<T, N>> group_tuple(Generator<T> generator) {
     std::vector<T> data;
@@ -23,7 +24,12 @@ Generator<core::tp::generate_t<T, N>> group_tuple(Generator<T> generator) {
     co_return;
 }
 
-// Return a unary group operator with a fixed `count`.
+// Return a function that accepts generator **G** and returns a new
+// `group_tuple` generator. The `group_tuple` generator yields
+// **std::tuple<`G::value_type`,...>**'s constructed by grouping
+// elements yielded from **G**.
+//
+// *sampler<int>(0, 100) | group_tuple<2>() -> std::tuple<int,int>*
 template<size_t N>
 auto group_tuple() {
     return [=]<class G>(G&& g) {
@@ -31,4 +37,4 @@ auto group_tuple() {
     };
 }
 
-}; // costr
+}; // coro

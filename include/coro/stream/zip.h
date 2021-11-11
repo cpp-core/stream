@@ -3,7 +3,7 @@
 
 #pragma once
 #include "coro/stream/util.h"
-#include "coro/stream/to_stream.h"
+#include "coro/stream/adapt.h"
 #include "core/tuple/apply.h"
 #include "core/tuple/map.h"
 
@@ -24,7 +24,7 @@ Gen<std::tuple<T,Ts...>> zip(Gen<T> g, Gen<Ts>... gs) {
 
 template<class C, class... Cs>
 auto zip(const C& c, const Cs&... cs) {
-    return zip(to_stream(c), to_stream(cs)...);
+    return zip(adapt(c), adapt(cs)...);
 }
 
 auto zip() {

@@ -11,8 +11,15 @@ static const size_t NumberSamples = 64;
 
 using namespace coro;
 
-using IntegralTypes = std::tuple<int16,int32,int64,uint16,uint32,uint64>;
+using IntegralTypes = std::tuple<int32,int64,uint16,uint64>;
 using FloatingTypes = std::tuple<float,real>;
+
+TEST(CoroStream, Adapt)
+{
+    auto expected = sampler<int>(0, 100) | take(10) | collect<std::vector>();
+    auto actual = adapt(expected) | collect<std::vector>();
+    EXPECT_EQ(expected, actual);
+}
 
 TEST(CoroStream, Char)
 {
@@ -47,6 +54,16 @@ TEST(CoroStream, Char)
 	auto dec = elem >= '0' and elem <= '9';
 	auto alpha = elem >= 'A' and elem <= 'F';
 	EXPECT_TRUE(dec or alpha);
+    }
+}
+
+TEST(CoroStream, Collect)
+{
+    auto vec = sampler<int>(0, 100) | take(4) | collect<std::vector>();
+    EXPECT_EQ(vec.size(), 4);
+    for (auto elem : vec) {
+	EXPECT_GE(elem, 0);
+	EXPECT_LE(elem, 100);
     }
 }
 
@@ -111,6 +128,35 @@ TEST(CoroStream, Group)
 	    EXPECT_LE(x, +1);
 	}
     }
+}
+
+TEST(CoroStream, GroupTuple)
+{
+    for (auto [a, b] : sampler<int>(0, 100) | group_tuple<2>() | take(NumberSamples)) {
+	EXPECT_GE(a, 0);
+	EXPECT_LE(a, 100);
+	EXPECT_GE(b, 0);
+	EXPECT_LE(b, 100);
+    }
+}
+
+TEST(CoroStream, Iota)
+{
+    auto c = iota(3, 10, 2) | collect<std::vector>();
+    ASSERT_EQ(c.size(), 3);
+    EXPECT_EQ(c[0], 10);
+    EXPECT_EQ(c[1], 12);
+    EXPECT_EQ(c[2], 14);
+}
+
+
+TEST(CoroStream, Range)
+{
+    auto c = range(10, 14, 2) | collect<std::vector>();
+    ASSERT_EQ(c.size(), 3);
+    EXPECT_EQ(c[0], 10);
+    EXPECT_EQ(c[1], 12);
+    EXPECT_EQ(c[2], 14);
 }
 
 TEST(CoroStream, String)
@@ -308,36 +354,6 @@ TEST(CoroStream, PairVector)
 	for (const auto& elem : v1) {
 	    EXPECT_GE(elem, -1.0);
 	    EXPECT_LE(elem, +1.0);
-	}
-    }
-}
-
-TEST(CoroStream, Iota)
-{
-    auto c = iota(3, 10, 2) | to_container();
-    ASSERT_EQ(c.size(), 3);
-    EXPECT_EQ(c[0], 10);
-    EXPECT_EQ(c[1], 12);
-    EXPECT_EQ(c[2], 14);
-}
-
-TEST(CoroStream, Range)
-{
-    auto c = range(10, 14, 2) | to_container();
-    ASSERT_EQ(c.size(), 3);
-    EXPECT_EQ(c[0], 10);
-    EXPECT_EQ(c[1], 12);
-    EXPECT_EQ(c[2], 14);
-}
-
-TEST(CoroStream, GroupN)
-{
-    auto g = sampler<real>(-1, +1) | group(5) | take(NumberSamples);
-    for (const auto& vec : g) {
-	EXPECT_EQ(vec.size(), 5);
-	for (auto x : vec) {
-	    EXPECT_GE(x, -1);
-	    EXPECT_LE(x, +1);
 	}
     }
 }

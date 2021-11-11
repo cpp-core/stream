@@ -6,8 +6,10 @@
 
 namespace coro {
 
+// Return a generator that yields elements from the supplied
+// `container`.
 template<class C>
-coro::Generator<typename C::value_type> to_stream(const C& container) {
+Generator<typename C::value_type> adapt(const C& container) {
     for (auto elem : container)
 	co_yield elem;
     co_return;

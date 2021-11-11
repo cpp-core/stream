@@ -41,12 +41,12 @@ auto group() {
 
 // Return a function that accepts a generator **G** and returns a new
 // `group` generator. The new `group` generator yields
-// **std::vector<`G::value_type`>**'s constructed from the elements
-// yielded from **G**.
+// **std::vector<`G::value_type`>**'s with the size `count`
+// constructed from the elements yielded from **G**.
 auto group(size_t count) {
     return [=]<class G>(G&& g) {
 	return group(std::move(g), constant(count));
     };
 }
 
-}; // costr
+}; // coro
