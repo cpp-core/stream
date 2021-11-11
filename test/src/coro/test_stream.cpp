@@ -214,6 +214,17 @@ TEST(CoroStream, String)
     }
 }
 
+TEST(CoroStream, Transform)
+{
+    auto g = sampler<int>(0, 100)
+	| transform([](int elem) { return -elem; })
+	| take(NumberSamples);
+    for (auto elem : g) {
+	EXPECT_GE(elem, -100);
+	EXPECT_LE(elem, 0);
+    }
+}
+
 TEST(CoroStream, Pair)
 {
     core::mp::foreach<std::tuple<int,real>>([]<class T>() {
@@ -227,34 +238,6 @@ TEST(CoroStream, Pair)
 		    }
 		});
 	});
-}
-
-TEST(CoroStream, Zip)
-{
-    auto g = sampler<int>(-20, +20) ^ sampler<real>(-1, +1) | zip() | take(NumberSamples);
-    size_t count{0};
-    for (const auto& [a, b] : g) {
-	++count;
-	EXPECT_GE(a, -20);
-	EXPECT_LE(a, +20);
-	EXPECT_GE(b, -1.0);
-	EXPECT_LE(b, +1.0);
-    }
-    EXPECT_EQ(count, NumberSamples);
-}
-
-TEST(CoroStream, ZipPair)
-{
-    auto g = sampler<int>(-20, +20) ^ sampler<real>(-1.0, +1.0) | zip_pair() | take(NumberSamples);
-    size_t count{0};
-    for (const auto& [a, b] : g) {
-	++count;
-	EXPECT_GE(a, -20);
-	EXPECT_LE(a, +20);
-	EXPECT_GE(b, -1.0);
-	EXPECT_LE(b, +1.0);
-    }
-    EXPECT_EQ(count, NumberSamples);
 }
 
 TEST(CoroStream, Container)
@@ -342,7 +325,7 @@ TEST(CoroStream, VectorPair)
 TEST(CoroStream, PairVector)
 {
     auto g = sampler<vector<int>>(0, 10, -100, +100) ^ sampler<vector<real>>(0, 5, -1.0, +1.0)
-	| zip_pair()
+	| zip()
 	| take(NumberSamples);
     for (const auto& [v0, v1] : g) {
 	EXPECT_LE(v0.size(), 10);
@@ -356,6 +339,20 @@ TEST(CoroStream, PairVector)
 	    EXPECT_LE(elem, +1.0);
 	}
     }
+}
+
+TEST(CoroStream, Zip)
+{
+    auto g = sampler<int>(-20, +20) ^ sampler<real>(-1, +1) | zip() | take(NumberSamples);
+    size_t count{0};
+    for (const auto& [a, b] : g) {
+	++count;
+	EXPECT_GE(a, -20);
+	EXPECT_LE(a, +20);
+	EXPECT_GE(b, -1.0);
+	EXPECT_LE(b, +1.0);
+    }
+    EXPECT_EQ(count, NumberSamples);
 }
 
 int main(int argc, char *argv[])
