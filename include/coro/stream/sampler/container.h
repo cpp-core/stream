@@ -48,6 +48,21 @@ struct Sampler<T> {
     }
 };
 
+inline auto sampler_vector() {
+    return []<class G, class H>(std::tuple<G,H>&& tup) {
+	using T = typename H::value_type;
+	using R = std::vector<T>;
+	return Sampler<R>{}(std::move(std::get<0>(tup)), std::move(std::get<1>(tup)));
+    };
+}
+
+template<class T>
+auto samplerG() {
+    return []<class G, class H>(std::tuple<G,H>&& tup) {
+	return Sampler<T>{}(std::move(std::get<0>(tup)), std::move(std::get<1>(tup)));
+    };
+}
+
 template<class T>
 requires (core::mp::is_same_template_v<T, set>
 	  or core::mp::is_same_template_v<T, map>)
@@ -85,4 +100,4 @@ struct Sampler<T> {
     }
 };
 
-}; // costr
+}; // coro

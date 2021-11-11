@@ -55,4 +55,10 @@ struct Sampler<T> {
     }
 };
 
-}; // costr
+template<class T, class U>
+auto sampler_pair(std::pair<T,U>&& min, std::pair<T,U>&& max) {
+    using Pair = std::pair<T,U>;
+    return Sampler<Pair>{}(std::forward<Pair>(min), std::forward<Pair>(max));
+}
+
+}; // coro

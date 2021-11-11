@@ -229,10 +229,10 @@ TEST(CoroStream, ContainerContainer)
 			     ,std::deque<std::deque<int>>
 			     >;
     core::mp::foreach<Types>([]<class T>() {
-	    auto g_size = Sampler<size_t>{}(0, 10);
-	    auto g_elem = Sampler<typename T::value_type>{}(0, 10, -20, 20);
-	    auto src = Sampler<T>{}(std::move(g_size), std::move(g_elem));
-	    for (auto outer : take(std::move(src), NumberSamples)) {
+	    auto g = Sampler<size_t>{}(0, 10) ^ Sampler<typename T::value_type>{}(0, 10, -20, 20)
+	        | samplerG<T>()
+	        | take(NumberSamples);
+	    for (auto outer : g) {
 		EXPECT_LE(outer.size(), 10);
 		for (const auto& inner : outer) {
 		    EXPECT_LE(inner.size(), 10);
@@ -247,10 +247,13 @@ TEST(CoroStream, ContainerContainer)
 
 TEST(CoroStream, VectorPair)
 {
-    auto g_size = Sampler<size_t>{}(0, 20);
-    auto g_elem = Sampler<std::pair<int,real>>{}({-10,-1.0}, {+10,+1.0});
-    auto g = Sampler<std::vector<std::pair<int,real>>>{}(std::move(g_size), std::move(g_elem));
+    using Pair = std::pair<int,real>;
+    auto g = sampler<size_t>(0, 20) ^ sampler_pair(Pair{-10,-1.0}, Pair{+10,+1.0})
+	| sampler_vector()
+	| take(NumberSamples);
+    size_t count{0};
     for (auto vec : take(std::move(g), NumberSamples)) {
+	++count;
 	EXPECT_LE(vec.size(), 20);
 	for (const auto& [a, b] : vec) {
 	    EXPECT_GE(a, -10);
@@ -259,6 +262,7 @@ TEST(CoroStream, VectorPair)
 	    EXPECT_LE(b, +1.0);
 	}
     }
+    EXPECT_EQ(count, NumberSamples);
 }
 
 TEST(CoroStream, PairVector)
