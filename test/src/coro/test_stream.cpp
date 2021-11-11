@@ -75,6 +75,13 @@ TEST(CoroStream, Integral)
 	});
 }
 
+TEST(CoroStream, Filter)
+{
+    auto g = sampler<int>(0, 100) | filter([](int n) { return n % 2 == 0; }) | take(NumberSamples);
+    for (auto elem : g)
+	EXPECT_TRUE(elem % 2 == 0);
+}
+
 TEST(CoroStream, Floating)
 {
     core::mp::foreach<FloatingTypes>([]<class T>() {
@@ -83,6 +90,27 @@ TEST(CoroStream, Floating)
 		EXPECT_LE(elem, +1.0);
 	    }
 	});
+}
+
+TEST(CoroStream, Group)
+{
+    for (auto vec : sampler<int>(0, 100) | group(4) | take(NumberSamples)) {
+	EXPECT_EQ(vec.size(), 4);
+	for (auto elem : vec) {
+	    EXPECT_GE(elem, 0);
+	    EXPECT_LE(elem, 100);
+	}
+    }
+
+    auto g = sampler<real>(-1, +1) ^ sampler<size_t>(1, 8) | group() | take(NumberSamples);
+    for (const auto& vec : g) {
+	EXPECT_GT(vec.size(), 0);
+	EXPECT_LE(vec.size(), 8);
+	for (auto x : vec) {
+	    EXPECT_GE(x, -1);
+	    EXPECT_LE(x, +1);
+	}
+    }
 }
 
 TEST(CoroStream, String)
@@ -300,19 +328,6 @@ TEST(CoroStream, Range)
     EXPECT_EQ(c[0], 10);
     EXPECT_EQ(c[1], 12);
     EXPECT_EQ(c[2], 14);
-}
-
-TEST(CoroStream, Group)
-{
-    auto g = sampler<real>(-1, +1) ^ sampler<size_t>(1, 8) | group() | take(NumberSamples);
-    for (const auto& vec : g) {
-	EXPECT_GT(vec.size(), 0);
-	EXPECT_LE(vec.size(), 8);
-	for (auto x : vec) {
-	    EXPECT_GE(x, -1);
-	    EXPECT_LE(x, +1);
-	}
-    }
 }
 
 TEST(CoroStream, GroupN)
