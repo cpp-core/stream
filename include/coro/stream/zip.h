@@ -9,6 +9,11 @@
 
 namespace coro {
 
+// Zip the elements from the given tuple of generators.
+//
+// *Returns:* **Generator<std::tuple<...>>** A generator that yields **std::tuple**'s
+// containing an element from each of the underlying generators. As many tuples will be
+// yielded as the least number of elements yielded from an underlying generator.
 template<class T, class... Ts>
 Gen<std::tuple<T,Ts...>> zip(std::tuple<Generator<T>,Generator<Ts>...> tup) {
     using core::tp::apply, core::tp::map, core::tp::mapply, core::tp::map_n, core::tp::all;
@@ -21,13 +26,13 @@ Gen<std::tuple<T,Ts...>> zip(std::tuple<Generator<T>,Generator<Ts>...> tup) {
     co_return;
 }
 
-// Zip the elements from the preceeding tuple of generators in a pipeline.
+// Zip the elements from the preceeding tuple of generators.
 //
-// *Returns:* `Generator<std::tuple<...>>` A generator that yields **std::tuple**'s
-// containing an element fromeach of the underlying generators. As many tuples will be
+// *Returns:* **Generator<std::tuple<...>>** A generator that yields **std::tuple**'s
+// containing an element from each of the underlying generators. As many tuples will be
 // yielded as the least number of elements yielded from an underlying generator.
 //
-// Usage: *sampler<int>(0,9) sampler<int>(10,19) | zip()*
+// Usage: *sampler<int>(0,9) % sampler<int>(10,19) | zip()*
 inline auto zip() {
     return []<class T>(T tup) {
 	return zip(std::move(tup));

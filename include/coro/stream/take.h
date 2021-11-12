@@ -15,9 +15,9 @@ Generator<T> take(Generator<T> generator, size_t count) {
     co_return;
 }
 
-// Return a function that accepts generator **G** and returns a new
-// `take` generator. The `take` generator yields the first `count`
-// elements (or until exhaustion) from **G**.
+// Take the first `count` elements from the preceeding generator.
+//
+// Usage: *sampler<int>() | take(10)*
 inline auto take(size_t count) {
     return [=]<class G>(G&& g) {
 	return take(std::move(g), count);

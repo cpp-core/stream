@@ -24,12 +24,13 @@ Generator<core::tp::generate_t<T, N>> group_tuple(Generator<T> generator) {
     co_return;
 }
 
-// Return a function that accepts generator **G** and returns a new
-// `group_tuple` generator. The `group_tuple` generator yields
-// **std::tuple<`G::value_type`,...>**'s constructed by grouping
-// elements yielded from **G**.
+// Group the elemens of the preceeding generator into N-tuples.
 //
-// *sampler<int>(0, 100) | group_tuple<2>() -> std::tuple<int,int>*
+// *Returns:* **Generator<std::tuple<...>>** A generator that yields **std::tuple<...>**'s
+// with arity `N`. The generator groups elements yielded from the underlying generator
+// into `N`-tuples and yields them.
+//
+// *sampler<int>(0, 100) | group_tuple<2>() // -> std::tuple<int,int>*
 template<size_t N>
 auto group_tuple() {
     return [=]<class G>(G&& g) {

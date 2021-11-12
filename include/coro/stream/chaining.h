@@ -6,8 +6,8 @@
 
 namespace coro {
 
-// Return an **array<`G`,2>** containing the generators `left` and
-// `right`. This allows for the composition of a pair of generators.
+// Return an **array<`G`,2>** containing the generators `left` and `right`. This allows
+// for the composition of a pair of generators.
 //
 // *sampler<int>(0,9) + sampler<int>(10,19)*
 template<class G>
@@ -17,10 +17,9 @@ auto operator+(G left, G right) {
     return std::array<Generator<T>,2>{std::move(left), std::move(right)};
 }
 
-// Return an **array<`G`,`N`+1>** containing the generators from
-// `arry` and the generator `right`. Coupled with pairwise
-// composition, this allows for the composition of any number of
-// generators:
+// Return an **array<`G`,`N`+1>** containing the generators from `arr` and the generator
+// `right`. Coupled with pairwise composition, this allows for the composition of any
+// number of generators:
 //
 // *sampler<int>(0,9) & sampler<int>(10,19) & sampler<int>(20,29)*
 template<class G, class T, size_t N>
@@ -42,8 +41,8 @@ auto operator*(G&& g, H&& h) {
     return std::tuple{std::forward<G>(g), std::forward<H>(h)};
 }
 
-// Return a **tuple<...>** containing the generators from `tup` and the
-// generator from `g`.
+// Return a **tuple<...>** containing the generators from `tup` and the generator from
+// `g`.
 //
 // *sampler<int>(0, 10) x sampler<int>(0, 5) x sampler<int>(-10, 0) | zip() | take(5)* 
 template<class G, class... Gs>
@@ -67,8 +66,7 @@ auto operator|(G&& g, Op&& op) {
     return op(std::forward<G>(g));
 }
 
-// Return the result of applying `op` to the array of generators
-// `arr`.
+// Return the result of applying `op` to the array of generators `arr`.
 //
 // *sampler<int>(0,9) & sampler<int>(10,19) | sequence()*
 template<class G, size_t N, class Op>

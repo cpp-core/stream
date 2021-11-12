@@ -359,14 +359,20 @@ TEST(CoroStream, PairVector)
 
 TEST(CoroStream, Zip)
 {
-    auto g = sampler<int>(-20, +20) * sampler<real>(-1, +1) | zip() | take(NumberSamples);
+    auto g = sampler<int>(-20, +20)
+	* sampler<real>(-1, +1)
+	* sampler<char>('a','z')
+	| zip()
+	| take(NumberSamples);
     size_t count{0};
-    for (const auto& [a, b] : g) {
+    for (const auto& [a, b, c] : g) {
 	++count;
 	EXPECT_GE(a, -20);
 	EXPECT_LE(a, +20);
 	EXPECT_GE(b, -1.0);
 	EXPECT_LE(b, +1.0);
+	EXPECT_GE(c, 'a');
+	EXPECT_LE(c, 'z');
     }
     EXPECT_EQ(count, NumberSamples);
 }

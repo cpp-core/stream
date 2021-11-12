@@ -16,6 +16,8 @@ auto collect(Generator<T> generator) {
     return c;
 }
 
+// Collect all the elements from a generator into a container of type `C`.
+//
 // Return a function that accepts **Generator<`T`>** and returns a
 // container **C<`T`>** with all the elements yielded from the
 // generator.

@@ -16,6 +16,8 @@ Generator<T> filter(Generator<T> generator, P&& predicate) {
     co_return;
 }
 
+// Filter elements from a generator using the given `predicate`.
+//
 // Return a function that accepts a generator **G** and returns a new
 // `filter` generator. The `filter` generator yields the elements of
 // **G** for which the supplied `predicate` evaluates to `true`.
