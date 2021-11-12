@@ -21,6 +21,18 @@ TEST(CoroStream, Adapt)
     EXPECT_EQ(expected, actual);
 }
 
+TEST(CoroStream, Alternate)
+{
+    auto g = iota<int>(11) + iota(10, 10) + iota(10, 20) | alternate();
+    size_t count{0};
+    for (auto elem : g) {
+	auto expected = 10 * (count % 3) + count / 3;
+	EXPECT_EQ(elem, expected);
+	++count;
+    }
+    EXPECT_EQ(count, 31);
+}
+
 TEST(CoroStream, Char)
 {
     for (auto elem : sampler<char>(-10, 10) | take(NumberSamples)) {
@@ -149,6 +161,13 @@ TEST(CoroStream, Iota)
     EXPECT_EQ(c[2], 14);
 }
 
+TEST(CoroStream, IotaStart)
+{
+    auto c = iota(10, 10) | collect<std::vector>();
+    ASSERT_EQ(c.size(), 10);
+    for (auto i = 0; i < 10; ++i)
+	EXPECT_EQ(c[i], i + 10);
+}
 
 TEST(CoroStream, Range)
 {
@@ -228,17 +247,6 @@ TEST(CoroStream, Sequence)
 	EXPECT_LE(delta, 10);
     }
     EXPECT_EQ(count, 40);
-}
-
-TEST(CoroStream, Transform)
-{
-    auto g = sampler<int>(0, 100)
-	| transform([](int elem) { return -elem; })
-	| take(NumberSamples);
-    for (auto elem : g) {
-	EXPECT_GE(elem, -100);
-	EXPECT_LE(elem, 0);
-    }
 }
 
 TEST(CoroStream, Pair)
