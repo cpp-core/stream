@@ -17,4 +17,6 @@
 #include "coro/stream/sequence.h"
 #include "coro/stream/take.h"
 #include "coro/stream/transform.h"
+#include "coro/stream/stream.h"
+#include "coro/stream/unique.h"
 #include "coro/stream/zip.h"

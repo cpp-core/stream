@@ -380,6 +380,17 @@ TEST(CoroStream, PairVector)
     }
 }
 
+TEST(CoroStream, Unique)
+{
+    auto g = sampler<int>(0, 100) | unique([](int n) { return n % 11; }) | take(11);
+     std::set<int> s;
+    for (auto elem : g) {
+	EXPECT_FALSE(s.contains(elem % 11));
+	s.insert(elem % 11);
+    }
+    EXPECT_EQ(s.size(), 11);
+}
+
 TEST(CoroStream, Zip)
 {
     auto g = sampler<int>(-20, +20)
