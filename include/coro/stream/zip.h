@@ -21,46 +21,32 @@ Gen<std::tuple<T,Ts...>> zip(std::tuple<Generator<T>,Generator<Ts>...> tup) {
     co_return;
 }
 
+// Zip the elements from the preceeding tuple of generators in a pipeline.
+//
+// *Returns:* `Generator<std::tuple<...>>` A generator that yields **std::tuple**'s
+// containing an element fromeach of the underlying generators. As many tuples will be
+// yielded as the least number of elements yielded from an underlying generator.
+//
+// Usage: *sampler<int>(0,9) sampler<int>(10,19) | zip()*
 inline auto zip() {
     return []<class T>(T tup) {
 	return zip(std::move(tup));
     };
 }
 
-// Return a generator that yields tuples. The generator zips together
-// the elements yielded by the given generators and yields each set of
-// elements as a tuple.
-template<class T, class... Ts>
-Gen<std::tuple<T,Ts...>> zip2(Gen<T> g, Gen<Ts>... gs) {
-    using core::tp::apply, core::tp::map, core::tp::map_n, core::tp::all;
-
-    auto iterators = std::make_tuple(g.begin(), gs.begin()...);
-    auto end_iters = std::make_tuple(g.end(), gs.end()...);
-    while (all(map_n([](auto& iter, auto& end) { return iter != end; }, iterators, end_iters))) {
-	co_yield map([](auto& iter) { return *iter; }, iterators);
-	apply([](auto& iter) { ++iter; }, iterators);
-    }
-    co_return;
-}
-
-// Return a generator that zips together the elements of the
-// underlying containers and yields each set of elements as a tuple.
+// Zip the elements from the given containers.
+//
+// *template param:* `C` Container that can be iterated.
+// *template params:* `Cs` Containers that can be iterated.
+// *param:* `c` First container to zip.
+// *params:* `cs` Remaining containers to zip.
+//
+// *Returns:* `Generator<Cstd::tuple<C::value_type,Cs::value_type...>>` A generator that yields
+// **std::tuple**'s containing an element from each of the underlying containers. As many
+// tuples will be yieled as the size of the smallest container.
 template<class C, class... Cs>
 auto zip(const C& c, const Cs&... cs) {
-    return zip2(::coro::adapt(c), ::coro::adapt(cs)...);
+    return zip(std::make_tuple(::coro::adapt(c), ::coro::adapt(cs)...));
 }
-
-// Return a function that accepts a tuple of generators **Gs** and
-// returns a new `zip` generator. The `zip` generator yields tuples of
-// values zipped together from the values yielded from the underlying
-// generators **Gs**.
-inline auto zip2() {
-    return [=]<class T, class I = core::tp::make_tuple_index<T>>(T&& tup) {
-	return core::mp::invoke_with_pack(I{}, [&](auto... Is) {
-	    return zip2(std::move(std::get<Is>(tup))...);
-	});
-    };
-}
-
 
 }; // coro
