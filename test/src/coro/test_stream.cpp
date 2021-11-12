@@ -94,13 +94,30 @@ TEST(CoroStream, Collect)
     }
 }
 
-TEST(CoroStream, Constant)
+TEST(CoroStream, Repeat)
 {
-    core::mp::foreach<IntegralTypes>([]<class T>() {
-	    auto value = sampler<T>().sample();
-	    for (auto elem : constant(value) | take(NumberSamples))
-		EXPECT_EQ(elem, value);
-	});
+    for (auto value : sampler<int>(0, 100) | take(NumberSamples)) {
+	auto g = repeat(value) | take(1000);
+	size_t count{0};
+	for (auto elem : g) {
+	    EXPECT_EQ(elem, value);
+	    ++count;
+	}
+	EXPECT_EQ(count, 1000);
+    }
+}
+
+TEST(CoroStream, RepeatCount)
+{
+    for (auto [n, m] : sampler<int>(0, 100) * sampler<int>(0, 10) | zip() | take(NumberSamples)) {
+	auto g = repeat(n, m);
+	size_t count{0};
+	for (auto elem : g) {
+	    EXPECT_EQ(elem, n);
+	    ++count;
+	}
+	EXPECT_EQ(count, m);
+    }
 }
 
 TEST(CoroStream, Integral)

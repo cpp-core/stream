@@ -3,7 +3,7 @@
 
 #pragma once
 #include "coro/generator.h"
-#include "coro/stream/constant.h"
+#include "coro/stream/repeat.h"
 #include "core/tuple/from_vector.h"
 #include "core/tuple/generate.h"
 
@@ -49,7 +49,7 @@ inline auto group() {
 // constructed from the elements yielded from **G**.
 inline auto group(size_t count) {
     return [=]<class G>(G&& g) {
-	return group(std::move(g), constant(count));
+	return group(std::move(g), repeat(count));
     };
 }
 

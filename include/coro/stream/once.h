@@ -6,11 +6,10 @@
 
 namespace coro {
 
-// Return a generator that yields `value` indefinitely.
+// Return a generator that yields `value` exactly once.
 template<class T>
-Generator<T> constant(T value) {
-    while (true)
-	co_yield value;
+Generator<T> once(T value) {
+    co_yield value;
     co_return;
 }
 
