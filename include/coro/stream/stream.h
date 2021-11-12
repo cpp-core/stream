@@ -5,6 +5,7 @@
 #include "coro/stream/adapt.h"
 #include "coro/stream/alternate.h"
 #include "coro/stream/chaining.h"
+#include "coro/stream/choose.h"
 #include "coro/stream/collect.h"
 #include "coro/stream/constant.h"
 #include "coro/stream/filter.h"

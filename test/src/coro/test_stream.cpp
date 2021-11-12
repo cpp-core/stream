@@ -69,6 +69,21 @@ TEST(CoroStream, Char)
     }
 }
 
+TEST(CoroStream, Choose)
+{
+    auto g = iota<int>(10) + iota(10, 10) + iota(8, 20) | choose();
+    std::set<int> unique;
+    size_t count{0};
+    for (auto elem : g) {
+	EXPECT_GE(elem, 0);
+	EXPECT_LT(elem, 28);
+	EXPECT_FALSE(unique.contains(elem));
+	unique.insert(elem);
+	++count;
+    }
+    EXPECT_EQ(count, 28);
+}
+
 TEST(CoroStream, Collect)
 {
     auto vec = sampler<int>(0, 100) | take(4) | collect<std::vector>();
