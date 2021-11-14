@@ -4,6 +4,7 @@
 #pragma once
 #include "coro/stream/adapt.h"
 #include "coro/stream/alternate.h"
+#include "coro/stream/apply.h"
 #include "coro/stream/chaining.h"
 #include "coro/stream/choose.h"
 #include "coro/stream/collect.h"

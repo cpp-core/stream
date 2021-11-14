@@ -33,6 +33,17 @@ TEST(CoroStream, Alternate)
     EXPECT_EQ(count, 31);
 }
 
+TEST(CoroStream, Apply)
+{
+    auto count{0};
+    sampler<int>(0, 100)
+	| take(10)
+	| apply([&](int n) {
+	    ++count;
+	});
+    EXPECT_EQ(count, 10);
+}
+
 TEST(CoroStream, Char)
 {
     for (auto elem : sampler<char>(-10, 10) | take(NumberSamples)) {
