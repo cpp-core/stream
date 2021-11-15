@@ -44,19 +44,19 @@ public:
 	always final_suspend() noexcept { return {}; }
 
 	struct input_awaiter {
-	    std::add_pointer_t<Input> input_;
-	    // Never suspend
-	    bool await_ready() const noexcept { return true; }
+	    std::add_pointer_t<promise_type> promise_;
+	    // Always suspend
+	    bool await_ready() const noexcept { return false; }
 	    // Since we never suspend, is never called.
 	    void await_suspend(handle_type coro) noexcept { }
-	    // Return the input pointer.
-	    auto await_resume() const noexcept { return static_cast<Input>(*input_); }
+	    // Return the input.
+	    auto await_resume() const noexcept { return static_cast<Input>(*promise_->input_); }
 	};
 	
 	// If an `input_token` is yieled, return the current input via
 	// the input awaiter without suspending.
 	input_awaiter yield_value(input) noexcept {
-	    return {input_};
+	    return {this};
 	}
 
 	// If a `ready_token` is yielded, always suspend.
