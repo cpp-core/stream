@@ -2,31 +2,29 @@
 //
 
 #pragma once
-#include "coro/generator.h"
+#include "coro/stream/util.h"
 
 namespace coro {
 
-// Return a generator that yields the elements from the supplied
-// `generator` filtered by the given `predicate`.
-template<class T, class P>
-Generator<T> filter(Generator<T> generator, P&& predicate) {
-    for (auto element : generator)
+// Return a **Stream** that filters the elements from `source` with `predicate`.
+template<Stream S, class P>
+Generator<typename S::value_type> filter(S source, P&& predicate) {
+    for (auto element : source)
 	if (predicate(element))
 	    co_yield element;
     co_return;
 }
 
-// Filter elements from a generator using the given `predicate`.
+// Filter a **Stream** using the given `predicate`.
 //
-// Return a function that accepts a generator **G** and returns a new
-// `filter` generator. The `filter` generator yields the elements of
-// **G** for which the supplied `predicate` evaluates to `true`.
+// Return a function that accepts a **Stream** and returns a new **Stream** that filters
+// the elements of the original **Stream** with the given `predicate`.
 //
-// *sampler<int>(0, 100) | filter([](int n) { return n % 2 == 0; })*
+// *iota<int>(0, 10) | filter([](int n) { return n % 2 == 0; }); // 0, 2, 4, 6, 8*
 template<class P>
 auto filter(P predicate) {
-    return [=]<class G>(G&& g) {
-	return filter(std::forward<G>(g), predicate);
+    return [=]<Stream S>(S&& s) {
+	return filter(std::forward<S>(s), predicate);
     };
 }
 

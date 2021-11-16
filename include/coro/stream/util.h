@@ -20,4 +20,13 @@ Generator<T> nil() {
     co_return;
 }
 
+// The **Stream** concept defines the necessary shape for a class to interoperate as a
+// stream.
+template<class T>
+concept Stream = requires (T t) {
+    typename std::decay_t<T>::value_type;
+    std::begin(t);
+    std::end(t);
+};
+
 }; // coro
