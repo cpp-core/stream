@@ -78,7 +78,7 @@ TEST(CoroStream, Char)
 
 TEST(CoroStream, Choose)
 {
-    auto g = iota<int>(10) + iota(10, 10) + iota(8, 20) | choose();
+    auto g = iota<int>(10) * iota(10, 10) * iota(8, 20) | choose();
     std::set<int> unique;
     size_t count{0};
     for (auto elem : g) {

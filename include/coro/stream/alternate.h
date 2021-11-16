@@ -12,21 +12,6 @@ namespace coro {
 // Return a generator that yields elements from the underlying generators in a round-robin
 // fashion starting with the first elmenent from the first generator followed by the first
 // element from the second generator, etc.
-template<class T, size_t N>
-Generator<T> alternate(std::array<Generator<T>,N> arr) {
-    bool done{false};
-    while (not done) {
-	done = true;
-	for (auto& g : arr) {
-	    if (not g.done() and g.next()) {
-		co_yield g();
-		done = false;
-	    }
-	}
-    }
-    co_return;
-}
-
 template<Stream S, Stream... Ss>
 Generator<typename std::decay_t<S>::value_type> alternate(std::tuple<S, Ss...> tup) {
     using namespace core::tp;
