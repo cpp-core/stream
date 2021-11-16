@@ -236,7 +236,7 @@ TEST(CoroStream, Sequence)
 
 TEST(CoroStream, SequenceFixedVector)
 {
-    std::vector<int> a{0, 1, 2, 3, 4, 5, 6, 7, 8, 9},
+    core::Fixed<std::vector<int>> a{0, 1, 2, 3, 4, 5, 6, 7, 8, 9},
 	b{10, 11, 12, 13, 14, 15, 16, 17, 18, 19},
 	c{20, 21, 22, 23, 24, 25, 26, 27, 28, 29};
     auto g = a * b * c | sequence();
@@ -246,6 +246,29 @@ TEST(CoroStream, SequenceFixedVector)
 	++count;
     }
     EXPECT_EQ(count, 30);
+}
+
+TEST(CoroStream, Take)
+{
+    auto g = iota<int>(99) | take(5);
+    size_t count{0};
+    for (auto&& elem : g) {
+	EXPECT_EQ(elem, count);
+	++count;
+    }
+    EXPECT_EQ(count, 5);
+}
+
+TEST(CoroStream, TakeFixedVector)
+{
+    core::Fixed<std::vector<int>> data{0, 1, 2, 3, 4, 5, 6, 7};
+    auto g = data | take(5);
+    size_t count{0};
+    for (auto&& elem : g) {
+	EXPECT_EQ(elem, count);
+	++count;
+    }
+    EXPECT_EQ(count, 5);
 }
 
 TEST(CoroStream, Transform)
@@ -310,6 +333,23 @@ TEST(CoroStream, Zip)
 	EXPECT_LE(c, 'z');
     }
     EXPECT_EQ(count, NumberSamples);
+}
+
+TEST(CoroStream, ZipFixedVector)
+{
+    core::Fixed<std::vector<int>> a{-1, 0, +1};
+    core::Fixed<std::vector<real>> b{-10.0, 0.0, 10.0};
+    core::Fixed<std::vector<char>> c{'a', 'b', 'c', 'd'};
+    
+    auto g = a * b * c | zip();
+    size_t count{0};
+    for (const auto& [x, y, z] : g) {
+	EXPECT_EQ(x, a[count]);
+	EXPECT_EQ(y, b[count]);
+	EXPECT_EQ(z, c[count]);
+	++count;
+    }
+    EXPECT_EQ(count, 3);
 }
 
 int main(int argc, char *argv[])

@@ -14,9 +14,10 @@ namespace coro {
 // *Returns:* **Generator<std::tuple<...>>** A generator that yields **std::tuple**'s
 // containing an element from each of the underlying generators. As many tuples will be
 // yielded as the least number of elements yielded from an underlying generator.
-template<class T, class... Ts>
-Gen<std::tuple<T,Ts...>> zip(std::tuple<Generator<T>,Generator<Ts>...> tup) {
-    using core::tp::apply, core::tp::map, core::tp::mapply, core::tp::map_n, core::tp::all;
+template<Stream S, Stream... Ss>
+Generator<std::tuple<stream_value_t<S>,stream_value_t<Ss>...>> zip(std::tuple<S, Ss...> tup) {
+    using namespace core;
+    using tp::mapply, tp::map, tp::apply, tp::map_n, tp::all;
     auto iterators = mapply([](auto& g) { return g.begin(); }, tup);
     auto end_iters = mapply([](auto& g) { return g.end(); }, tup);
     while (all(map_n([](auto& iter, auto& end) { return iter != end; }, iterators, end_iters))) {
@@ -34,8 +35,8 @@ Gen<std::tuple<T,Ts...>> zip(std::tuple<Generator<T>,Generator<Ts>...> tup) {
 //
 // Usage: *sampler<int>(0,9) % sampler<int>(10,19) | zip()*
 inline auto zip() {
-    return []<class T>(T tup) {
-	return zip(std::move(tup));
+    return []<class T>(T&& tuple) {
+	return zip(std::move(tuple));
     };
 }
 

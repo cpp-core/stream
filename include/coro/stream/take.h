@@ -2,16 +2,21 @@
 //
 
 #pragma once
-#include "coro/generator.h"
+#include "coro/stream/util.h"
 
 namespace coro {
 
 // Return a generator that yields the first `count` elements (or until
 // exhaustion) from the supplied `generator`.
-template<class T>
-Generator<T> take(Generator<T> generator, size_t count) {
-    while (count-- > 0 and generator.next())
-	co_yield generator();
+template<Stream S>
+Generator<stream_value_t<S>> take(S source, size_t count) {
+    if (count > 0) {
+	for (auto&& elem : source) {
+	    co_yield elem;
+	    if (--count == 0)
+		break;
+	}
+    }
     co_return;
 }
 
@@ -19,8 +24,8 @@ Generator<T> take(Generator<T> generator, size_t count) {
 //
 // Usage: *sampler<int>() | take(10)*
 inline auto take(size_t count) {
-    return [=]<class G>(G&& g) {
-	return take(std::move(g), count);
+    return [=]<Stream S>(S&& source) {
+	return take<S>(std::forward<S>(source), count);
     };
 }
 

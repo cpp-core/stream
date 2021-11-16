@@ -2,24 +2,28 @@
 //
 
 #pragma once
-#include "coro/generator.h"
+#include "coro/stream/util.h"
 #include "coro/stream/repeat.h"
 #include "core/tuple/from_vector.h"
-#include "core/tuple/generate.h"
 
 namespace coro {
 
 // Return a generator that yields **std::vector<T>**'s. For each count yielded fromm the
 // supplied **Generator<size_t>**`gsize`, the generator yields a vector of `T` with count
 // elements yielded from the supplied **Generator<`T`>** `generator`.
-template<class T>
-Generator<std::vector<T>> group(Generator<T> generator, Generator<size_t> gsize) {
-    std::vector<T> data;
-    while (gsize.next()) {
-	auto count = gsize();
-	while (data.size() < count and generator.next())
-	    data.push_back(generator());
-	if (data.size() != count)
+template<Stream S, Stream R>
+Generator<std::vector<stream_value_t<S>>> group(S source, R sizer) {
+    std::vector<stream_value_t<S>> data;
+    auto iter = std::begin(source);
+    auto end = std::end(source);
+    
+    for (auto&& count : sizer) {
+	while (count > 0 and iter != end) {
+	    data.push_back(*iter);
+	    ++iter;
+	    --count;
+	}
+	if (data.size() < count)
 	    break;
 	co_yield data;
 	data.clear();
