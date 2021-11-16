@@ -2,7 +2,11 @@
 //
 
 #pragma once
-#include "coro/generator.h"
+#include "coro/stream/util.h"
+#include "coro/stream/sampler/integral.h"
+#include "core/tuple/apply.h"
+#include "core/tuple/map.h"
+#include "core/tuple/to_array.h"
 
 namespace coro {
 
@@ -24,6 +28,21 @@ Generator<T> choose(std::array<Generator<T>,N> arr) {
     co_return;
 }
 
+template<Stream S, Stream... Ss>
+Generator<typename std::decay_t<S>::value_type> choose(std::tuple<S, Ss...> tup) {
+    auto r = sampler<int>(0, sizeof...(Ss));
+    using namespace core::tp;
+    auto iterators = mapply([](auto& g) { return g.begin(); }, tup);
+    auto end_iters = mapply([](auto& g) { return g.end(); }, tup);
+    while (all(map_n([](auto& iter, auto& end) { return iter != end; }, iterators, end_iters))) {
+	auto idx = r.sample();
+	auto value = *select_nth(iterators, idx);
+	co_yield value;
+	apply_nth([](auto& iter) { ++iter; }, idx, iterators);
+    }
+    co_return;
+}
+
 // Choose randomly from an array of generators for each element.
 //
 // *Returns:* **Generator<...>** A generator that yields elements from the underlying
@@ -32,7 +51,7 @@ Generator<T> choose(std::array<Generator<T>,N> arr) {
 // *sampler<int>(0, 9) + sampler<int>(10, 19) + sampler<int>(20, 29) | choose()*
 inline auto choose() {
     return []<class G>(G g) {
-	return alternate(std::move(g));
+	return choose(std::move(g));
     };
 }
 

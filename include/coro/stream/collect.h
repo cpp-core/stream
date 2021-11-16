@@ -3,12 +3,13 @@
 
 #pragma once
 #include "coro/stream/util.h"
+#include "core/utility/type_name.h"
 
 namespace coro {
 
 // Return a container **C<T>** with all the elements from **Stream** `source`.
 template<class C, Stream S>
-auto collect(S source) {
+auto collect(S&& source) {
     C c;
     for (auto&& value : source)
 	c.push_back(value);

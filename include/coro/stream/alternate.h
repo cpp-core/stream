@@ -9,9 +9,8 @@
 
 namespace coro {
 
-// Return a generator that yields elements from the underlying generators in a round-robin
-// fashion starting with the first elmenent from the first generator followed by the first
-// element from the second generator, etc.
+// Return a **Stream** that returns elements in a round-robin fashion from the given tuple
+// of **Stream**'s `tup` until all are exhausted.
 template<Stream S, Stream... Ss>
 Generator<typename std::decay_t<S>::value_type> alternate(std::tuple<S, Ss...> tup) {
     using namespace core::tp;
@@ -31,16 +30,16 @@ Generator<typename std::decay_t<S>::value_type> alternate(std::tuple<S, Ss...> t
     co_return;
 }
 
-// Alternate elements from an array of generators.
+// Alternate elements from a tuple of **Stream**'s until all are exhausted.
 //
-// *Returns:* **Generator<...>** A generator that yields elements from the underlying
-// generators starting with the first elmenent from the first generator followed by the
-// first element from the second generator, etc.
+// Return a function that accepts a tuple of **Stream**'s and returns a new **Stream**
+// that returns elements in a round-robin fashion from the underlying **Stream**'s until
+// all are exhausted
 //
-// *sampler<int>(0, 9) + sampler<int>(10, 19) + sampler<int>(20, 29) | alternate()*
+// *sampler<int>(0, 9) x sampler<int>(10, 19) x sampler<int>(20, 29) | alternate()*
 inline auto alternate() {
-    return []<class G>(G g) {
-	return alternate(std::move(g));
+    return []<class T>(T&& source) {
+	return alternate(std::move(source));
     };
 }
 

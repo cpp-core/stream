@@ -2,31 +2,30 @@
 //
 
 #pragma once
-#include "coro/generator.h"
+#include "coro/stream/util.h"
 
 namespace coro {
 
-// Apply `func` to each element yielded from the supplied `generator` and return the
-// number of elements processed.
-template<class T, class F>
-size_t apply(Generator<T> generator, F&& func) {
+// Return a count of elements in **Stream** `source` after applying `function` to each
+// element.
+template<Stream S, class F>
+size_t apply(S&& source, F&& function) {
     size_t count{0};
-    for (auto&& value : generator) {
-	std::forward<F>(func)(value);
+    for (auto&& value : source) {
+	std::forward<F>(function)(value);
 	++count;
     }
     return count;
 }
 
-// Apply `func` to each element from a generator and return the number of elements
-// processed.
+// Apply `function` to each element of a **Stream** and return the count of elements.
 //
-// Return a function that accepts **Generator<`T`>** and returns a **size_t** indicated
-// the number of elements yieled from the generator.
+// Return a function that accepts a **Stream** and returns the count of elements in the
+// **Stream** after applying `function` to each element.
 template<class F>
-auto apply(F func) {
-    return [=]<class T>(Generator<T>&& g) {
-	return apply(std::forward<Generator<T>>(g), std::move(func));
+auto apply(F function) {
+    return [=]<Stream S>(S&& source) {
+	return apply(std::forward<S>(source), std::move(function));
     };
 }
 
