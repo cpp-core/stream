@@ -29,4 +29,8 @@ concept Stream = requires (T t) {
     std::end(t);
 };
 
+// Return the value_type of **Stream** `S`.
+template<Stream S>
+using stream_value_t = typename std::decay_t<S>::value_type;
+
 }; // coro

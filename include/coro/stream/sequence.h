@@ -2,17 +2,26 @@
 //
 
 #pragma once
-#include "coro/generator.h"
+#include "coro/stream/util.h"
+#include "core/tuple/map.h"
 
 namespace coro {
 
 // Return a generator that yields elements from the underlying generators starting with
 // all the elements from the first generator before proceeding to the next generator.
-template<class T, size_t N>
-Generator<T> sequence(std::array<Generator<T>,N> arr) {
-    for (auto i = 0; i < arr.size(); ++i)
-	for (auto elem : arr[i])
-	    co_yield elem;
+template<Stream S, Stream... Ss>
+Generator<stream_value_t<S>> sequence(std::tuple<S, Ss...> tup) {
+    using core::tp::select_nth, core::tp::mapply;
+    auto iterators = mapply([](auto& g) { return g.begin(); }, tup);
+    auto end_iters = mapply([](auto& g) { return g.end(); }, tup);
+    for (auto i = 0; i < sizeof...(Ss) + 1; ++i) {
+	auto& iter = select_nth(iterators, i);
+	auto& end = select_nth(end_iters, i);
+	while (iter != end) {
+	    co_yield *iter;
+	    ++iter;
+	}
+    }
     co_return;
 }
 

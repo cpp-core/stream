@@ -9,10 +9,10 @@ namespace coro {
 // Return a count of elements in **Stream** `source` after applying `function` to each
 // element.
 template<Stream S, class F>
-size_t apply(S&& source, F&& function) {
+size_t apply(S source, F function) {
     size_t count{0};
     for (auto&& value : source) {
-	std::forward<F>(function)(value);
+	function(value);
 	++count;
     }
     return count;
@@ -25,7 +25,7 @@ size_t apply(S&& source, F&& function) {
 template<class F>
 auto apply(F function) {
     return [=]<Stream S>(S&& source) {
-	return apply(std::forward<S>(source), std::move(function));
+	return apply<S>(std::forward<S>(source), std::move(function));
     };
 }
 

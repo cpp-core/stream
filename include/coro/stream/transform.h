@@ -2,15 +2,15 @@
 //
 
 #pragma once
-#include "coro/generator.h"
+#include "coro/stream/util.h"
 
 namespace coro {
 
 // Return a generator that yields the elements from the supplied `generator` transformed
 // by the given function `func` that maps **T** to **U**.
-template<class T, class F, class U = std::result_of_t<F&(T)>>
-Generator<U> transform(Generator<T> generator, F&& func) {
-    for (auto elem : generator)
+template<Stream S, class F, class U = std::result_of_t<F&(stream_value_t<S>)>>
+Generator<U> transform(S source, F&& func) {
+    for (auto&& elem : source)
 	co_yield func(elem);
     co_return;
 }
@@ -22,9 +22,9 @@ Generator<U> transform(Generator<T> generator, F&& func) {
 //
 // *sampler<int>(0, 10) | transform([](int n) { return n + 10; })*
 template<class F>
-auto transform(F func) {
-    return [=]<class G>(G&& g) {
-	return transform(std::move(g), func);
+auto transform(F function) {
+    return [=]<Stream S>(S&& source) {
+	return transform<S>(std::forward<S>(source), std::move(function));
     };
 }
 

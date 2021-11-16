@@ -8,8 +8,8 @@ namespace coro {
 
 // Return a **Stream** that filters the elements from `source` with `predicate`.
 template<Stream S, class P>
-Generator<typename S::value_type> filter(S source, P&& predicate) {
-    for (auto element : source)
+Generator<stream_value_t<S>> filter(S source, P&& predicate) {
+    for (auto&& element : source)
 	if (predicate(element))
 	    co_yield element;
     co_return;
@@ -24,7 +24,7 @@ Generator<typename S::value_type> filter(S source, P&& predicate) {
 template<class P>
 auto filter(P predicate) {
     return [=]<Stream S>(S&& s) {
-	return filter(std::forward<S>(s), predicate);
+	return filter<S>(std::forward<S>(s), predicate);
     };
 }
 

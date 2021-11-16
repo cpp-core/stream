@@ -6,30 +6,6 @@
 
 namespace coro {
 
-// Return an **array<`G`,2>** containing the generators `left` and `right`. This allows
-// for the composition of a pair of generators.
-//
-// *sampler<int>(0,9) + sampler<int>(10,19)*
-template<Stream S>
-auto operator+(S left, S right) {
-    using T = typename std::decay_t<S>::value_type;
-    return std::array<Generator<T>,2>{std::move(left), std::move(right)};
-}
-
-// Return an **array<`G`,`N`+1>** containing the generators from `arr` and the generator
-// `right`. Coupled with pairwise composition, this allows for the composition of any
-// number of generators:
-//
-// *sampler<int>(0,9) & sampler<int>(10,19) & sampler<int>(20,29)*
-template<Stream S, class T, size_t N>
-auto operator+(std::array<T,N> arr, S right) {
-    std::array<T,N+1> arr1;
-    for (auto i = 0; i < N; ++i)
-	arr1[i] = arr[i];
-    arr1[N] = right;
-    return arr1;
-}
-
 // Return a **std::tuple** of the **Stream**'s `l` and `r`.
 //
 // *sampler<int>(0, 10) x sampler<int>(0, 5) | zip() | take(5)* 
@@ -38,12 +14,12 @@ auto operator*(L&& l, R&& r) {
     return std::tuple<L,R>{std::forward<L>(l), std::forward<R>(r)};
 }
 
-// Return a the given **Stream** tuple `ls` with the **Stream** `r` appended.  `g`.
+// Return the **Stream** `r` appended to the tuple of **Stream**'s `ls`.
 //
 // *sampler<int>(0, 10) x sampler<int>(0, 5) x sampler<int>(-10, 0) | zip() | take(5)* 
-template<Stream... Ls, Stream R>
-auto operator*(std::tuple<Ls...>&& ls, R&& r) {
-    return std::tuple_cat(std::move(ls), std::tuple<R>{std::forward<R>(r)});
+template<Stream... Ss, Stream S>
+auto operator*(std::tuple<Ss...>&& tuple, S&& stream) {
+    return std::tuple_cat(std::move(tuple), std::tuple<S>{std::forward<S>(stream)});
 }
 
 // Return the result of applying operation `op` to the **Stream** `s`.
@@ -52,14 +28,6 @@ auto operator*(std::tuple<Ls...>&& ls, R&& r) {
 template<Stream S, class Op>
 auto operator|(S&& s, Op&& op) {
     return op(std::forward<S>(s));
-}
-
-// Return the result of applying operation `op` to the array of streams `arr`.
-//
-// *sampler<int>(0,9) & sampler<int>(10,19) | sequence()*
-template<Stream S, size_t N, class Op>
-auto operator|(std::array<S,N> arr, Op op) {
-    return op(std::move(arr));
 }
 
 // Return the result of applying operation `op` to the tuple of **Stream**'s `tup`.

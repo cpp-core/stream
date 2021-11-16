@@ -9,7 +9,7 @@ namespace coro {
 
 // Return a container **C<T>** with all the elements from **Stream** `source`.
 template<class C, Stream S>
-auto collect(S&& source) {
+auto collect(S source) {
     C c;
     for (auto&& value : source)
 	c.push_back(value);
@@ -24,8 +24,8 @@ auto collect(S&& source) {
 template<template<class...> class C>
 auto collect() {
     return []<Stream S>(S&& s) {
-	using T = typename std::decay_t<S>::value_type;
-	return collect<C<T>>(std::forward<S>(s));
+	using T = stream_value_t<S>;
+	return collect<C<T>, S>(std::forward<S>(s));
     };
 }
 
