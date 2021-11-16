@@ -30,7 +30,7 @@ auto operator+(std::array<T,N> arr, S right) {
     return arr1;
 }
 
-// Return a **tuple<`G`,`H`>** containing the generators `left` and `right`.
+// Return a **std::tuple** of the **Stream**'s `l` and `r`.
 //
 // *sampler<int>(0, 10) x sampler<int>(0, 5) | zip() | take(5)* 
 template<Stream L, Stream R>
@@ -38,8 +38,7 @@ auto operator*(L&& l, R&& r) {
     return std::tuple<L,R>{std::forward<L>(l), std::forward<R>(r)};
 }
 
-// Return a **tuple<...>** containing the generators from `tup` and the generator from
-// `g`.
+// Return a the given **Stream** tuple `ls` with the **Stream** `r` appended.  `g`.
 //
 // *sampler<int>(0, 10) x sampler<int>(0, 5) x sampler<int>(-10, 0) | zip() | take(5)* 
 template<Stream... Ls, Stream R>
@@ -47,7 +46,7 @@ auto operator*(std::tuple<Ls...>&& ls, R&& r) {
     return std::tuple_cat(std::move(ls), std::tuple<R>{std::forward<R>(r)});
 }
 
-// Return the result of applying `op` to the generator `g`.
+// Return the result of applying operation `op` to the **Stream** `s`.
 //
 // *sampler<int>(0, 100) | take(4) | collect<std::vector>()*
 template<Stream S, class Op>
@@ -55,7 +54,7 @@ auto operator|(S&& s, Op&& op) {
     return op(std::forward<S>(s));
 }
 
-// Return the result of applying `op` to the array of generators `arr`.
+// Return the result of applying operation `op` to the array of streams `arr`.
 //
 // *sampler<int>(0,9) & sampler<int>(10,19) | sequence()*
 template<Stream S, size_t N, class Op>
@@ -63,9 +62,9 @@ auto operator|(std::array<S,N> arr, Op op) {
     return op(std::move(arr));
 }
 
-// Return the result of applying `op` to the tuple of generators `tup`.
+// Return the result of applying operation `op` to the tuple of **Stream**'s `tup`.
 //
-// *sampler<int>(0, 10) ^ sampler<int>(0, 5) | zip() | take(5)* 
+// *sampler<int>(0, 10) * sampler<int>(0, 5) | zip() | take(5)* 
 template<class Op, Stream... Ss>
 auto operator|(std::tuple<Ss...>&& tup, Op&& op) {
     return op(std::forward<std::tuple<Ss...>>(tup));

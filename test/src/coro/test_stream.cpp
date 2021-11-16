@@ -23,7 +23,7 @@ TEST(CoroStream, Adapt)
 
 TEST(CoroStream, Alternate)
 {
-    auto g = iota<int>(11) + iota(10, 10) + iota(10, 20) | alternate();
+    auto g = iota<int>(11) * iota(10, 10) * iota(10, 20) | alternate();
     size_t count{0};
     for (auto elem : g) {
 	auto expected = 10 * (count % 3) + count / 3;
@@ -36,11 +36,7 @@ TEST(CoroStream, Alternate)
 TEST(CoroStream, Apply)
 {
     auto count{0};
-    sampler<int>(0, 100)
-	| take(10)
-	| apply([&](int n) {
-	    ++count;
-	});
+    sampler<int>(0, 100) | take(10) | apply([&](int n) { ++count; });
     EXPECT_EQ(count, 10);
 }
 
@@ -103,6 +99,9 @@ TEST(CoroStream, Collect)
 	EXPECT_GE(elem, 0);
 	EXPECT_LE(elem, 100);
     }
+
+    auto vec_copy = vec | collect<std::vector>();
+    EXPECT_EQ(vec, vec_copy);
 }
 
 TEST(CoroStream, Repeat)
@@ -421,22 +420,22 @@ TEST(CoroStream, Unique)
 
 TEST(CoroStream, Zip)
 {
-    // auto g = sampler<int>(-20, +20)
-    // 	* sampler<real>(-1, +1)
-    // 	* sampler<char>('a','z')
-    // 	| zip()
-    // 	| take(NumberSamples);
-    // size_t count{0};
-    // for (const auto& [a, b, c] : g) {
-    // 	++count;
-    // 	EXPECT_GE(a, -20);
-    // 	EXPECT_LE(a, +20);
-    // 	EXPECT_GE(b, -1.0);
-    // 	EXPECT_LE(b, +1.0);
-    // 	EXPECT_GE(c, 'a');
-    // 	EXPECT_LE(c, 'z');
-    // }
-    // EXPECT_EQ(count, NumberSamples);
+    auto g = sampler<int>(-20, +20)
+	* sampler<real>(-1, +1)
+	* sampler<char>('a','z')
+	| zip()
+	| take(NumberSamples);
+    size_t count{0};
+    for (const auto& [a, b, c] : g) {
+	++count;
+	EXPECT_GE(a, -20);
+	EXPECT_LE(a, +20);
+	EXPECT_GE(b, -1.0);
+	EXPECT_LE(b, +1.0);
+	EXPECT_GE(c, 'a');
+	EXPECT_LE(c, 'z');
+    }
+    EXPECT_EQ(count, NumberSamples);
 }
 
 int main(int argc, char *argv[])
