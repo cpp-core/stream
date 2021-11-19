@@ -14,6 +14,7 @@
 #include "coro/stream/iota.h"
 #include "coro/stream/once.h"
 #include "coro/stream/range.h"
+#include "coro/stream/reduce.h"
 #include "coro/stream/repeat.h"
 #include "coro/stream/sampler/all.h"
 #include "coro/stream/sequence.h"

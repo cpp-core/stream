@@ -22,9 +22,9 @@ Generator<U> transform(S source, F&& func) {
 //
 // *sampler<int>(0, 10) | transform([](int n) { return n + 10; })*
 template<class F>
-auto transform(F function) {
-    return [=]<Stream S>(S&& source) {
-	return transform<S>(std::forward<S>(source), std::move(function));
+auto transform(F&& function) {
+    return [f = std::forward<F>(function)]<Stream S>(S&& source) mutable {
+	return transform<S>(std::forward<S>(source), std::forward<F>(f));
     };
 }
 
