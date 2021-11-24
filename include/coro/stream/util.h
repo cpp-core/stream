@@ -33,4 +33,16 @@ concept Stream = requires (T t) {
 template<Stream S>
 using stream_value_t = typename std::decay_t<S>::value_type;
 
+// Requires that `T` has correpsonding free function `getline`.
+template<class T>
+concept Readable = requires (T a, std::string s) {
+    getline(a, s);
+};
+
+// Requires that `T` has member method `write`.
+template<class T>
+concept Writeable = requires (T a, std::string s) {
+    a.write(s.data(), s.size());
+};
+
 }; // coro
