@@ -9,8 +9,9 @@ namespace coro {
 // Return a generator that yields elements from the supplied
 // `container`.
 template<class C>
-Generator<typename std::decay_t<C>::value_type> adapt(const C& container) {
-    for (auto elem : container)
+Generator<std::add_rvalue_reference_t<typename std::decay_t<C>::value_type>>
+adapt(C& container) {
+    for (auto&& elem : container)
 	co_yield elem;
     co_return;
 }
