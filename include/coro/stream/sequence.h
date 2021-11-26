@@ -10,7 +10,7 @@ namespace coro {
 // Return a generator that yields elements from the underlying generators starting with
 // all the elements from the first generator before proceeding to the next generator.
 template<Stream S, Stream... Ss>
-Generator<stream_value_t<S>> sequence(std::tuple<S, Ss...> tup) {
+Generator<stream_value_t<S>&&> sequence(std::tuple<S, Ss...> tup) {
     using core::tp::select_nth, core::tp::mapply;
     auto iterators = mapply([](auto& g) { return g.begin(); }, tup);
     auto end_iters = mapply([](auto& g) { return g.end(); }, tup);

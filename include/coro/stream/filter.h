@@ -8,7 +8,7 @@ namespace coro {
 
 // Return a **Stream** that filters the elements from `source` with `predicate`.
 template<Stream S, class P>
-Generator<stream_value_t<S>> filter(S source, P&& predicate) {
+Generator<stream_value_t<S>&&> filter(S source, P&& predicate) {
     for (auto&& element : source)
 	if (predicate(element))
 	    co_yield element;
