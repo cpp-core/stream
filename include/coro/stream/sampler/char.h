@@ -8,18 +8,18 @@
 namespace coro::chr {
 
 // Return a generator of lowercase alpha characters, i.e. a-z.
-Gen<char> lower();
+Generator<char> lower();
 
 // Return a generator of uppercase alpha characters, i.e. A-Z.
-Gen<char> upper();
+Generator<char> upper();
 
 // Return a generator of alpha characters, i.e a-z or A-Z.
-Gen<char> alpha();
+Generator<char> alpha();
 
 // Return a generator of alpha-numeric characters, i.e. a-z or A-Z or 0-9.
-Gen<char> alphanum();
+Generator<char> alphanum();
 
 // Return a generator of hex digits, i.e. 0-9 or a-f, or if upper is true 0-9 or A-F.
-Gen<char> hex(bool upper = false);
+Generator<char> hex(bool upper = false);
 
 }; // costr

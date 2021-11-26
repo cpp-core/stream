@@ -5,15 +5,15 @@
 
 namespace coro::chr {
 
-Gen<char> lower() {
+Generator<char> lower() {
     return sampler<char>('a', 'z');
 }
 
-Gen<char> upper() {
+Generator<char> upper() {
     return sampler<char>('A', 'Z');
 }
 
-Gen<char> alpha() {
+Generator<char> alpha() {
     size_t count = 52;
     auto g = sampler<int>(0, count - 1);
     while (true) {
@@ -24,7 +24,7 @@ Gen<char> alpha() {
     co_return;
 }
 
-Gen<char> alphanum() {
+Generator<char> alphanum() {
     size_t count = 62;
     auto g = sampler<int>(0, count - 1);
     while (true) {
@@ -36,7 +36,7 @@ Gen<char> alphanum() {
     co_return;
 }
 
-Gen<char> hex(bool upper) {
+Generator<char> hex(bool upper) {
     size_t count = 16;
     auto g = sampler<int>(0, count - 1);
     char alpha = upper ? 'A' : 'a';
