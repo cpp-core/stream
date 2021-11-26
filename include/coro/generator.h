@@ -74,13 +74,13 @@ public:
 	final_awaiter final_suspend() noexcept { return {}; }
 
 	// Record the address of the yieled value.
-	always yield_value(Reference&& v) noexcept {
+	always yield_value(std::remove_reference_t<reference_type>&& v) noexcept {
 	    root_or_leaf_->value_ = std::addressof(v);
 	    return {};
 	}
 
 	// Record the address of the yielded value.
-	always yield_value(Reference& v) noexcept {
+	always yield_value(std::remove_reference_t<reference_type>& v) noexcept {
 	    root_or_leaf_->value_ = std::addressof(v);
 	    return {};
 	}
