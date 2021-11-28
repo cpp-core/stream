@@ -15,16 +15,25 @@ struct stream_traits : public std::false_type { };
 template<class T, class U>
 struct stream_traits<Generator<T, U>> : public std::true_type {
     using value_type = typename Generator<T,U>::value_type;
+    using yield_type = typename Generator<T,U>::reference_type;
 };
 
 template<class T>
 struct stream_traits<std::vector<T>> : public std::true_type {
     using value_type = T;
+    using yield_type = T&&;
+};
+
+template<class T>
+struct stream_traits<const std::vector<T>> : public std::true_type {
+    using value_type = T;
+    using yield_type = const T&;
 };
 
 template<class T>
 struct stream_traits<core::Fixed<std::vector<T>>> : public std::true_type {
     using value_type = T;
+    using yield_type = T&&;
 };
 
 // Evaluates to true if class `T` has a **stream_traits** specialization.
@@ -33,7 +42,10 @@ constexpr bool has_stream_traits = stream_traits<std::decay_t<T>>::value;
 
 // Evaluates to the **value_type** of **Stream** `T`.
 template<class T>
-using stream_value_t = typename stream_traits<std::decay_t<T>>::value_type;
+using stream_value_t = typename stream_traits<std::remove_reference_t<T>>::value_type;
+
+template<class T>
+using stream_yield_t = typename stream_traits<std::remove_reference_t<T>>::yield_type;
 
 // The **Stream** concept defines the necessary shape for a class to
 // interoperate as a stream.

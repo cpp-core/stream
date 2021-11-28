@@ -34,7 +34,7 @@ TEST(CoroStreamModify, Adapt)
     for (auto i = 0; i < NumberSamples; ++i) {
 	auto [data, expected] = env->sample_pair();
 	EXPECT_NE(data, expected);
-    
+
 	adapt(data) | apply([](int& n) { n *= 2; });
 	EXPECT_EQ(data, expected);
     }
