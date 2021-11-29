@@ -56,6 +56,24 @@ TEST(CoroStreamUtil, CompatibleType)
     StaticAssertTypeEq<t4, int&>();
 }
 
+TEST(CoroStreamUtil, StreamsYieldType)
+{
+    using s0 = Generator<int&>;
+    using s1 = Generator<const int&>;
+    
+    using t0 = streams_yield_t<s0, s0>;
+    StaticAssertTypeEq<t0, int&>();
+    
+    using t1 = streams_yield_t<s1, s1>;
+    StaticAssertTypeEq<t1, const int&>();
+    
+    using t1a = streams_yield_t<s1, s0>;
+    StaticAssertTypeEq<t1a, const int&>();
+    
+    using t1b = streams_yield_t<s0, s1>;
+    StaticAssertTypeEq<t1b, const int&>();
+}
+
 int main(int argc, char *argv[])
 {
     ::testing::InitGoogleTest(&argc, argv);

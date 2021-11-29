@@ -35,8 +35,11 @@ TEST(CoroStreamTypes, Choose)
     auto h = adapt(cvec) * adapt(cvec) | choose();
     EXPECT_TRUE((std::is_same_v<decltype(h), Generator<const int&, int>>));
 
-    // auto h2 = adapt(vec) * adapt(cvec) | choose();
-    // EXPECT_TRUE((std::is_same_v<decltype(h), Generator<const int&, int>>));
+    auto h2 = adapt(cvec) * adapt(vec) | choose();
+    EXPECT_TRUE((std::is_same_v<decltype(h2), Generator<const int&, int>>));
+
+    auto h3 = adapt(vec) * adapt(cvec) | choose();
+    EXPECT_TRUE((std::is_same_v<decltype(h3), Generator<const int&, int>>));
 }
 
 TEST(CoroStreamTypes, Filter)

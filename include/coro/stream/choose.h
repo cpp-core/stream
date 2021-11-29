@@ -2,6 +2,7 @@
 //
 
 #pragma once
+#include <tuple>
 #include "coro/stream/util.h"
 #include "coro/stream/sampler/integral.h"
 #include "core/tuple/apply.h"
@@ -10,28 +11,40 @@
 
 namespace coro {
 
+#define APPLY_NTH(Idx)						\
+    if constexpr (std::tuple_size<decltype(tup)>() > Idx) {	\
+	if (idx == Idx) {					\
+	    auto& iter = std::get<Idx>(iterators);		\
+	    auto& end = std::get<Idx>(end_iters);		\
+	    if (iter != end) {					\
+		co_yield *iter;					\
+		++iter;						\
+	    }							\
+	}							\
+    }
+
+
 // Return a **Stream** that randomly chooses elements from the **Stream**s in `tup` until
 // all **Stream** are exhausted.
 template<Stream S, Stream... Ss>
-Generator<stream_yield_t<S>> choose(std::tuple<S, Ss...> tup) {
+Generator<streams_yield_t<S, Ss...>> choose(std::tuple<S, Ss...> tup) {
+    static_assert(sizeof...(Ss) < 5);
     auto r = sampler<int>(0, sizeof...(Ss));
     using namespace core::tp;
     auto iterators = mapply([](auto& g) { return g.begin(); }, tup);
     auto end_iters = mapply([](auto& g) { return g.end(); }, tup);
     while (any(map_n([](auto& iter, auto& end) { return iter != end; }, iterators, end_iters))) {
-	while (true) {
-	    auto idx = r.sample();
-	    auto& iter = select_nth(iterators, idx);
-	    auto& end = select_nth(end_iters, idx);
-	    if (iter != end) {
-		co_yield *iter;
-		++iter;
-		break;
-	    }
-	}
+	auto idx = r.sample();
+	APPLY_NTH(0);
+	APPLY_NTH(1);
+	APPLY_NTH(2);
+	APPLY_NTH(3);
+	APPLY_NTH(4);
     }
     co_return;
 }
+
+#undef APPLY_NTH
 
 // Choose values randomly from a tuple of **Stream**s.
 //
