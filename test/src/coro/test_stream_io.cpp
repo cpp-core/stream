@@ -41,7 +41,7 @@ public:
     }
     
     std::string dir_;
-    Generator<std::vector<std::string>> generator_;
+    Generator<std::vector<std::string>&&> generator_;
 };
 
 Environment *env{nullptr};

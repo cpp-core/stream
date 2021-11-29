@@ -9,7 +9,7 @@ namespace coro {
 // Return a generator that yields the first `count` elements (or until
 // exhaustion) from the supplied `generator`.
 template<Stream S>
-Generator<stream_value_t<S>&&> take(S source, size_t count) {
+Generator<stream_yield_t<S>> take(S source, size_t count) {
     if (count > 0) {
 	for (auto&& elem : source) {
 	    co_yield elem;

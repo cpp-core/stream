@@ -21,7 +21,7 @@ struct stream_traits<Generator<T, U>> : public std::true_type {
 template<class T>
 struct stream_traits<std::vector<T>> : public std::true_type {
     using value_type = T;
-    using yield_type = T&&;
+    using yield_type = T&;
 };
 
 template<class T>
@@ -33,7 +33,7 @@ struct stream_traits<const std::vector<T>> : public std::true_type {
 template<class T>
 struct stream_traits<core::Fixed<std::vector<T>>> : public std::true_type {
     using value_type = T;
-    using yield_type = T&&;
+    using yield_type = T&;
 };
 
 // Evaluates to true if class `T` has a **stream_traits** specialization.

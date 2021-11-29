@@ -13,7 +13,7 @@ namespace coro {
 // Return a **Stream** that randomly chooses elements from the **Stream**s in `tup` until
 // all **Stream** are exhausted.
 template<Stream S, Stream... Ss>
-Generator<stream_value_t<S>&&> choose(std::tuple<S, Ss...> tup) {
+Generator<stream_yield_t<S>> choose(std::tuple<S, Ss...> tup) {
     auto r = sampler<int>(0, sizeof...(Ss));
     using namespace core::tp;
     auto iterators = mapply([](auto& g) { return g.begin(); }, tup);

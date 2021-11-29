@@ -2,7 +2,7 @@
 //
 
 #pragma once
-#include "coro/generator.h"
+#include "coro/stream/util.h"
 #include "core/tuple/from_vector.h"
 #include "core/tuple/generate.h"
 
@@ -11,11 +11,12 @@ namespace coro {
 // Return a generator that yields **std::tuple<`T`,..>**'s with arity
 // `N`. The generator groups elements yielded from the supplied
 // `generator` into `N`-tuples and yields them.
-template<size_t N, class T>
-Generator<core::tp::generate_t<T, N>> group_tuple(Generator<T> generator) {
+template<size_t N, Stream S>
+Generator<core::tp::generate_t<stream_value_t<S>, N>&&> group_tuple(S source) {
+    using T = stream_value_t<S>;
     std::vector<T> data;
-    while (generator.next()) {
-	data.push_back(generator());
+    for (auto&& elem : source) {
+	data.push_back(elem);
 	if (data.size() == N) {
 	    co_yield core::tp::from_vector<T,N>(data);
 	    data.clear();

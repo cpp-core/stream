@@ -12,7 +12,7 @@ namespace coro {
 // Return a **Stream** that returns elements in a round-robin fashion from the given tuple
 // of **Stream**'s `tup` until all are exhausted.
 template<Stream S, Stream... Ss>
-Generator<stream_value_t<S>> alternate(std::tuple<S, Ss...> tup) {
+Generator<const stream_value_t<S>&> alternate(std::tuple<S, Ss...> tup) {
     using namespace core::tp;
     using value_type = stream_value_t<S>;
     

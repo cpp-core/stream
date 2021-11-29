@@ -12,7 +12,7 @@ namespace coro {
 // supplied **Generator<size_t>**`gsize`, the generator yields a vector of `T` with count
 // elements yielded from the supplied **Generator<`T`>** `generator`.
 template<Stream S, Stream R>
-Generator<std::vector<stream_value_t<S>>> group(S source, R sizer) {
+Generator<std::vector<stream_value_t<S>>&&> group(S source, R sizer) {
     std::vector<stream_value_t<S>> data;
     auto iter = std::begin(source);
     auto end = std::end(source);
