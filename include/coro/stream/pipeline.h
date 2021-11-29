@@ -10,13 +10,13 @@
 
 namespace coro {
 
-template<class T>
-Generator<T> pipeline(Generator<T> source) {
+template<Stream S>
+Generator<stream_value_t<S>&&> pipeline(S source) {
     namespace ring = core::mt::ring;
     
     const size_t buffer_size = 256;
     std::atomic<ring::sequence_t> final_idx{ring::FinalSequence};
-    ring::Ring<T> data{buffer_size};
+    ring::Ring<stream_value_t<S>> data{buffer_size};
     ring::Processor<ring::SingleThreadClaimStrategy> producer{buffer_size};
     ring::Processor<ring::SingleThreadClaimStrategy> consumer{buffer_size};
     producer.add_write_barrier(consumer.cursor());

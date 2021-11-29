@@ -15,7 +15,7 @@ namespace coro {
 // containing an element from each of the underlying generators. As many tuples will be
 // yielded as the least number of elements yielded from an underlying generator.
 template<Stream S, Stream... Ss>
-Generator<std::tuple<stream_value_t<S>,stream_value_t<Ss>...>> zip(std::tuple<S, Ss...> tup) {
+Generator<std::tuple<stream_value_t<S>,stream_value_t<Ss>...>&&> zip(std::tuple<S, Ss...> tup) {
     using namespace core;
     using tp::mapply, tp::map, tp::apply, tp::map_n, tp::all;
     auto iterators = mapply([](auto& g) { return g.begin(); }, tup);

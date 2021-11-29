@@ -17,7 +17,7 @@ Generator<std::vector<stream_value_t<S>>&&> group(S source, R sizer) {
     auto iter = std::begin(source);
     auto end = std::end(source);
     
-    for (auto&& count : sizer) {
+    for (auto count : sizer) {
 	while (count > 0 and iter != end) {
 	    data.push_back(*iter);
 	    ++iter;

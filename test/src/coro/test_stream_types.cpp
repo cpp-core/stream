@@ -72,6 +72,29 @@ TEST(CoroStreamTypes, Iota)
     EXPECT_TRUE((std::is_same_v<decltype(g), Generator<const int&>>));
 }
 
+TEST(CoroStreamTypes, Once)
+{
+    auto g = once(3);
+    EXPECT_TRUE((std::is_same_v<decltype(g), Generator<int&&>>));
+}
+
+TEST(CoroStreamTypes, Range)
+{
+    auto g = range(0, 10, 2);
+    EXPECT_TRUE((std::is_same_v<decltype(g), Generator<const int&>>));
+}
+
+TEST(CoroStreamTypes, Reduce)
+{
+    // TODO
+}
+
+TEST(CoroStreamTypes, Repeat)
+{
+    auto g = repeat(10, 10);
+    EXPECT_TRUE((std::is_same_v<decltype(g), Generator<const int&>>));
+}
+
 TEST(CoroStreamTypes, Sequence)
 {
     auto g =  vec * vec | sequence();
@@ -92,6 +115,40 @@ TEST(CoroStreamTypes, Take)
     auto h =  cvec | take(10);
     EXPECT_TRUE((std::is_same_v<decltype(h), Generator<const int&>>));
 }
+
+TEST(CoroStreamTypes, Transform)
+{
+    auto g = vec | transform([](const int& v) { return fmt::format("{}", v); });
+    EXPECT_TRUE((std::is_same_v<decltype(g), Generator<std::string&&>>));
+    
+    auto h = cvec | transform([](const int& v) { return fmt::format("{}", v); });
+    EXPECT_TRUE((std::is_same_v<decltype(h), Generator<std::string&&>>));
+}
+
+TEST(CoroStreamTypes, Unique)
+{
+    auto g = vec | unique([](const int& value) { return value; });
+    EXPECT_TRUE((std::is_same_v<decltype(g), Generator<int&>>));
+    
+    auto h = cvec | unique([](const int& value) { return value; });
+    EXPECT_TRUE((std::is_same_v<decltype(h), Generator<const int&>>));
+}
+
+TEST(CoroStreamTypes, Zip)
+{
+    auto g =  vec * vec | zip();
+    EXPECT_TRUE((std::is_same_v<decltype(g), Generator<std::tuple<int,int>&&>>));
+    
+    auto h =  cvec * cvec | zip();
+    EXPECT_TRUE((std::is_same_v<decltype(h), Generator<std::tuple<int,int>&&>>));
+    
+    auto h2 =  vec * cvec | zip();
+    EXPECT_TRUE((std::is_same_v<decltype(h2), Generator<std::tuple<int,int>&&>>));
+    
+    auto h3 =  cvec * vec | zip();
+    EXPECT_TRUE((std::is_same_v<decltype(h3), Generator<std::tuple<int,int>&&>>));
+}
+
 
 int main(int argc, char *argv[])
 {

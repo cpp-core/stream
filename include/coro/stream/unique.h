@@ -10,7 +10,7 @@ namespace coro {
 // Return a generator that yields the elements from the supplied `generator` filtering
 // them to be unique with respect to the given `key` function.
 template<Stream S, class F>
-Generator<stream_value_t<S>> unique(S source, F key) {
+Generator<stream_yield_t<S>> unique(S source, F key) {
     using T = stream_value_t<S>;
     using K = std::result_of_t<F(T)>;
     std::set<K> s;

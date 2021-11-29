@@ -47,6 +47,37 @@ using stream_value_t = typename stream_traits<std::remove_reference_t<T>>::value
 template<class T>
 using stream_yield_t = typename stream_traits<std::remove_reference_t<T>>::yield_type;
 
+namespace detail {
+template<class T, bool l, bool r, bool c>
+struct compatible_type_helper;
+
+template<class T, bool r, bool c>
+struct compatible_type_helper<T, true, r, c> {
+    using type = std::conditional_t<c, const T&, T&>;
+};
+
+template<class T, bool c>
+struct compatible_type_helper<T, false, true, c> {
+    using type = std::conditional_t<c, const T&&, T&&>;
+};
+
+}; // detail
+
+template<class... Ts>
+struct compatible_type {
+    using T = std::common_type_t<Ts...>;
+    static constexpr bool l = (std::is_lvalue_reference_v<Ts> || ...);
+    static constexpr bool r = (std::is_rvalue_reference_v<Ts> || ...);
+    static constexpr bool c = (std::is_const_v<std::remove_reference_t<Ts>> || ...);
+    using type = typename detail::compatible_type_helper<T, l, r, c>::type;
+};
+
+template<class... Ts>
+using compatible_type_t = typename compatible_type<Ts...>::type;
+
+template<class... Ss>
+using streams_yield_t = compatible_type_t<stream_yield_t<Ss>...>;
+
 // The **Stream** concept defines the necessary shape for a class to
 // interoperate as a stream.
 template<class T>

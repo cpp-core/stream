@@ -8,7 +8,7 @@ namespace coro {
 
 // Return a generator that yields `value` exactly once.
 template<class T>
-Generator<T> once(T value) {
+Generator<T&&> once(T value) {
     co_yield value;
     co_return;
 }
