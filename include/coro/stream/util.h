@@ -51,6 +51,11 @@ namespace detail {
 template<class T, bool l, bool r, bool c>
 struct compatible_type_helper;
 
+template<class T, bool c>
+struct compatible_type_helper<T, false, false, c> {
+    using type = std::conditional_t<c, const T, T>;
+};
+
 template<class T, bool r, bool c>
 struct compatible_type_helper<T, true, r, c> {
     using type = std::conditional_t<c, const T&, T&>;

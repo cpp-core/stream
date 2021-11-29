@@ -15,7 +15,7 @@ namespace coro {
     if constexpr (std::tuple_size<decltype(tup)>() > Idx) {	\
 	if (idx == Idx) {					\
 	    auto& iter = std::get<Idx>(iterators);		\
-	    auto& end = std::get<Idx>(end_iters);		\
+	    auto& end = std::get<Idx>(sentinels);		\
 	    if (iter != end) {					\
 		co_yield *iter;					\
 		++iter;						\
@@ -32,8 +32,8 @@ Generator<streams_yield_t<S, Ss...>> choose(std::tuple<S, Ss...> tup) {
     auto r = sampler<int>(0, sizeof...(Ss));
     using namespace core::tp;
     auto iterators = mapply([](auto& g) { return g.begin(); }, tup);
-    auto end_iters = mapply([](auto& g) { return g.end(); }, tup);
-    while (any(map_n([](auto& iter, auto& end) { return iter != end; }, iterators, end_iters))) {
+    auto sentinels = mapply([](auto& g) { return g.end(); }, tup);
+    while (any(map_n([](auto& iter, auto& end) { return iter != end; }, iterators, sentinels))) {
 	auto idx = r.sample();
 	APPLY_NTH(0);
 	APPLY_NTH(1);

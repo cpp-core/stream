@@ -106,8 +106,8 @@ TEST(CoroStreamTypes, Sequence)
     auto h =  cvec * cvec | sequence();
     EXPECT_TRUE((std::is_same_v<decltype(h), Generator<const int&>>));
     
-    // auto h2 =  vec * cvec | sequence();
-    // EXPECT_TRUE((std::is_same_v<decltype(h2), Generator<const int&>>));
+    auto h2 =  vec * cvec | sequence();
+    EXPECT_TRUE((std::is_same_v<decltype(h2), Generator<const int&>>));
 }
 
 TEST(CoroStreamTypes, Take)
