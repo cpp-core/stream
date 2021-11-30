@@ -50,7 +50,7 @@ void write_lines(Stream auto source, core::File file) {
     else write_lines_plain(std::move(source), file);
 }
 
-auto write_lines(core::File file) {
+inline auto write_lines(core::File file) {
     return [=]<Stream S>(S&& source) {
 	return write_lines(std::forward<S>(source), file);
     };
