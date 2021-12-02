@@ -16,10 +16,10 @@ auto find_timepoint(Strand *s, TimePoint vtp, TimePoint rtp) {
 	    return std::make_pair(true, state.tp);
 	},
 	 [&](const Yield::ResumeAfter& state) {
-	     return std::make_pair(true, TimePoint{vtp + state.duration});
+	     return std::make_pair(true, vtp + state.duration);
 	 },
 	 [&](const Yield::ResumeAfterReal& state) {
-	     return std::make_pair(false, TimePoint{rtp + state.duration});
+	     return std::make_pair(false, rtp + state.duration);
 	 },
 	 [&](const Yield::Resume& state) {
 	     return std::make_pair(true, vtp);
