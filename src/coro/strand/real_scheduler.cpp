@@ -7,16 +7,16 @@
 
 namespace coros {
 
-static auto find_timepoint(Strand *s, chron::TimeInNanos tp) {
+static auto find_timepoint(Strand *s, chron::TimePoint tp) {
     return core::match
 	(s->state(),
 	 [&](const Yield::ResumeAt& state) { return state.tp; },
-	 [&](const Yield::ResumeAfter& state) { return tp + state.duration; },
-	 [&](const Yield::ResumeAfterReal& state) { return tp + state.duration; },
+	 [&](const Yield::ResumeAfter& state) { return chron::TimePoint{tp + state.duration}; },
+	 [&](const Yield::ResumeAfterReal& state) { return chron::TimePoint{tp + state.duration};},
 	 [&](const Yield::Resume& state) { return tp; },
 	 [&](const auto& state) { 
 	     throw core::runtime_error("Invalid initial runnable state: {}", state);
-	     return chron::TimeInNanos::max();
+	     return chron::TimePoint::max();
 	 });
 }
 
@@ -48,7 +48,7 @@ bool RealScheduler::run_group(Strands& strands) {
 			set_eptr(state.eptr);
 		    },
 		    [&](const Yield::Finished&) {
-			s->next_runtime() = chron::TimeInNanos::max();
+			s->next_runtime() = chron::TimePoint::max();
 		    },
 		    [&](const Yield::Resume&) {
 			s->next_runtime() = s->last_runtime();

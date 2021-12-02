@@ -10,7 +10,7 @@ namespace coros
 
 class LowResYield {
 public:
-    LowResYield(const LowResClock& clock, chron::InNanos period)
+    LowResYield(const LowResClock& clock, chron::nanos period)
 	: clock_(clock)
 	, period_(period)
 	, next_(clock_.now() + period_) {
@@ -33,8 +33,8 @@ public:
     
 private:
     const LowResClock& clock_;
-    chron::InNanos period_;
-    chron::TimeInNanos next_;
+    chron::nanos period_;
+    chron::TimePoint next_;
 };
 
 }; // coros

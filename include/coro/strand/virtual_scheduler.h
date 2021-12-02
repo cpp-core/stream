@@ -8,9 +8,9 @@ namespace coros {
 
 class VirtualScheduler : public Scheduler {
 public:
-    VirtualScheduler(chron::TimeInNanos start = chron::TimeInNanos{},
-		     chron::TimeInNanos end = chron::TimeInNanos::max(),
-		     chron::InNanos resolution = 1ms)
+    VirtualScheduler(chron::TimePoint start = chron::TimePoint{},
+		     chron::TimePoint end = chron::TimePoint::max(),
+		     chron::nanos resolution = chron::millis{1})
 	: Scheduler(Mode::Virtual, start, end, resolution) {
     }
 

@@ -10,7 +10,7 @@ namespace coros
 
 class TimeMarker {
 public:
-    TimeMarker(chron::TimeInNanos tp, Scheduler& scheduler)
+    TimeMarker(chron::TimePoint tp, Scheduler& scheduler)
 	: tp_(tp)
 	, scheduler_(scheduler) {
     }
@@ -27,7 +27,7 @@ public:
     }
 	
 private:
-    chron::TimeInNanos tp_;
+    chron::TimePoint tp_;
     Scheduler& scheduler_;
 };
 

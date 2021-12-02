@@ -14,16 +14,16 @@ public:
     using Mode = LowResClock::Mode;
     
     struct StrandPriority {
-	constexpr bool operator()(const Strand *l, const Strand *r) const {
+	bool operator()(const Strand *l, const Strand *r) const {
 	    return l->next_runtime() > r->next_runtime();
 	};
     };
     using RunQueue = std::priority_queue<Strand*, std::vector<Strand*>, StrandPriority>;
     
     Scheduler(Mode mode,
-	      chron::TimeInNanos start,
-	      chron::TimeInNanos end,
-	      chron::InNanos resolution)
+	      chron::TimePoint start,
+	      chron::TimePoint end,
+	      chron::nanos resolution)
 	: clock_(mode, resolution) 
 	, start_(start)
 	, end_(end) {
@@ -40,15 +40,15 @@ public:
     
     void stop() { set_done(); }
     bool done() const { return done_; }
-    bool fast_forward(chron::TimeInNanos tp);
+    bool fast_forward(chron::TimePoint tp);
 
     const std::exception_ptr& eptr() const { return exception_ptr_; }
 
     const LowResClock& clock() const { return clock_; }
     LowResClock& clock() { return clock_; }
     
-    chron::TimeInNanos virtual_now() const { return clock_.virtual_now(); }
-    chron::TimeInNanos now() const { return clock_.now(); }
+    chron::TimePoint virtual_now() const { return clock_.virtual_now(); }
+    chron::TimePoint now() const { return clock_.now(); }
     
     Strand::Profiles profiles() const;
 
@@ -77,17 +77,17 @@ public:
     }
     
     template<class L> requires StrandLambda<L>
-    auto& at_time(chron::TimeInNanos tp, L&& lambda) {
+    auto& at_time(chron::TimePoint tp, L&& lambda) {
 	return on_loop(Yield::ResumeAt{tp}, std::forward<L>(lambda));
     }
 
     template<class L> requires StrandLambda<L>
-    auto& after_duration(chron::InNanos duration, L&& lambda) {
+    auto& after_duration(chron::nanos duration, L&& lambda) {
 	return on_loop(Yield::ResumeAfter{duration}, std::forward<L>(lambda));
     }
 
     template<class L> requires StrandLambda<L>
-    auto& after_duration_wallclock(chron::InNanos duration, L&& lambda) {
+    auto& after_duration_wallclock(chron::nanos duration, L&& lambda) {
 	return on_loop(Yield::ResumeAfterReal{duration}, std::forward<L>(lambda));
     }
 
@@ -135,7 +135,7 @@ private:
     SetupFunctors setup_;
     TearDownFunctors tear_down_;
     LowResClock clock_;
-    chron::TimeInNanos start_, end_;
+    chron::TimePoint start_, end_;
 };
 
 using SchedulerPtr = std::unique_ptr<Scheduler>;

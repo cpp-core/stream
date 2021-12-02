@@ -16,7 +16,7 @@ public:
     
     struct Profile {
 	size_t calls{0};
-	chron::InNanos time{0};
+	chron::nanos time{0};
     };
     using Profiles = std::vector<Profile>;
     
@@ -84,7 +84,7 @@ public:
 
     auto clock() { return ++clock_; }
 
-    void update(chron::TimeInNanos start_tp, chron::TimeInNanos end_tp) {
+    void update(chron::TimePoint start_tp, chron::TimePoint end_tp) {
 	last_runtime() = end_tp;
 	++profile_.calls;
 	profile_.time += end_tp - start_tp;
@@ -93,8 +93,8 @@ public:
 private:
     inline static size_t clock_{0};
     Handle coro_;
-    chron::TimeInNanos last_;
-    chron::TimeInNanos next_;
+    chron::TimePoint last_;
+    chron::TimePoint next_;
     Profile profile_;
 };
 

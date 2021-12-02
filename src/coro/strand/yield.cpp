@@ -3,6 +3,7 @@
 
 #include "coro/strand/yield.h"
 #include "core/utility/match.h"
+#include "core/chrono/duration.h"
 
 namespace coros
 {

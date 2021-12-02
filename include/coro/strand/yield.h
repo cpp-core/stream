@@ -13,9 +13,9 @@ struct Yield {
     struct Exception { std::exception_ptr eptr; };
     struct Finished {};
     struct Resume {};
-    struct ResumeAfter { chron::InNanos duration; };
-    struct ResumeAfterReal { chron::InNanos duration; };
-    struct ResumeAt { chron::TimeInNanos tp; };
+    struct ResumeAfter { chron::nanos duration; };
+    struct ResumeAfterReal { chron::nanos duration; };
+    struct ResumeAt { chron::TimePoint tp; };
     struct Shutdown {};
     struct Suspend {};
     struct Terminate {};

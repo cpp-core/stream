@@ -8,9 +8,9 @@ namespace coros {
 
 class RealScheduler : public Scheduler {
 public:
-    RealScheduler(chron::TimeInNanos start = chron::TimeInNanos{},
-		  chron::TimeInNanos end = chron::TimeInNanos::max(),
-		  chron::InNanos resolution = 1ms)
+    RealScheduler(chron::TimePoint start = chron::TimePoint{},
+		  chron::TimePoint end = chron::TimePoint::max(),
+		  chron::nanos resolution = chron::millis{1})
 	: Scheduler(Mode::RealTime, start, end, resolution) {
     }
 

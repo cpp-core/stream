@@ -7,7 +7,7 @@
 namespace coros
 {
 
-bool Scheduler::fast_forward(chron::TimeInNanos tp) {
+bool Scheduler::fast_forward(chron::TimePoint tp) {
     if (clock().mode() == Mode::RealTime)
 	return true;
     if (tasks().empty() or tp < tasks().top()->next_runtime()) {

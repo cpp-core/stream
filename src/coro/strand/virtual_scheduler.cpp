@@ -5,26 +5,28 @@
 #include "coro/strand/virtual_scheduler.h"
 #include "core/utility/match.h"
 
+using namespace chron;
+
 namespace coros {
 
-auto find_timepoint(Strand *s, chron::TimeInNanos vtp, chron::TimeInNanos rtp) {
+auto find_timepoint(Strand *s, TimePoint vtp, TimePoint rtp) {
     return core::match
 	(s->state(),
 	 [&](const Yield::ResumeAt& state) {
 	    return std::make_pair(true, state.tp);
 	},
 	 [&](const Yield::ResumeAfter& state) {
-	     return std::make_pair(true, vtp + state.duration);
+	     return std::make_pair(true, TimePoint{vtp + state.duration});
 	 },
 	 [&](const Yield::ResumeAfterReal& state) {
-	     return std::make_pair(false, rtp + state.duration);
+	     return std::make_pair(false, TimePoint{rtp + state.duration});
 	 },
 	 [&](const Yield::Resume& state) {
 	     return std::make_pair(true, vtp);
 	 },
 	 [&](const auto& state) {
 	     throw core::runtime_error("Invalid initial state: {}", state);
-	     return std::make_pair(true, chron::TimeInNanos::max());
+	     return std::make_pair(true, TimePoint::max());
 	 });
 }
 
@@ -70,7 +72,7 @@ bool VirtualScheduler::run_group(Strands& strands) {
 			set_eptr(state.eptr);
 		    },
 		    [&](const Yield::Finished&) {
-			s->next_runtime() = chron::TimeInNanos::max();
+			s->next_runtime() = TimePoint::max();
 		    },
 		    [&](const Yield::Resume&) {
 			s->next_runtime() = virtual_now() + 1ns;
