@@ -1,4 +1,4 @@
-// Copyright (C) 2021 by Mark Melton
+// Copyright (C) 2021, 2022 by Mark Melton
 //
 
 #include "coro/stream/sampler/string.h"
@@ -39,6 +39,10 @@ coro::Generator<string> alpha(size_t min, size_t max) {
 
 coro::Generator<string> alphanum(size_t min, size_t max) {
     return Sampler<string>{}(sampler<size_t>(min, max), chr::alphanum());
+}
+
+coro::Generator<string> decimal(size_t min, size_t max) {
+    return Sampler<string>{}(sampler<size_t>(min, max), chr::decimal());
 }
 
 coro::Generator<string> hex(bool upper, size_t min, size_t max) {

@@ -1,4 +1,4 @@
-// Copyright 2021 by Mark Melton
+// Copyright 2021, 2022 by Mark Melton
 //
 
 #pragma once
@@ -18,6 +18,9 @@ Generator<char> alpha();
 
 // Return a generator of alpha-numeric characters, i.e. a-z or A-Z or 0-9.
 Generator<char> alphanum();
+
+// Return a generator of decimal digits, i.e. 0-9.
+Generator<char> decimal();
 
 // Return a generator of hex digits, i.e. 0-9 or a-f, or if upper is true 0-9 or A-F.
 Generator<char> hex(bool upper = false);

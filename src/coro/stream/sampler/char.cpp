@@ -1,4 +1,4 @@
-// Copyright (C) 2021 by Mark Melton
+// Copyright (C) 2021, 2022 by Mark Melton
 //
 
 #include "coro/stream/sampler/char.h"
@@ -32,6 +32,18 @@ Generator<char> alphanum() {
 	if (idx < 26) co_yield 'a' + idx;
 	else if (idx < 52) co_yield 'A' + (idx - 26);
 	else co_yield '0' + (idx - 52);
+    }
+    co_return;
+}
+
+Generator<char> decimal() {
+    size_t count = 10;
+    auto g = sampler<int>(0, count - 1);
+    char alpha = '0';
+    
+    while (true) {
+	auto idx = g.sample();
+	co_yield alpha + idx;
     }
     co_return;
 }

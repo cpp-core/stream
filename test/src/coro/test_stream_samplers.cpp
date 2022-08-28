@@ -1,4 +1,4 @@
-// Copyright 2021 by Mark Melton
+// Copyright 2021, 2022 by Mark Melton
 //
 
 #include <gtest/gtest.h>
@@ -41,6 +41,11 @@ TEST(CoroStream, Char)
 	auto dec = elem >= '0' and elem <= '9';
 	auto alpha = elem >= 'a' and elem <= 'f';
 	EXPECT_TRUE(dec or alpha);
+    }
+
+    for (auto elem : chr::decimal() | take(NumberSamples)) {
+	auto dec = elem >= '0' and elem <= '9';
+	EXPECT_TRUE(dec);
     }
 
     for (auto elem : chr::hex(true) | take(NumberSamples)) {
@@ -112,6 +117,14 @@ TEST(CoroStream, String)
 	    EXPECT_TRUE(std::isalnum(c));
     }
 
+    for (auto str : str::decimal() | take(16)) {
+	EXPECT_LE(str.size(), 20);
+	for (auto c : str) {
+	    auto dec = c >= '0' and c <= '9';
+	    EXPECT_TRUE(dec);
+	}
+    }
+    
     for (auto str : str::hex() | take(16)) {
 	EXPECT_LE(str.size(), 20);
 	for (auto c : str) {

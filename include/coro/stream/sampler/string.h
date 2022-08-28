@@ -1,4 +1,4 @@
-// Copyright 2021 by Mark Melton
+// Copyright 2021, 2022 by Mark Melton
 //
 
 #pragma once
@@ -29,6 +29,9 @@ coro::Generator<string> alpha(size_t min = 0, size_t max = 20);
 
 // Return a generator of alpha-numeric strings with size in the range (min,max).
 coro::Generator<string> alphanum(size_t min = 0, size_t max = 20);
+
+// Return a generator of decimal strings with size in the range (min,max).
+coro::Generator<string> decimal(size_t min = 0, size_t max = 20);
 
 // Return a generator of hex strings with size in the range (min,max).
 coro::Generator<string> hex(bool upper = false, size_t min = 0, size_t max = 20);
