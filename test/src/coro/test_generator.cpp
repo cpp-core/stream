@@ -3,7 +3,7 @@
 
 #include <gtest/gtest.h>
 #include "coro/generator.h"
-#include "core/range/sample.h"
+#include "coro/stream/stream.h"
 
 static const size_t NumberSamples = 2;
 
@@ -14,7 +14,7 @@ coro::Generator<int> iota(size_t n) {
 
 TEST(CoroGenerator, NextCall)
 {
-    for (auto n : cr::uniform(0, 128) | v::take(NumberSamples)) {
+    for (auto n : coro::sampler<int>(0, 128) | coro::take(NumberSamples)) {
 	auto loop = iota(n);
 	size_t count{0};
 	while (loop.next())
