@@ -1,4 +1,4 @@
-// Copyright (C) 2021 by Mark Melton
+// Copyright (C) 2021, 2022 by Mark Melton
 //
 
 #pragma once
@@ -22,6 +22,5 @@
 #include "coro/stream/sequence.h"
 #include "coro/stream/take.h"
 #include "coro/stream/transform.h"
-#include "coro/stream/stream.h"
 #include "coro/stream/unique.h"
 #include "coro/stream/zip.h"
