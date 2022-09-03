@@ -1,10 +1,10 @@
-// Copyright 2021 by Mark Melton
+// Copyright 2021, 2022 by Mark Melton
 //
 
 #pragma once
 #include "coro/stream/sampler.h"
-#include "core/algo/random.h"
-#include "core/traits/extrema.h"
+#include "core/utility/random.h"
+#include "core/types/traits/extrema.h"
 #include "core/mp/same.h"
 
 namespace coro {

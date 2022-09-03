@@ -1,11 +1,11 @@
-// Copyright 2021 by Mark Melton
+// Copyright 2021, 2022 by Mark Melton
 //
 
 #include <gtest/gtest.h>
 #include <filesystem>
 #include "coro/stream/stream.h"
-#include "core/utility/fixed.h"
-#include "core/file.h"
+#include "core/types/fixed.h"
+#include "core/utility/file.h"
 
 using namespace coro;
 static const size_t NumberSamples = 5;

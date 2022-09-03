@@ -1,9 +1,9 @@
-// Copyright 2021 by Mark Melton
+// Copyright 2021, 2022 by Mark Melton
 //
 
 #pragma once
 #include "coro/generator.h"
-#include "core/utility/fixed.h"
+#include "core/types/fixed.h"
 
 namespace coro {
 

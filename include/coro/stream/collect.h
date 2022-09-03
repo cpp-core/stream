@@ -1,9 +1,9 @@
-// Copyright 2021 by Mark Melton
+// Copyright 2021, 2022 by Mark Melton
 //
 
 #pragma once
 #include "coro/stream/util.h"
-#include "core/utility/type_name.h"
+#include "core/types/type_name.h"
 
 namespace coro {
 
