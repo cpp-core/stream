@@ -5,7 +5,7 @@
 #include <deque>
 #include "coro/stream/stream.h"
 #include "core/mp/foreach.h"
-#include "core/types/fixed.h"
+#include "core/type/fixed.h"
 
 using namespace coro;
 static const size_t NumberSamples = 64;

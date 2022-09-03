@@ -3,7 +3,7 @@
 
 #pragma once
 #include "coro/generator.h"
-#include "core/types/fixed.h"
+#include "core/type/fixed.h"
 
 namespace coro {
 

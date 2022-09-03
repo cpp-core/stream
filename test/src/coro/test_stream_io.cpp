@@ -4,8 +4,8 @@
 #include <gtest/gtest.h>
 #include <filesystem>
 #include "coro/stream/stream.h"
-#include "core/types/fixed.h"
-#include "core/utility/file.h"
+#include "core/type/fixed.h"
+#include "core/util/file.h"
 
 using namespace coro;
 static const size_t NumberSamples = 5;

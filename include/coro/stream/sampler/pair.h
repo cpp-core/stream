@@ -3,8 +3,8 @@
 
 #pragma once
 #include "coro/stream/sampler.h"
-#include "core/utility/random.h"
-#include "core/types/traits/extrema.h"
+#include "core/util/random.h"
+#include "core/type/traits/extrema.h"
 #include "core/mp/same.h"
 
 namespace coro {
