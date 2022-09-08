@@ -7,22 +7,22 @@
 
 namespace coro::chr {
 
-// Return a generator of lowercase alpha characters, i.e. a-z.
+/// Return a generator of lowercase alpha characters, i.e. a-z.
 Generator<char> lower();
 
-// Return a generator of uppercase alpha characters, i.e. A-Z.
+/// Return a generator of uppercase alpha characters, i.e. A-Z.
 Generator<char> upper();
 
-// Return a generator of alpha characters, i.e a-z or A-Z.
+/// Return a generator of alpha characters, i.e a-z or A-Z.
 Generator<char> alpha();
 
-// Return a generator of alpha-numeric characters, i.e. a-z or A-Z or 0-9.
+/// Return a generator of alpha-numeric characters, i.e. a-z or A-Z or 0-9.
 Generator<char> alphanum();
 
-// Return a generator of decimal digits, i.e. 0-9.
+/// Return a generator of decimal digits, i.e. 0-9.
 Generator<char> decimal();
 
-// Return a generator of hex digits, i.e. 0-9 or a-f, or if upper is true 0-9 or A-F.
+/// Return a generator of hex digits, i.e. 0-9 or a-f, or if upper is true 0-9 or A-F.
 Generator<char> hex(bool upper = false);
 
 }; // costr

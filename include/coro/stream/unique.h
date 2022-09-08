@@ -7,8 +7,8 @@
 
 namespace coro {
 
-// Return a generator that yields the elements from the supplied `generator` filtering
-// them to be unique with respect to the given `key` function.
+/// Return a generator that yields the elements from the supplied `generator` filtering
+/// them to be unique with respect to the given `key` function.
 template<Stream S, class F>
 Generator<stream_yield_t<S>> unique(S source, F key) {
     using T = stream_value_t<S>;
@@ -24,14 +24,14 @@ Generator<stream_yield_t<S>> unique(S source, F key) {
     co_return;
 }
 
-// Filter elements from a generator to make them unique with respect to the given `key`
-// function which defaults to identity.
-//
-// Return a function that accepts a generator **G** and returns a new
-// `unique` generator. The `unique` generator yields the elements of
-// **G** filtered with respect to the given `key` function.
-//
-// *sampler<int>(0, 100) | unique([](int n) { return n % 11; })*
+/// Filter elements from a generator to make them unique with respect to the given `key`
+/// function which defaults to identity.
+///
+/// Return a function that accepts a generator **G** and returns a new
+/// `unique` generator. The `unique` generator yields the elements of
+/// **G** filtered with respect to the given `key` function.
+///
+/// *sampler<int>(0, 100) | unique([](int n) { return n % 11; })*
 template<class F>
 auto unique(F key) {
     return [=]<Stream S>(S&& source) {
