@@ -92,6 +92,14 @@ concept Stream = requires (T t) {
     std::end(t);
 };
 
+namespace detail {
+template<class T> struct is_tuple_of_stream: std::false_type { };
+template<Stream... Ss> struct is_tuple_of_stream<std::tuple<Ss...>>: std::true_type { };
+}; // detail
+
+template<class T>
+concept TupleOfStream = detail::is_tuple_of_stream<T>::value;
+    
 // Requires that `T` has correpsonding free function `getline`.
 template<class T>
 concept Readable = requires (T a, std::string s) {

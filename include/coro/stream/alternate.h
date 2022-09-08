@@ -53,7 +53,7 @@ Generator<const stream_value_t<S>&> alternate(std::tuple<S, Ss...> tuple) {
 /// ```
 /// \endrst
 inline auto alternate() {
-    return []<class S>(S&& source) {
+    return []<TupleOfStream S>(S&& source) {
 	return alternate(std::move(source));
     };
 }
