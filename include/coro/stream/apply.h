@@ -6,8 +6,11 @@
 
 namespace coro {
 
-/// Return a count of elements in **Stream** `source` after applying
-/// `function` to each element.
+/// Apply `function` to each element of the given `source` returning
+/// the number of elements.
+///
+/// \tparam S An input source that satisfies the **Stream** concept.
+/// \tparam F A function that accepts a Stream element as input.
 template<Stream S, class F>
 size_t apply(S source, F function) {
     size_t count{0};
@@ -18,10 +21,13 @@ size_t apply(S source, F function) {
     return count;
 }
 
-/// Apply `function` to each element of a **Stream** and return the count of elements.
+/// Apply `function` to each element of a Stream and return the number
+/// of elements.
 ///
-/// Return a function that accepts a **Stream** and returns the count of elements in the
-/// **Stream** after applying `function` to each element.
+/// Returns a function that accepts an input Stream and applies the
+/// given `function` to each element returning the number of elements.
+///
+/// \tparam F A function that accepts a Stream element as input
 template<class F>
 auto apply(F function) {
     return [=]<Stream S>(S&& source) {

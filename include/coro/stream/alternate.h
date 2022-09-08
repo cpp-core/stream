@@ -16,8 +16,8 @@ namespace coro {
 /// `tuple` of input Streams in an round-robin fashion unitl all are
 /// exhausted.
 ///
-/// \tparam S An source that satisfies the `Stream` concept.
-/// \tparam Ss An source(s) that satisfies the `Stream` concept.
+/// \tparam S A source that satisfies the `Stream` concept.
+/// \tparam Ss A source(s) that satisfies the `Stream` concept.
 template<Stream S, Stream... Ss>
 Generator<const stream_value_t<S>&> alternate(std::tuple<S, Ss...> tuple) {
     using namespace core::tp;
@@ -47,7 +47,7 @@ Generator<const stream_value_t<S>&> alternate(std::tuple<S, Ss...> tuple) {
 /// in a round-robin fashion until all are exhausted.
 ///
 /// \rst
-/// ```code-block{c++}
+/// ```{code-block} c++
 /// sampler<int>(0, 9) * sampler<int>(10, 19) * sampler<int>(20, 29) | alternate();
 /// // 0, 10, 20, 1, 11, 21, 2, 12, 22, 3, 13, 23, ...
 /// ```
