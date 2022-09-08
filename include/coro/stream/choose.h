@@ -1,4 +1,4 @@
-// Copyright 2021 by Mark Melton
+// Copyright 2021, 2022 by Mark Melton
 //
 
 #pragma once
@@ -24,8 +24,8 @@ namespace coro {
     }
 
 
-// Return a **Stream** that randomly chooses elements from the **Stream**s in `tup` until
-// all **Stream** are exhausted.
+/// Return a **Stream** that randomly chooses elements from the **Stream**s in `tup` until
+/// all **Stream** are exhausted.
 template<Stream S, Stream... Ss>
 Generator<streams_yield_t<S, Ss...>> choose(std::tuple<S, Ss...> tup) {
     static_assert(sizeof...(Ss) < 5);
@@ -46,12 +46,12 @@ Generator<streams_yield_t<S, Ss...>> choose(std::tuple<S, Ss...> tup) {
 
 #undef APPLY_NTH
 
-// Choose values randomly from a tuple of **Stream**s.
-//
-// Return a function that accepts a tuple of **Stream**s and randomly chooses elements
-// from the streams unitl all **Stream**s are exhausted.
-//
-// *sampler<int>(0, 9) x sampler<int>(10, 19) x sampler<int>(20, 29) | choose()*
+/// Choose values randomly from a tuple of **Stream**s.
+///
+/// Return a function that accepts a tuple of **Stream**s and randomly chooses elements
+/// from the streams unitl all **Stream**s are exhausted.
+///
+/// *sampler<int>(0, 9) x sampler<int>(10, 19) x sampler<int>(20, 29) | choose()*
 inline auto choose() {
     return []<class T>(T tup) {
 	return choose(std::move(tup));

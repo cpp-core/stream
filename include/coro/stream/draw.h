@@ -7,8 +7,8 @@
 
 namespace coro {
 
-// Return a generator that yields elements from the supplied
-// `container`.
+/// Return a generator that yields elements from the supplied
+/// `container`.
 template<class C>
 Generator<stream_yield_t<C>> draw(C& container) {
     auto dist = std::uniform_int_distribution<size_t>(0, container.size() - 1);

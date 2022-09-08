@@ -1,4 +1,4 @@
-// Copyright 2021 by Mark Melton
+// Copyright 2021, 2022 by Mark Melton
 //
 
 #pragma once
@@ -6,8 +6,8 @@
 
 namespace coro {
 
-// Return a count of elements in **Stream** `source` after applying `function` to each
-// element.
+/// Return a count of elements in **Stream** `source` after applying
+/// `function` to each element.
 template<Stream S, class F>
 size_t apply(S source, F function) {
     size_t count{0};
@@ -18,10 +18,10 @@ size_t apply(S source, F function) {
     return count;
 }
 
-// Apply `function` to each element of a **Stream** and return the count of elements.
-//
-// Return a function that accepts a **Stream** and returns the count of elements in the
-// **Stream** after applying `function` to each element.
+/// Apply `function` to each element of a **Stream** and return the count of elements.
+///
+/// Return a function that accepts a **Stream** and returns the count of elements in the
+/// **Stream** after applying `function` to each element.
 template<class F>
 auto apply(F function) {
     return [=]<Stream S>(S&& source) {

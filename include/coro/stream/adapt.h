@@ -1,4 +1,4 @@
-// Copyright 2021 by Mark Melton
+// Copyright 2021, 2022 by Mark Melton
 //
 
 #pragma once
@@ -6,8 +6,7 @@
 
 namespace coro {
 
-// Return a generator that yields elements from the supplied
-// `container`.
+/// Adapt the supplied container to be a stream source.
 template<class C>
 Generator<stream_yield_t<C>> adapt(C& container) {
     for (auto&& elem : container)

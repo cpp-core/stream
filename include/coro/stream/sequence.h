@@ -1,4 +1,4 @@
-// Copyright 2021 by Mark Melton
+// Copyright 2021, 2022 by Mark Melton
 //
 
 #pragma once
@@ -17,8 +17,8 @@ namespace coro {
 	}					       \
     }
 
-// Return a generator that yields elements from the underlying generators starting with
-// all the elements from the first generator before proceeding to the next generator.
+/// Return a generator that yields elements from the underlying generators starting with
+/// all the elements from the first generator before proceeding to the next generator.
 template<Stream... Ss>
 requires (sizeof...(Ss) > 0)
 Generator<streams_yield_t<Ss...>> sequence(std::tuple<Ss...> tup) {
@@ -35,13 +35,13 @@ Generator<streams_yield_t<Ss...>> sequence(std::tuple<Ss...> tup) {
 
 #undef APPLY_NTH
 
-// Sequence the elements from the preceeding array of generators.
-//
-// *Returns:* **Generator<...>** A generator that yields elements from the underlying
-// generators starting with all the elements from the first generator before proceeding to
-// the next generator.
-//
-// *sampler<int>(0, 9) + sampler<int>(10, 19) + sampler<int>(20, 29) | sequence()*
+/// Sequence the elements from the preceeding array of generators.
+///
+/// *Returns:* **Generator<...>** A generator that yields elements from the underlying
+/// generators starting with all the elements from the first generator before proceeding to
+/// the next generator.
+///
+/// *sampler<int>(0, 9) + sampler<int>(10, 19) + sampler<int>(20, 29) | sequence()*
 inline auto sequence() {
     return []<class G>(G g) {
 	return sequence(std::move(g));

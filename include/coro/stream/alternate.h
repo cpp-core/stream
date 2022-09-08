@@ -1,4 +1,4 @@
-// Copyright 2021 by Mark Melton
+// Copyright 2021, 2022 by Mark Melton
 //
 
 #pragma once
@@ -32,13 +32,13 @@ Generator<const stream_value_t<S>&> alternate(std::tuple<S, Ss...> tup) {
     co_return;
 }
 
-// Alternate elements from a tuple of **Stream**'s until all are exhausted.
-//
-// Return a function that accepts a tuple of **Stream**'s and returns a new **Stream**
-// that returns elements in a round-robin fashion from the underlying **Stream**'s until
-// all are exhausted
-//
-// *sampler<int>(0, 9) x sampler<int>(10, 19) x sampler<int>(20, 29) | alternate()*
+/// Alternate elements from a tuple of **Stream**'s until all are exhausted.
+///
+/// Return a function that accepts a tuple of **Stream**'s and returns a new **Stream**
+/// that returns elements in a round-robin fashion from the underlying **Stream**'s until
+/// all are exhausted.
+///
+/// *sampler<int>(0, 9) x sampler<int>(10, 19) x sampler<int>(20, 29) | alternate()*
 inline auto alternate() {
     return []<class T>(T&& source) {
 	return alternate(std::move(source));

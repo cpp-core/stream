@@ -1,4 +1,4 @@
-// Copyright 2021 by Mark Melton
+// Copyright 2021, 2022 by Mark Melton
 //
 
 #pragma once
@@ -6,7 +6,7 @@
 
 namespace coro {
 
-// 
+//  Reduce
 // 
 template<Stream S, class A, class R>
 A reduce(S source, A accumulator, R&& reducer) {
@@ -15,11 +15,7 @@ A reduce(S source, A accumulator, R&& reducer) {
     return accumulator;
 }
 
-// 
-// 
-// 
-// 
-//
+// Reduce
 // 
 template<class A, class R>
 auto reduce(A&& accumulator, R&& reducer) {

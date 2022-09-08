@@ -1,4 +1,4 @@
-// Copyright 2021 by Mark Melton
+// Copyright 2021, 2022 by Mark Melton
 //
 
 #pragma once
@@ -6,8 +6,8 @@
 
 namespace coro {
 
-// Return a generator that yields the values from `start` until `stop`
-// incrementing by `step`.
+/// Return a generator that yields the values from `start` until `stop`
+/// incrementing by `step`.
 template<class T>
 Generator<const T&> range(T start, T stop, T step = T{1}) {
     for (auto x = start; x <= stop; x += step)

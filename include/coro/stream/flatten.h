@@ -7,7 +7,7 @@
 
 namespace coro {
 
-// Return a container **C<T>** with all the elements from **Stream** `source`.
+/// Return a container **C<T>** with all the elements from **Stream** `source`.
 template<class C, Stream S>
 auto flatten(S source) {
     C c;
@@ -16,11 +16,11 @@ auto flatten(S source) {
     return c;
 }
 
-// Collect all the elements from a **Stream** and insert them into a container of type
-// **C**.
-//
-// Return a function that accepts a **Stream** and returns a container **C<`T`>** with all
-// the elements from the **Stream**.
+/// Collect all the elements from a **Stream** and insert them into a container of type
+/// **C**.
+///
+/// Return a function that accepts a **Stream** and returns a container **C<`T`>** with all
+/// the elements from the **Stream**.
 template<class C>
 auto flatten() {
     return []<Stream S>(S&& s) {

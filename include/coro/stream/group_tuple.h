@@ -1,4 +1,4 @@
-// Copyright 2021 by Mark Melton
+// Copyright 2021, 2022 by Mark Melton
 //
 
 #pragma once
@@ -8,9 +8,9 @@
 
 namespace coro {
 
-// Return a generator that yields **std::tuple<`T`,..>**'s with arity
-// `N`. The generator groups elements yielded from the supplied
-// `generator` into `N`-tuples and yields them.
+/// Return a generator that yields **std::tuple<`T`,..>**'s with arity
+/// `N`. The generator groups elements yielded from the supplied
+/// `generator` into `N`-tuples and yields them.
 template<size_t N, Stream S>
 Generator<core::tp::generate_t<stream_value_t<S>, N>&&> group_tuple(S source) {
     using T = stream_value_t<S>;
@@ -25,13 +25,13 @@ Generator<core::tp::generate_t<stream_value_t<S>, N>&&> group_tuple(S source) {
     co_return;
 }
 
-// Group the elemens of the preceeding generator into N-tuples.
-//
-// *Returns:* **Generator<std::tuple<...>>** A generator that yields **std::tuple<...>**'s
-// with arity `N`. The generator groups elements yielded from the underlying generator
-// into `N`-tuples and yields them.
-//
-// *sampler<int>(0, 100) | group_tuple<2>() // -> std::tuple<int,int>*
+/// Group the elemens of the preceeding generator into N-tuples.
+///
+/// *Returns:* **Generator<std::tuple<...>>** A generator that yields **std::tuple<...>**'s
+/// with arity `N`. The generator groups elements yielded from the underlying generator
+/// into `N`-tuples and yields them.
+///
+/// *sampler<int>(0, 100) | group_tuple<2>() // -> std::tuple<int,int>*
 template<size_t N>
 auto group_tuple() {
     return [=]<class G>(G&& g) {

@@ -1,4 +1,4 @@
-// Copyright 2021 by Mark Melton
+// Copyright 2021, 2022 by Mark Melton
 //
 
 #pragma once
@@ -6,7 +6,7 @@
 
 namespace coro {
 
-// Return a generator that yields `value` exactly once.
+/// Return a generator that yields `value` exactly once.
 template<class T>
 Generator<T&&> once(T value) {
     co_yield value;
