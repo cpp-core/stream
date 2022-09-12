@@ -3,7 +3,7 @@
 
 #pragma once
 #include "coro/stream/util.h"
-#include "core/util/file.h"
+#include "core/type/file.h"
 
 namespace coro {
 

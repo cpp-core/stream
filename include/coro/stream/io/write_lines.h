@@ -5,7 +5,7 @@
 #include <fstream>
 #include "coro/stream/util.h"
 #include "core/codex/zstd/file_compressor.h"
-#include "core/util/file.h"
+#include "core/type/file.h"
 
 namespace coro {
 
