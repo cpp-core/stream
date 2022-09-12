@@ -5,7 +5,6 @@
 #include <filesystem>
 #include "coro/stream/stream.h"
 #include "core/type/fixed.h"
-#include "core/util/file.h"
 
 using namespace coro;
 static const size_t NumberSamples = 5;
