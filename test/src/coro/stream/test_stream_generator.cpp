@@ -54,7 +54,7 @@ coro::Generator<int> fibonacci(int count, int a = 0, int b = 1) {
 TEST(CoroGenerator, RecursiveFibonacci)
 {
     size_t idx{0};
-    ints fibs = { 0, 1, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89, 144 };
+    std::vector<int> fibs = { 0, 1, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89, 144 };
     for (auto i : fibonacci(fibs.size())) {
 	EXPECT_EQ(i, fibs[idx]);
 	++idx;

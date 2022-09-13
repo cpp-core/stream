@@ -3,15 +3,19 @@
 
 #pragma once
 #include <deque>
+#include <list>
+#include <map>
+#include <set>
+#include <vector>
 #include "coro/stream/sampler.h"
-#include "core/util/random.h"
+#include "coro/stream/detail/random.h"
 #include "core/mp/same.h"
 
 namespace coro {
 
 template<class T>
-requires (core::mp::is_same_template_v<T, vector>
-	  or core::mp::is_same_template_v<T, list>
+requires (core::mp::is_same_template_v<T, std::vector>
+	  or core::mp::is_same_template_v<T, std::list>
 	  or core::mp::is_same_template_v<T, std::deque>)
 struct Sampler<T> {
     using G = coro::Generator<T>;
@@ -63,8 +67,8 @@ auto samplerG() {
 }
 
 template<class T>
-requires (core::mp::is_same_template_v<T, set>
-	  or core::mp::is_same_template_v<T, map>)
+requires (core::mp::is_same_template_v<T, std::set>
+	  or core::mp::is_same_template_v<T, std::map>)
 struct Sampler<T> {
     using G = coro::Generator<T>;
     using SizeG = coro::Generator<size_t>;

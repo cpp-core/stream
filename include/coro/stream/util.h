@@ -3,7 +3,7 @@
 
 #pragma once
 #include "coro/generator.h"
-#include "core/type/fixed.h"
+#include "coro/stream/detail/fixed.h"
 
 namespace coro {
 
@@ -31,7 +31,7 @@ struct stream_traits<const std::vector<T>> : public std::true_type {
 };
 
 template<class T>
-struct stream_traits<core::Fixed<std::vector<T>>> : public std::true_type {
+struct stream_traits<coro::detail::Fixed<std::vector<T>>> : public std::true_type {
     using value_type = T;
     using yield_type = T&;
 };

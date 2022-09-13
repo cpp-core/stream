@@ -1,6 +1,7 @@
 // Copyright (C) 2021, 2022 by Mark Melton
 //
 
+#include <string>
 #include "coro/stream/sampler/char.h"
 
 namespace coro::chr {

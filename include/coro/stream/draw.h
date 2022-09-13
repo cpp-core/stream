@@ -3,7 +3,7 @@
 
 #pragma once
 #include "coro/stream/util.h"
-#include "core/util/random.h"
+#include "coro/stream/detail/random.h"
 
 namespace coro {
 
@@ -11,9 +11,9 @@ namespace coro {
 /// `container`.
 template<class C>
 Generator<stream_yield_t<C>> draw(C& container) {
-    auto dist = std::uniform_int_distribution<size_t>(0, container.size() - 1);
+    auto dist = std::uniform_int_distribution<std::size_t>(0, container.size() - 1);
     while (true) {
-	auto idx = dist.operator()(core::rng());
+	auto idx = dist.operator()(coro::detail::rng());
 	co_yield container[idx];
     }
     co_return;

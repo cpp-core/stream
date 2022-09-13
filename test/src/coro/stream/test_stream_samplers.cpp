@@ -11,8 +11,8 @@ static const size_t NumberSamples = 64;
 
 using namespace coro;
 
-using IntegralTypes = std::tuple<int32,int64,uint16,uint64>;
-using FloatingTypes = std::tuple<float,real>;
+using IntegralTypes = std::tuple<std::int32_t,std::int64_t,std::uint16_t,std::uint64_t>;
+using FloatingTypes = std::tuple<float,double>;
 
 TEST(CoroStream, Char)
 {
@@ -83,7 +83,7 @@ TEST(CoroStream, Floating)
 
 TEST(CoroStream, String)
 {
-    for (auto str : sampler<string>() | take(16)) {
+    for (auto str : sampler<std::string>() | take(16)) {
 	EXPECT_LE(str.size(), 20);
 	for (auto c : str)
 	    EXPECT_TRUE(std::isalpha(c));
@@ -146,8 +146,8 @@ TEST(CoroStream, String)
 
 TEST(CoroStream, Pair)
 {
-    core::mp::foreach<std::tuple<int,real>>([]<class T>() {
-	    core::mp::foreach<std::tuple<int,real>>([]<class U>() {
+    core::mp::foreach<std::tuple<int,double>>([]<class T>() {
+	    core::mp::foreach<std::tuple<int,double>>([]<class U>() {
 		    auto g = Sampler<std::pair<T,U>>{}({0,0}, {10,10}) | take(NumberSamples);
 		    for (auto elem : g) {
 			EXPECT_GE(elem.first, 0);
@@ -180,7 +180,7 @@ TEST(CoroStream, Container)
 
 TEST(CoroStream, ContainerMap)
 {
-    auto g = Sampler<std::map<int,real>>{}(0, 20, {0,-1.0}, {100,+1.0});
+    auto g = Sampler<std::map<int,double>>{}(0, 20, {0,-1.0}, {100,+1.0});
     for (auto map : std::move(g) | take(NumberSamples)) {
 	EXPECT_LE(map.size(), 20);
 	for (const auto& [key, value] : map) {
@@ -223,7 +223,7 @@ TEST(CoroStream, ContainerContainer)
 
 TEST(CoroStream, VectorPair)
 {
-    using Pair = std::pair<int,real>;
+    using Pair = std::pair<int,double>;
     auto g = sampler<size_t>(0, 20) * sampler_pair(Pair{-10,-1.0}, Pair{+10,+1.0})
 	| sampler_vector()
 	| take(NumberSamples);
@@ -243,7 +243,8 @@ TEST(CoroStream, VectorPair)
 
 TEST(CoroStream, PairVector)
 {
-    auto g = sampler<vector<int>>(0, 10, -100, +100) * sampler<vector<real>>(0, 5, -1.0, +1.0)
+    auto g = sampler<std::vector<int>>(0, 10, -100, +100)
+	* sampler<std::vector<double>>(0, 5, -1.0, +1.0)
 	| zip()
 	| take(NumberSamples);
     for (const auto& [v0, v1] : g) {

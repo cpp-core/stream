@@ -1,9 +1,9 @@
 cmake_minimum_required (VERSION 3.22 FATAL_ERROR)
-project (cxx_core_fp VERSION 0.1 LANGUAGES C CXX)
+project (cxx_coro_stream VERSION 0.1 LANGUAGES C CXX)
 
 # Make including this file idempotent
 #
-if(TARGET cxx_core_fp)
+if(TARGET cxx_coro_stream)
   return()
 endif()
 
@@ -12,7 +12,7 @@ endif()
 # Build the tests and set directories if this is the master project
 #
 if(CMAKE_CURRENT_SOURCE_DIR STREQUAL CMAKE_SOURCE_DIR)
-  set(CORE_FP_TEST ON CACHE BOOL "Generate the tests.")
+  set(CORO_STREAM_TEST ON CACHE BOOL "Generate the tests.")
   set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
   set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
   set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
@@ -24,21 +24,22 @@ endif()
 
 # Options for generating tests and documentation.
 #
-option(CORE_FP_TEST "Generate the tests." OFF)
-option(CORE_FP_DOCS "Generate the docs." OFF)
+option(CORO_STREAM_TEST "Generate the tests." OFF)
+option(CORO_STREAM_DOCS "Generate the docs." OFF)
 
 # Add our dependencies
 #
 include(GNUInstallDirs)
-find_package(cxx_core_mp)
+find_package(cxx_core_tuple REQUIRED)
+find_package(fmt REQUIRED)
 
 # Output configuration
 #
-message("-- cxx-core-fp: Configuration: ${CMAKE_CURRENT_SOURCE_DIR}")
-message("-- cxx-core-fp: Included from: ${CMAKE_SOURCE_DIR}")
-message("-- cxx-core-fp: CORE_TUPLE_TEST ${CORE_FP_TEST}")
-message("-- cxx-core-fp: CORE_TUPLE_DOCS ${CORE_FP_DOCS}")
-message("-- cxx-core-fp: CMAKE_INSTALL_PREFIX ${CMAKE_INSTALL_PREFIX}")
+message("-- cxx-coro-stream: Configuration: ${CMAKE_CURRENT_SOURCE_DIR}")
+message("-- cxx-coro-stream: Included from: ${CMAKE_SOURCE_DIR}")
+message("-- cxx-coro-stream: CORO_STREAM_TEST ${CORO_STREAM_TEST}")
+message("-- cxx-coro-stream: CORO_STREAM_DOCS ${CORO_STREAM_DOCS}")
+message("-- cxx-coro-stream: CMAKE_INSTALL_PREFIX ${CMAKE_INSTALL_PREFIX}")
 
 # Compilation
 #
@@ -51,15 +52,28 @@ add_compile_options(-stdlib=libc++)
 add_compile_options(-O)
 add_link_options(-stdlib=libc++)
 
-add_library(cxx_core_fp INTERFACE)
-target_include_directories(cxx_core_fp
-  INTERFACE
+set(SOURCES
+  stream/detail/random
+  stream/sampler/char
+  stream/sampler/string
+  )
+
+foreach(NAME ${SOURCES})
+  list(APPEND FILES "src/coro/${NAME}.cpp")
+endforeach()
+
+add_library(cxx_coro_stream ${FILES})
+
+target_link_libraries(cxx_coro_stream PRIVATE cxx_core_tuple::cxx_core_tuple)
+
+target_include_directories(cxx_coro_stream
+  PUBLIC
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
   $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>)
 
 # Optionally configure the tests
 #
-if(CORE_FP_TEST)
+if(CORO_STREAM_TEST)
   enable_testing()
   if (NOT TARGET check)
     add_custom_target(check ${CMAKE_CTEST_COMMAND})
@@ -70,12 +84,12 @@ endif()
 
 # Optionally configure the documentation
 #
-# if(CORE_FP_DOCS)
+# if(CORO_STREAM_DOCS)
 #   add_subdirectory(docs)
 # endif()
 
 # Installation
 #
 include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/install_config.cmake)
-install_config(cxx_core_fp)
+install_config(cxx_coro_stream)
 install(DIRECTORY ${PROJECT_SOURCE_DIR}/include/core/fp DESTINATION include/core/)

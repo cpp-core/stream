@@ -3,7 +3,7 @@
 
 #pragma once
 #include "coro/stream/sampler.h"
-#include "core/util/random.h"
+#include "coro/stream/detail/random.h"
 #include "core/mp/traits/extrema.h"
 
 namespace coro {
@@ -15,7 +15,7 @@ struct Sampler<T> {
 				  T max = core::mp::extrema<T>::max()) const {
 	std::uniform_int_distribution<T> dist(min, max);
 	while (true)
-	    co_yield dist(core::rng());
+	    co_yield dist(coro::detail::rng());
 	co_return;
     }
 };

@@ -6,12 +6,20 @@ find_package(googletest REQUIRED)
 find_package(Threads REQUIRED)
 
 set(TESTS
-  fp/either
-  fp/fold
-  fp/option
-  fp/try
+  stream/base
+  stream/generator
+#  stream/io
+  stream/samplers
+  stream/types
+  stream/util
   )
 
+set(LIBRARIES
+  cxx_coro_stream
+  cxx_core_tuple::cxx_core_tuple
+  fmt::fmt
+  googletest::cxx-googletest
+  Threads::Threads)
+
 include(${CMAKE_CURRENT_SOURCE_DIR}/../cmake/configure_tests.cmake)
-set(LIBS "cxx_core_mp::cxx_core_mp;googletest::cxx-googletest;Threads::Threads")
-configure_tests("core" "${LIBS}" ${TESTS})
+configure_tests("coro" "${LIBRARIES}" ${TESTS})

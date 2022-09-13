@@ -5,7 +5,7 @@
 #include <deque>
 #include "coro/stream/stream.h"
 #include "core/mp/foreach.h"
-#include "core/type/fixed.h"
+#include "coro/stream/detail/fixed.h"
 
 using namespace coro;
 static const size_t NumberSamples = 64;
@@ -19,7 +19,7 @@ TEST(CoroStream, Adapt)
 
 TEST(CoroStream, AdaptFixedVector)
 {
-    core::Fixed<vector<int>> expected{1, 2, 3, 4};
+    coro::detail::Fixed<std::vector<int>> expected{1, 2, 3, 4};
     auto actual = adapt(expected) | collect<std::vector>();
     EXPECT_EQ(expected, actual);
 }
@@ -61,7 +61,7 @@ TEST(CoroStream, Apply)
 TEST(CoroStream, ApplyFixedVector)
 {
     auto count{0};
-    core::Fixed<std::vector<int>> data{1, 2, 3, 4};
+    coro::detail::Fixed<std::vector<int>> data{1, 2, 3, 4};
     data | apply([&](int n) { ++count; });
     EXPECT_EQ(count, 4);
 }
@@ -114,7 +114,7 @@ TEST(CoroStream, Collect)
 
 TEST(CoroStream, CollectFixedVector)
 {
-    core::Fixed<std::vector<int>> data{1, 2, 3, 4};
+    coro::detail::Fixed<std::vector<int>> data{1, 2, 3, 4};
     auto vec = data | collect<std::vector>();
     EXPECT_EQ(vec, data);
 }
@@ -128,7 +128,7 @@ TEST(CoroStream, Filter)
 
 TEST(CoroStream, FilterFixedVector)
 {
-    core::Fixed<std::vector<int>> data{0, 1, 2, 3};
+    coro::detail::Fixed<std::vector<int>> data{0, 1, 2, 3};
     auto g = data | filter([](int n) { return n % 2 == 0; }) | take(NumberSamples);
     for (auto elem : g)
 	EXPECT_TRUE(elem % 2 == 0);
@@ -144,7 +144,7 @@ TEST(CoroStream, Group)
 	}
     }
 
-    auto g = sampler<real>(-1, +1) * sampler<size_t>(1, 8) | group() | take(NumberSamples);
+    auto g = sampler<double>(-1, +1) * sampler<size_t>(1, 8) | group() | take(NumberSamples);
     for (const auto& vec : g) {
 	EXPECT_GT(vec.size(), 0);
 	EXPECT_LE(vec.size(), 8);
@@ -236,7 +236,7 @@ TEST(CoroStream, Sequence)
 
 TEST(CoroStream, SequenceFixedVector)
 {
-    core::Fixed<std::vector<int>> a{0, 1, 2, 3, 4, 5, 6, 7, 8, 9},
+    coro::detail::Fixed<std::vector<int>> a{0, 1, 2, 3, 4, 5, 6, 7, 8, 9},
 	b{10, 11, 12, 13, 14, 15, 16, 17, 18, 19},
 	c{20, 21, 22, 23, 24, 25, 26, 27, 28, 29};
     auto g = a * b * c | sequence();
@@ -261,7 +261,7 @@ TEST(CoroStream, Take)
 
 TEST(CoroStream, TakeFixedVector)
 {
-    core::Fixed<std::vector<int>> data{0, 1, 2, 3, 4, 5, 6, 7};
+    coro::detail::Fixed<std::vector<int>> data{0, 1, 2, 3, 4, 5, 6, 7};
     auto g = data | take(5);
     size_t count{0};
     for (auto&& elem : g) {
@@ -283,7 +283,7 @@ TEST(CoroStream, Transform)
 
 TEST(CoroStream, TransformFixedVector)
 {
-    core::Fixed<std::vector<int>> data{0, 1, 2, 3, 4};
+    coro::detail::Fixed<std::vector<int>> data{0, 1, 2, 3, 4};
     auto g = data | transform([](int n) { return n * n; });
     size_t count{0};
     for (auto&& elem : g) {
@@ -305,7 +305,7 @@ TEST(CoroStream, Unique)
 
 TEST(CoroStream, UniqueFixedVector)
 {
-    core::Fixed<std::vector<int>> data{0, 1, 2, 3, 4, 5, 6};
+    coro::detail::Fixed<std::vector<int>> data{0, 1, 2, 3, 4, 5, 6};
     auto g = data | unique([](int n) { return n % 3; }) | take(3);
     std::set<int> s;
     for (auto elem : g) {
@@ -318,7 +318,7 @@ TEST(CoroStream, UniqueFixedVector)
 TEST(CoroStream, Zip)
 {
     auto g = sampler<int>(-20, +20)
-	* sampler<real>(-1, +1)
+	* sampler<double>(-1, +1)
 	* sampler<char>('a','z')
 	| zip()
 	| take(NumberSamples);
@@ -337,9 +337,9 @@ TEST(CoroStream, Zip)
 
 TEST(CoroStream, ZipFixedVector)
 {
-    core::Fixed<std::vector<int>> a{-1, 0, +1};
-    core::Fixed<std::vector<real>> b{-10.0, 0.0, 10.0};
-    core::Fixed<std::vector<char>> c{'a', 'b', 'c', 'd'};
+    coro::detail::Fixed<std::vector<int>> a{-1, 0, +1};
+    coro::detail::Fixed<std::vector<double>> b{-10.0, 0.0, 10.0};
+    coro::detail::Fixed<std::vector<char>> c{'a', 'b', 'c', 'd'};
     
     auto g = a * b * c | zip();
     size_t count{0};
