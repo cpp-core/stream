@@ -5,7 +5,6 @@
 #include <deque>
 #include "coro/stream/sampler.h"
 #include "core/util/random.h"
-#include "core/type/traits/extrema.h"
 #include "core/mp/same.h"
 
 namespace coro {
