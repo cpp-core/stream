@@ -3,10 +3,10 @@
 
 #pragma once
 #include "coro/stream/util.h"
-#include "core/concurrent/ring/ring.h"
-#include "core/concurrent/ring/claim.h"
-#include "core/concurrent/ring/processor.h"
-#include "core/concurrent/scoped_task.h"
+#include "core/cc/ring/ring.h"
+#include "core/cc/ring/claim.h"
+#include "core/cc/ring/processor.h"
+#include "core/cc/scoped_task.h"
 
 namespace coro {
 
