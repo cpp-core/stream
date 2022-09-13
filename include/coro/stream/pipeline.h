@@ -1,4 +1,4 @@
-// Copyright 2021 by Mark Melton
+// Copyright 2021, 2022 by Mark Melton
 //
 
 #pragma once
@@ -12,7 +12,7 @@ namespace coro {
 
 template<Stream S>
 Generator<stream_value_t<S>&&> pipeline(S source) {
-    namespace ring = core::mt::ring;
+    namespace ring = core::cc::ring;
     
     const size_t buffer_size = 256;
     std::atomic<ring::sequence_t> final_idx{ring::FinalSequence};
@@ -22,7 +22,7 @@ Generator<stream_value_t<S>&&> pipeline(S source) {
     producer.add_write_barrier(consumer.cursor());
     consumer.add_read_barrier(producer.cursor());
 
-    core::mt::scoped_task<void> producer_thread{[&]() {
+    core::cc::scoped_task<void> producer_thread{[&]() {
 	while (source.next()) {
 	    auto idx = producer.claim();
 	    data[idx] = source();
