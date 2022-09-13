@@ -54,6 +54,7 @@ add_link_options(-stdlib=libc++)
 
 set(SOURCES
   stream/detail/random
+  stream/io/read_lines
   stream/sampler/char
   stream/sampler/string
   )

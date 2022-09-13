@@ -4,8 +4,6 @@
 #pragma once
 #include <fstream>
 #include "coro/stream/util.h"
-#include "core/codex/zstd/file_compressor.h"
-#include "core/type/file.h"
 
 namespace coro {
 
@@ -26,7 +24,7 @@ auto write_lines(Writeable auto& writeable) {
 }
 
 /// Write lines from the supplied **Stream** `source` to the given `file` uncompressed.
-void write_lines_plain(Stream auto source, core::File file) {
+void write_lines_plain(Stream auto source, std::string_view file) {
     std::ofstream ofs{file};
     for (const auto& line : source) {
 	ofs.write(line.data(), line.size());
@@ -34,25 +32,8 @@ void write_lines_plain(Stream auto source, core::File file) {
     }
 }
 
-/// Write lines from the supplied **Stream** `source` to the given `file` compressed with zstd.
-void write_lines_zstd(Stream auto source, core::File file) {
-    zstd::FileCompressor c{file};
-    for (const auto& line : source) {
-	c.write(line.data(), line.size());
-	c.write("\n", 1);
-    }
-}
-
-/// Write lines from the supplied **Stream** `source` to the given
-/// `file`. If `file` ends with ".zstd" using zstd
-/// compressions; otherwise, write the file uncompressed.
-void write_lines(Stream auto source, core::File file) {
-    if (file.ends_with(".zst")) write_lines_zstd(std::move(source), file);
-    else write_lines_plain(std::move(source), file);
-}
-
 /// Write lines to file.
-inline auto write_lines(core::File file) {
+inline auto write_lines(std::string_view file) {
     return [=]<Stream S>(S&& source) {
 	return write_lines(std::forward<S>(source), file);
     };

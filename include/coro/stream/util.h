@@ -2,7 +2,7 @@
 //
 
 #pragma once
-#include "coro/generator.h"
+#include "coro/stream/generator.h"
 #include "coro/stream/detail/fixed.h"
 
 namespace coro {

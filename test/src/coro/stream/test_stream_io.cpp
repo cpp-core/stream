@@ -31,7 +31,7 @@ public:
 	fs::remove_all(dir_);
     }
 
-    core::File get_filename(const string& name) const {
+    std::string get_filename(const std::string& name) const {
 	return fmt::format("{}/{}", dir_, name);
     }
 
@@ -50,23 +50,12 @@ TEST(CoroStreamIo, PlainFile)
     for (auto i = 0; i < NumberSamples; ++i) {
 	auto expected = env->get_sample();
 	auto fn = env->get_filename("plain.dat");
-	expected | write_lines(fn);
-	auto actual = read_lines(fn) | collect<std::vector>();
+	write_lines_plain(expected, fn);
+	auto actual = read_lines_plain(fn) | collect<std::vector>();
 	EXPECT_EQ(actual, expected);
     }
 }
     
-TEST(CoroStreamIo, ZstdFile)
-{
-    for (auto i = 0; i < NumberSamples; ++i) {
-	auto expected = env->get_sample();
-	auto fn = env->get_filename("plain.zst");
-	expected | write_lines(fn);
-	auto actual = read_lines(fn) | collect<std::vector>();
-	EXPECT_EQ(actual, expected);
-    }
-}
-
 struct ioable {
     void write(const char *data, size_t size) {
 	if (size != 1 or data[0] != '\n')
