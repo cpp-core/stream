@@ -4,7 +4,7 @@
 #pragma once
 #include "coro/stream/sampler.h"
 #include "core/util/random.h"
-#include "core/type/traits/extrema.h"
+#include "core/mp/traits/extrema.h"
 #include "core/mp/same.h"
 
 namespace coro {
@@ -23,11 +23,11 @@ struct Sampler<T> {
     using SecondG = coro::Generator<Second>;
 
     static std::pair<First,First> min_pair() {
-	return std::make_pair(core::extrema<First>::min(), core::extrema<Second>::min());
+	return std::make_pair(core::mp::extrema<First>::min(), core::mp::extrema<Second>::min());
     }
     
     static std::pair<Second,Second> max_pair() {
-	return std::make_pair(core::extrema<First>::max(), core::extrema<Second>::max());
+	return std::make_pair(core::mp::extrema<First>::max(), core::mp::extrema<Second>::max());
     }
 
     G operator()(FirstG g_first, SecondG g_second) const {
