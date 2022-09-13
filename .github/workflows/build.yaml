@@ -1,0 +1,59 @@
+
+name: Build and Unit Test
+
+on:
+  # push:
+  #   branches:
+  #     - 'main'
+  
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Requirements
+      run: sudo apt-get install -y clang-11 libc++-11-dev libc++abi-11-dev
+      
+    - name: SSH Agent
+      uses: webfactory/ssh-agent@v0.5.4
+      with:
+        ssh-private-key: |
+          ${{ secrets.CXX_DEPENDS }}
+          ${{ secrets.CXX_CORE_PP }}
+          ${{ secrets.CXX_CORE_MP }}
+          ${{ secrets.CXX_CORE_FP }}
+        
+    - name: Checkout cxx-core-fp
+      uses: actions/checkout@v2
+      with:
+        repository: melton1968/cxx-core-fp
+        path: cxx-core-fp
+        
+    - name: Checkout cxx-depends
+      uses: actions/checkout@v2
+      with:
+        repository: melton1968/cxx-depends
+        ref: main
+        path: cxx-depends
+        
+    - name: Build dependencies
+      run: |
+        export CC=clang-11
+        export CXX=clang++-11
+        mkdir cxx-depends/build && pushd cxx-depends/build
+        cmake -DCMAKE_INSTALL_PREFIX=${GITHUB_WORKSPACE}/opt ..
+        make cxx_core_mp googletest
+        popd
+
+    - name: Build and run the tests
+      run: |
+        export CC=clang-11
+        export CXX=clang++-11
+        mkdir cxx-core-fp/build && pushd cxx-core-fp/build
+        cmake -DCMAKE_INSTALL_PREFIX=${GITHUB_WORKSPACE}/opt ..
+        make
+        make check
+        make install
+        popd
