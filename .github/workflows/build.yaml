@@ -52,7 +52,7 @@ jobs:
       run: |
         export CC=clang-11
         export CXX=clang++-11
-        mkdir cxx-core-stream/build && pushd cxx-core-stream/build
+        mkdir cxx-coro-stream/build && pushd cxx-coro-stream/build
         cmake -DCMAKE_INSTALL_PREFIX=${GITHUB_WORKSPACE}/opt ..
         make
         make check
