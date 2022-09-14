@@ -93,4 +93,4 @@ endif()
 #
 include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/install_config.cmake)
 install_config(cxx_coro_stream)
-install(DIRECTORY ${PROJECT_SOURCE_DIR}/include/coro/stream DESTINATION include/coro/stream)
+install(DIRECTORY ${PROJECT_SOURCE_DIR}/include/coro/stream DESTINATION include/coro/)
