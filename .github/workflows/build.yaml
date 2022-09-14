@@ -44,8 +44,8 @@ jobs:
         export CC=clang-11
         export CXX=clang++-11
         mkdir cxx-depends/build && pushd cxx-depends/build
-        cmake -DCMAKE_INSTALL_PREFIX=${GITHUB_WORKSPACE}/opt ..
-        make cxx_core_tuple fmt googletest
+        cmake -DCMAKE_INSTALL_PREFIX=${GITHUB_WORKSPACE}/opt -DCORE_TEST=ON ..
+        make cxx_coro_stream-depends
         popd
 
     - name: Build and run the tests
