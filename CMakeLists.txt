@@ -65,7 +65,7 @@ endforeach()
 
 add_library(cxx_coro_stream ${FILES})
 
-target_link_libraries(cxx_coro_stream PRIVATE cxx_core_tuple::cxx_core_tuple)
+target_link_libraries(cxx_coro_stream PUBLIC cxx_core_tuple::cxx_core_tuple)
 
 target_include_directories(cxx_coro_stream
   PUBLIC
