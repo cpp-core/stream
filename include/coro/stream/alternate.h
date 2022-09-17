@@ -2,6 +2,7 @@
 //
 
 #pragma once
+#include <optional>
 #include "coro/stream/util.h"
 #include "core/tuple/apply.h"
 #include "core/tuple/map.h"

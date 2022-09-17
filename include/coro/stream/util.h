@@ -2,6 +2,7 @@
 //
 
 #pragma once
+#include <string>
 #include "coro/stream/generator.h"
 #include "coro/stream/detail/fixed.h"
 
