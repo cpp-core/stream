@@ -22,9 +22,9 @@ namespace coro {
 template<Stream... Ss>
 requires (sizeof...(Ss) > 0)
 Generator<streams_yield_t<Ss...>> sequence(std::tuple<Ss...> tup) {
-    using core::tp::select_nth, core::tp::mapply;
-    auto iterators = mapply([](auto& g) { return g.begin(); }, tup);
-    auto end_iters = mapply([](auto& g) { return g.end(); }, tup);
+    using core::tp::select_nth, core::tp::map_inplace;
+    auto iterators = map_inplace([](auto& g) { return g.begin(); }, tup);
+    auto end_iters = map_inplace([](auto& g) { return g.end(); }, tup);
     APPLY_NTH(0);
     APPLY_NTH(1);
     APPLY_NTH(2);

@@ -4,7 +4,7 @@
 #pragma once
 #include <optional>
 #include "coro/stream/util.h"
-#include "core/tuple/apply.h"
+#include "core/tuple/fold.h"
 #include "core/tuple/map.h"
 #include "core/tuple/to_array.h"
 
@@ -24,10 +24,10 @@ Generator<const stream_value_t<S>&> alternate(std::tuple<S, Ss...> tuple) {
     using namespace core::tp;
     using value_type = stream_value_t<S>;
     
-    auto iterators = mapply([](auto& g) { return g.begin(); }, tuple);
-    auto end_iters = mapply([](auto& g) { return g.end(); }, tuple);
-    while (any(map_n([](auto& iter, auto& end) { return iter != end; }, iterators, end_iters))) {
-	auto values = map_n([](auto& iter, auto& end) {
+    auto iterators = map_inplace([](auto& g) { return g.begin(); }, tuple);
+    auto end_iters = map_inplace([](auto& g) { return g.end(); }, tuple);
+    while (any(map([](auto& iter, auto& end) { return iter != end; }, iterators, end_iters))) {
+	auto values = map([](auto& iter, auto& end) {
 	    if (iter != end) return std::optional<value_type>{*iter};
 	    else return std::optional<value_type>{};
 	}, iterators, end_iters);
@@ -35,7 +35,7 @@ Generator<const stream_value_t<S>&> alternate(std::tuple<S, Ss...> tuple) {
 	for (auto i = 0; i < std::tuple_size<decltype(values)>(); ++i)
 	    if (arr[i])
 		co_yield arr[i].value();
-	apply_n([](auto& iter, auto& end) { if (iter != end) ++iter; }, iterators, end_iters);
+	map_inplace([](auto& iter, auto& end) { if (iter != end) ++iter; }, iterators, end_iters);
     }
     co_return;
 }

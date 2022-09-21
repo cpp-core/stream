@@ -5,7 +5,7 @@
 #include <tuple>
 #include "coro/stream/util.h"
 #include "coro/stream/sampler/integral.h"
-#include "core/tuple/apply.h"
+#include "core/tuple/fold.h"
 #include "core/tuple/map.h"
 #include "core/tuple/to_array.h"
 
@@ -37,9 +37,9 @@ Generator<streams_yield_t<S, Ss...>> choose(std::tuple<S, Ss...> tup) {
     static_assert(sizeof...(Ss) < 5);
     auto r = sampler<int>(0, sizeof...(Ss));
     using namespace core::tp;
-    auto iterators = mapply([](auto& g) { return g.begin(); }, tup);
-    auto sentinels = mapply([](auto& g) { return g.end(); }, tup);
-    while (any(map_n([](auto& iter, auto& end) { return iter != end; }, iterators, sentinels))) {
+    auto iterators = map_inplace([](auto& g) { return g.begin(); }, tup);
+    auto sentinels = map_inplace([](auto& g) { return g.end(); }, tup);
+    while (any(map([](auto& iter, auto& end) { return iter != end; }, iterators, sentinels))) {
 	auto idx = r.sample();
 	APPLY_NTH(0);
 	APPLY_NTH(1);

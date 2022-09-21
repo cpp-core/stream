@@ -4,8 +4,8 @@
 #pragma once
 #include "coro/stream/util.h"
 #include "coro/stream/adapt.h"
-#include "core/tuple/apply.h"
 #include "core/tuple/map.h"
+#include "core/tuple/fold.h"
 
 namespace coro {
 
@@ -17,12 +17,12 @@ namespace coro {
 template<Stream S, Stream... Ss>
 Generator<std::tuple<stream_value_t<S>,stream_value_t<Ss>...>&&> zip(std::tuple<S, Ss...> tup) {
     using namespace core;
-    using tp::mapply, tp::map, tp::apply, tp::map_n, tp::all;
-    auto iterators = mapply([](auto& g) { return g.begin(); }, tup);
-    auto end_iters = mapply([](auto& g) { return g.end(); }, tup);
-    while (all(map_n([](auto& iter, auto& end) { return iter != end; }, iterators, end_iters))) {
+    using tp::map, tp::map_inplace, tp::all;
+    auto iterators = map_inplace([](auto& g) { return g.begin(); }, tup);
+    auto end_iters = map_inplace([](auto& g) { return g.end(); }, tup);
+    while (all(map([](auto& iter, auto& end) { return iter != end; }, iterators, end_iters))) {
 	co_yield map([](auto& iter) { return *iter; }, iterators);
-	apply([](auto& iter) { ++iter; }, iterators);
+	map_inplace([](auto& iter) { ++iter; }, iterators);
     }
     co_return;
 }
