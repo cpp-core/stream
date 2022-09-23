@@ -56,23 +56,8 @@ for (auto [x, y] : g);
 
 ## Installation
 
-### Using cxx-depends (Recommended)
-
-    git clone git@github.com:melton1968/cxx-depends
-	mkdir cxx-depends/build && cd cxx-depends/build
+    git clone https://github.com/cpp-core/depends
+	mkdir depends/build && cd depends/build
     CC=clang-mp-11 CXX=clang++-mp-11 cmake -DCMAKE_INSTALL_PREFIX=$HOME/opt -DCORE_FP_TEST=ON ..
-	make cxx_coro_stream_check # Run tests
-	make cxx_coro_stream       # Build and install
-	
-### Standalone
-
-	git clone git@github.com:cpp-core/stream
-	mkdir cxx-coro-stream/build && cd cxx-coro-stream/build
-    CC=clang-mp-11 CXX=clang++-mp-11 cmake -DCMAKE_INSTALL_PREFIX=$HOME/opt -DCORE_FP_TEST=ON ..
-	make check    # Run tests
-	make install  # Install
-	
-Compiling and running the tests requires cxx-core-tuple, fmt and googletest to be
-installed. This happens automagically when using cxx-depends.
-	
-	
+	make stream-check # Run tests
+	make stream       # Build and install
