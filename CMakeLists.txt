@@ -18,8 +18,14 @@ if(CMAKE_CURRENT_SOURCE_DIR STREQUAL CMAKE_SOURCE_DIR)
   set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/lib)
   set(CMAKE_DOCS_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/docs)
   
-  # Have cmake output the compilation commands
+  # Have cmake output the compilation commands and create a link to it
+  # from the project root directory so the language server can find
+  # it.
+  #
   set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+  execute_process(COMMAND ${CMAKE_COMMAND} -E create_symlink
+    ${CMAKE_BINARY_DIR}/compile_commands.json
+    ${CMAKE_SOURCE_DIR}/compile_commands.json)
 endif()
 
 # Options for generating tests and documentation.
