@@ -1,4 +1,4 @@
-[![Build and Unit Test](https://github.com/melton1968/cxx-coro-stream/actions/workflows/build.yaml/badge.svg)](https://github.com/melton1968/cxx-coro-stream/actions/workflows/build.yaml)
+[![Build and Unit Test](https://github.com/cpp-core/stream/actions/workflows/build.yaml/badge.svg)](https://github.com/cpp-core/stream/actions/workflows/build.yaml)
 
 # Streams
 
@@ -66,7 +66,7 @@ for (auto [x, y] : g);
 	
 ### Standalone
 
-	git clone git@github.com:melton1968/cxx-coro-stream
+	git clone git@github.com:cpp-core/stream
 	mkdir cxx-coro-stream/build && cd cxx-coro-stream/build
     CC=clang-mp-11 CXX=clang++-mp-11 cmake -DCMAKE_INSTALL_PREFIX=$HOME/opt -DCORE_FP_TEST=ON ..
 	make check    # Run tests
