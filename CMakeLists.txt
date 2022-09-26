@@ -27,17 +27,12 @@ if(CMAKE_CURRENT_SOURCE_DIR STREQUAL CMAKE_SOURCE_DIR)
     ${CMAKE_BINARY_DIR}/compile_commands.json
     ${CMAKE_SOURCE_DIR}/compile_commands.json)
 endif()
+set(CMAKE_BUILD_TYPE Release CACHE INTERNAL "Build type")
 
 # Options for generating tests and documentation.
 #
 option(STREAM_TEST "Generate the tests." OFF)
 option(STREAM_DOCS "Generate the docs." OFF)
-
-# Add our dependencies
-#
-include(GNUInstallDirs)
-include(cmake/cpp_core_find_package.cmake)
-cpp_core_find_package(tuple)
 
 # Output configuration
 #
@@ -47,7 +42,7 @@ message("-- stream: STREAM_TEST ${STREAM_TEST}")
 message("-- stream: STREAM_DOCS ${STREAM_DOCS}")
 message("-- stream: CMAKE_INSTALL_PREFIX ${CMAKE_INSTALL_PREFIX}")
 
-# Compilation
+# Setup the compilation environment before bringing in the dependencies.
 #
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -58,6 +53,14 @@ add_compile_options(-stdlib=libc++)
 add_compile_options(-O)
 add_link_options(-stdlib=libc++)
 
+# Add our dependencies
+#
+include(GNUInstallDirs)
+include(cmake/cpp_core_find_package.cmake)
+cpp_core_find_package(tuple)
+
+# Build the library
+#
 set(SOURCES
   stream/detail/random
   stream/io/read_lines
