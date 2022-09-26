@@ -3,6 +3,7 @@
 
 #include <gtest/gtest.h>
 #include <filesystem>
+#include <fmt/format.h>
 #include "coro/stream/stream.h"
 #include "coro/stream/detail/fixed.h"
 

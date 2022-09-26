@@ -9,14 +9,13 @@
 #include <vector>
 #include "coro/stream/sampler.h"
 #include "coro/stream/detail/random.h"
-#include "core/mp/same.h"
 
 namespace coro {
 
 template<class T>
-requires (core::mp::is_same_template_v<T, std::vector>
-	  or core::mp::is_same_template_v<T, std::list>
-	  or core::mp::is_same_template_v<T, std::deque>)
+requires (is_same_template_v<T, std::vector>
+	  or is_same_template_v<T, std::list>
+	  or is_same_template_v<T, std::deque>)
 struct Sampler<T> {
     using G = coro::Generator<T>;
     using SizeG = coro::Generator<size_t>;
@@ -67,8 +66,8 @@ auto samplerG() {
 }
 
 template<class T>
-requires (core::mp::is_same_template_v<T, std::set>
-	  or core::mp::is_same_template_v<T, std::map>)
+requires (is_same_template_v<T, std::set>
+	  or is_same_template_v<T, std::map>)
 struct Sampler<T> {
     using G = coro::Generator<T>;
     using SizeG = coro::Generator<size_t>;

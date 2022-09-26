@@ -20,8 +20,8 @@ function(configure_tests SUBDIR LIBRARIES)
     add_executable(${TEST_NAME} EXCLUDE_FROM_ALL ${TEST_FILE})
     add_test(${TEST_NAME} bin/${TEST_NAME})
 
-    target_link_libraries(${TEST_NAME} PUBLIC ${LIBRARIES})
-    target_include_directories(${TEST_NAME} PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/../include)
+    target_link_libraries(${TEST_NAME} PRIVATE ${LIBRARIES})
+    target_include_directories(${TEST_NAME} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/../include)
 
     add_dependencies(check ${TEST_NAME})
     add_dependencies(check_detail ${TEST_NAME})

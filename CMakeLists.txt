@@ -3,7 +3,7 @@ project (stream VERSION 0.1 LANGUAGES C CXX)
 
 # Make including this file idempotent
 #
-if(TARGET stream)
+if(TARGET stream OR TARGET stream::stream)
   return()
 endif()
 
@@ -36,8 +36,8 @@ option(STREAM_DOCS "Generate the docs." OFF)
 # Add our dependencies
 #
 include(GNUInstallDirs)
-find_package(tuple REQUIRED)
-find_package(fmt REQUIRED)
+include(cmake/cpp_core_find_package.cmake)
+cpp_core_find_package(tuple)
 
 # Output configuration
 #
@@ -70,22 +70,19 @@ foreach(NAME ${SOURCES})
 endforeach()
 
 add_library(stream ${FILES})
+add_library(stream::stream ALIAS stream)
+
+# Define the header files for this library.
+#
+file(GLOB_RECURSE PUBLIC_INCLUDE_FILES RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} include/*.h)
+target_sources(stream PUBLIC FILE_SET HEADERS BASE_DIRS include FILES ${PUBLIC_INCLUDE_FILES})
 
 target_link_libraries(stream PUBLIC tuple::tuple)
-
-target_include_directories(stream
-  PUBLIC
-  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-  $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}>)
 
 # Optionally configure the tests
 #
 if(STREAM_TEST)
   enable_testing()
-  if (NOT TARGET check)
-    add_custom_target(check ${CMAKE_CTEST_COMMAND})
-    add_custom_target(check_detail ${CMAKE_CTEST_COMMAND} -V)
-  endif()
   add_subdirectory(test)
 endif()
 
@@ -99,4 +96,3 @@ endif()
 #
 include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/install_config.cmake)
 install_config(stream)
-install(DIRECTORY ${PROJECT_SOURCE_DIR}/include/coro/stream DESTINATION include/coro)

@@ -3,13 +3,11 @@
 
 #pragma once
 #include "coro/stream/sampler.h"
-#include "core/mp/traits/extrema.h"
-#include "core/mp/same.h"
 
 namespace coro {
 
 template<class T>
-requires core::mp::is_same_template_v<T, std::pair>
+requires  is_same_template_v<T, std::pair>
 struct Sampler<T> {
     using G = coro::Generator<T>;
     
@@ -20,14 +18,6 @@ struct Sampler<T> {
     using Second = typename T::second_type;
     using SecondRef = const Second&;
     using SecondG = coro::Generator<Second>;
-
-    static std::pair<First,First> min_pair() {
-	return std::make_pair(core::mp::extrema<First>::min(), core::mp::extrema<Second>::min());
-    }
-    
-    static std::pair<Second,Second> max_pair() {
-	return std::make_pair(core::mp::extrema<First>::max(), core::mp::extrema<Second>::max());
-    }
 
     G operator()(FirstG g_first, SecondG g_second) const {
 	auto iter_first = g_first.begin();

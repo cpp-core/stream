@@ -113,4 +113,25 @@ concept Writeable = requires (T a, std::string s) {
     a.write(s.data(), s.size());
 };
 
+namespace detail {
+
+template<class T, class U, template<class...> class V>
+struct is_same_template : std::false_type
+{ static constexpr bool value = false; };
+
+template<template<class...> class T, template<class...> class U, class... Ts>
+struct is_same_template<T<Ts...>, U<Ts...>, U>
+{
+    using type = std::true_type;
+    static constexpr bool value = std::is_same_v<T<Ts...>,U<Ts...>>;
+};
+
+}; // detail
+
+template<class T, template<class...> class U>
+using is_same_template_t = typename detail::is_same_template<T,T,U>::type;
+
+template<class T, template<class...> class U>
+static constexpr bool is_same_template_v = detail::is_same_template<T,T,U>::value;
+
 }; // coro

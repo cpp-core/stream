@@ -1,7 +1,8 @@
-// Copyright 2021 by Mark Melton
+// Copyright 2021, 2022 by Mark Melton
 //
 
 #include <gtest/gtest.h>
+#include <fmt/format.h>
 #include "coro/stream/stream.h"
 
 using namespace coro;

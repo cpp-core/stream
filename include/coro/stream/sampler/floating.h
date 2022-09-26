@@ -4,15 +4,14 @@
 #pragma once
 #include "coro/stream/sampler.h"
 #include "coro/stream/detail/random.h"
-#include "core/mp/traits/extrema.h"
 
 namespace coro {
 
 template<class T>
 requires std::is_floating_point_v<T>
 struct Sampler<T> {
-    coro::Generator<T> operator()(T min = core::mp::extrema<T>::min(),
-				  T max = core::mp::extrema<T>::max()) const {
+    coro::Generator<T> operator()(T min = - std::numeric_limits<T>::max(),
+				  T max = + std::numeric_limits<T>::max()) const {
 	std::uniform_real_distribution<T> dist(0.0, 1.0);
 	while (true) {
 	    auto x = dist(coro::detail::rng());
