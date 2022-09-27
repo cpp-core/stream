@@ -1,6 +1,11 @@
 cmake_minimum_required (VERSION 3.24 FATAL_ERROR)
 
 function(cpp_core_find_package NAME)
+  if (TARGET ${NAME} OR TARGET ${NAME}::${NAME})
+    message("-- cpp_core_find_package: ${NAME} already included")
+    return()
+  endif()
+  
   cmake_parse_arguments(CCFP
     "EXCLUDE_FROM_ALL" # options
     "URL;VERSION" # single-value arguments
@@ -23,14 +28,24 @@ function(cpp_core_find_package NAME)
   if (${CCFP_EXCLUDE_FROM_ALL})
     set(EXCLUDE_FROM_ALL EXCLUDE_FROM_ALL)
   endif()
+
+  message("-- cpp_core_find_package:")
+  message("-- cpp_core_find_package: NAME: ${NAME}")
+  message("-- cpp_core_find_package: URL: ${URL}")
+  message("-- cpp_core_find_package: VERSION: ${VERSION}")
+  if (DEFINED EXCLUDE_FROM_ALL)
+    message("-- cpp_core_find_package: EXCLUDE_FROM_ALL set")
+  endif()
   
-  message("-- cpp_core_find_package NAME: ${NAME}")
-  message("-- cpp_core_find_package URL: ${URL}")
-  message("-- cpp_core_find_package VERSION: ${VERSION}")
-  message("-- cpp_core_find_package EXCLUDE_FROM_ALL: ${EXCLUDE_FROM_ALL}")
+  find_package(${NAME} QUIET)
   
+  if (TARGET ${NAME} OR TARGET ${NAME}::${NAME})
+    message("-- cpp_core_find_package: found ${NAME} installed here: ${${NAME}_DIR}")
+    return()
+  endif()
+
   include(FetchContent)
-  
+
   FetchContent_Declare(
     ${NAME}
     GIT_REPOSITORY ${URL}
@@ -39,14 +54,13 @@ function(cpp_core_find_package NAME)
     FIND_PACKAGE_ARGS
     )
 
-  find_package(${NAME} QUIET)
-  
-  if (TARGET ${NAME} OR TARGET ${NAME}::${NAME})
-    return()
-  endif()
-
   FetchContent_GetProperties(${NAME})
   string(TOLOWER "${NAME}" lc_name)
+
+  if (${lc_name}_POPULATED)
+    message(FATAL_ERROR "-- cpp_core_find_package: ${NAME} unexpectedly populated")
+    return()
+  endif()
   
   if (NOT ${lc_name}_POPULATED)
     FetchContent_Populate(${NAME})
