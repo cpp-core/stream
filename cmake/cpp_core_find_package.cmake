@@ -37,13 +37,6 @@ function(cpp_core_find_package NAME)
     message("-- cpp_core_find_package: EXCLUDE_FROM_ALL set")
   endif()
   
-  find_package(${NAME} QUIET)
-  
-  if (TARGET ${NAME} OR TARGET ${NAME}::${NAME})
-    message("-- cpp_core_find_package: found ${NAME} installed here: ${${NAME}_DIR}")
-    return()
-  endif()
-
   include(FetchContent)
 
   FetchContent_Declare(
@@ -53,6 +46,13 @@ function(cpp_core_find_package NAME)
     GIT_SHALLOW TRUE
     FIND_PACKAGE_ARGS
     )
+
+  find_package(${NAME} QUIET)
+  
+  if (TARGET ${NAME} OR TARGET ${NAME}::${NAME})
+    message("-- cpp_core_find_package: found ${NAME} installed here: ${${NAME}_DIR}")
+    return()
+  endif()
 
   FetchContent_GetProperties(${NAME})
   string(TOLOWER "${NAME}" lc_name)
