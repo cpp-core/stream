@@ -68,6 +68,7 @@ set(SOURCES
   stream/sampler/string
   )
 
+set(FILES)
 foreach(NAME ${SOURCES})
   list(APPEND FILES "src/coro/${NAME}.cpp")
 endforeach()
