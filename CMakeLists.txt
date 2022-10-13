@@ -7,22 +7,17 @@ if(TARGET stream OR TARGET stream::stream)
   return()
 endif()
 
-# Options for generating tests and documentation.
-#
-option(STREAM_TEST "Generate the tests." OFF)
-option(STREAM_DOCS "Generate the docs." OFF)
-
 # If this is the current project.
 #
 if(PROJECT_NAME STREQUAL CMAKE_PROJECT_NAME)
-  # Include the cmake helpers
+  # Laod the cmake recipes and utilities.
   #
-  include(${CPP_CORE_SOURCE_DIR}/projects/cmake/utils/all.cmake)
-  include(${CPP_CORE_SOURCE_DIR}/projects/cmake/recipes/all.cmake)
-  
-  # Geneerte the tests
+  include(${CMAKE_CURRENT_LIST_DIR}/cmake/load_cmake_helpers.cmake)
+
+  # Options for generating tests and documentation.
   #
-  set(STREAM_TEST ON CACHE BOOL "Generate the tests." FORCE)
+  option(STREAM_TEST "Generate the tests." ON)
+  option(STREAM_DOCS "Generate the docs." OFF)
 
   # compile_commands.json
   #
@@ -31,6 +26,10 @@ if(PROJECT_NAME STREQUAL CMAKE_PROJECT_NAME)
   # Convenience targets for git operations
   #
   make_submodule_pull_target()
+
+else()
+  option(STREAM_TEST "Generate the tests." OFF)
+  option(STREAM_DOCS "Generate the docs." OFF)
 endif()
 
 # Put executables in the top-level binary directory
