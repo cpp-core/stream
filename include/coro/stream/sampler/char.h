@@ -19,6 +19,12 @@ Generator<char> alpha();
 /// Return a generator of alpha-numeric characters, i.e. a-z or A-Z or 0-9.
 Generator<char> alphanum();
 
+/// Return a generator of binary digits, i.e. 0-1.
+Generator<char> binary();
+
+/// Return a generator of octal digits, i.e. 0-1.
+Generator<char> octal();
+
 /// Return a generator of decimal digits, i.e. 0-9.
 Generator<char> decimal();
 

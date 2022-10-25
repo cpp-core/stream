@@ -37,15 +37,21 @@ TEST(CoroStream, Char)
     for (auto elem : chr::alphanum() | take(NumberSamples))
 	EXPECT_TRUE(std::isalnum(elem));
     
-    for (auto elem : chr::hex() | take(NumberSamples)) {
-	auto dec = elem >= '0' and elem <= '9';
-	auto alpha = elem >= 'a' and elem <= 'f';
-	EXPECT_TRUE(dec or alpha);
-    }
+    for (auto elem : chr::binary() | take(NumberSamples))
+	EXPECT_TRUE(elem >= '0' and elem <= '1');
+
+    for (auto elem : chr::octal() | take(NumberSamples))
+	EXPECT_TRUE(elem >= '0' and elem <= '8');
 
     for (auto elem : chr::decimal() | take(NumberSamples)) {
 	auto dec = elem >= '0' and elem <= '9';
 	EXPECT_TRUE(dec);
+    }
+
+    for (auto elem : chr::hex() | take(NumberSamples)) {
+	auto dec = elem >= '0' and elem <= '9';
+	auto alpha = elem >= 'a' and elem <= 'f';
+	EXPECT_TRUE(dec or alpha);
     }
 
     for (auto elem : chr::hex(true) | take(NumberSamples)) {
@@ -117,6 +123,18 @@ TEST(CoroStream, String)
 	    EXPECT_TRUE(std::isalnum(c));
     }
 
+    for (auto str : str::binary() | take(16)) {
+	EXPECT_LE(str.size(), 20);
+	for (auto c : str)
+	    EXPECT_TRUE(c >= '0' and c <= '1');
+    }
+    
+    for (auto str : str::octal() | take(16)) {
+	EXPECT_LE(str.size(), 20);
+	for (auto c : str)
+	    EXPECT_TRUE(c >= '0' and c <= '9');
+    }
+    
     for (auto str : str::decimal() | take(16)) {
 	EXPECT_LE(str.size(), 20);
 	for (auto c : str) {

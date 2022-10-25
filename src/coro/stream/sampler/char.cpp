@@ -37,21 +37,35 @@ Generator<char> alphanum() {
     co_return;
 }
 
-Generator<char> decimal() {
-    size_t count = 10;
-    auto g = sampler<int>(0, count - 1);
-    char alpha = '0';
-    
+Generator<char> binary() {
+    auto g = sampler<int>(0, 1);
     while (true) {
 	auto idx = g.sample();
-	co_yield alpha + idx;
+	co_yield '0' + idx;
+    }
+    co_return;
+}
+
+Generator<char> octal() {
+    auto g = sampler<int>(0, 7);
+    while (true) {
+	auto idx = g.sample();
+	co_yield '0' + idx;
+    }
+    co_return;
+}
+
+Generator<char> decimal() {
+    auto g = sampler<int>(0, 9);
+    while (true) {
+	auto idx = g.sample();
+	co_yield '0' + idx;
     }
     co_return;
 }
 
 Generator<char> hex(bool upper) {
-    size_t count = 16;
-    auto g = sampler<int>(0, count - 1);
+    auto g = sampler<int>(0, 15);
     char alpha = upper ? 'A' : 'a';
     
     while (true) {

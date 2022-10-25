@@ -30,6 +30,12 @@ coro::Generator<std::string> alpha(size_t min = 0, size_t max = 20);
 /// Return a generator of alpha-numeric strings with size in the range (min,max).
 coro::Generator<std::string> alphanum(size_t min = 0, size_t max = 20);
 
+/// Return a generator of binary strings with size in the range (min,max).
+coro::Generator<std::string> binary(size_t min = 0, size_t max = 20);
+
+/// Return a generator of octal strings with size in the range (min,max).
+coro::Generator<std::string> octal(size_t min = 0, size_t max = 20);
+
 /// Return a generator of decimal strings with size in the range (min,max).
 coro::Generator<std::string> decimal(size_t min = 0, size_t max = 20);
 

@@ -42,6 +42,14 @@ coro::Generator<std::string> alphanum(size_t min, size_t max) {
     return Sampler<std::string>{}(sampler<size_t>(min, max), chr::alphanum());
 }
 
+coro::Generator<std::string> binary(size_t min, size_t max) {
+    return Sampler<std::string>{}(sampler<size_t>(min, max), chr::binary());
+}
+
+coro::Generator<std::string> octal(size_t min, size_t max) {
+    return Sampler<std::string>{}(sampler<size_t>(min, max), chr::octal());
+}
+
 coro::Generator<std::string> decimal(size_t min, size_t max) {
     return Sampler<std::string>{}(sampler<size_t>(min, max), chr::decimal());
 }
