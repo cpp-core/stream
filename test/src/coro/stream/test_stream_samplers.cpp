@@ -279,6 +279,22 @@ TEST(CoroStream, PairVector)
     }
 }
 
+TEST(CoroStream, Array)
+{
+    auto g = sampler<std::array<int,4>>()
+	| take(NumberSamples);
+    for (const auto& arr : g) {
+	EXPECT_EQ(arr.size(), 4);
+	for (const auto& elem : arr)
+	    EXPECT_NE(elem, 0);
+	for (auto i = 0; i < arr.size(); ++i) {
+	    EXPECT_NE(arr[i], 0);
+	    for (auto j = i + 1; j < arr.size(); ++j)
+		EXPECT_NE(arr[i], arr[j]);
+	}
+    }
+}
+
 int main(int argc, char *argv[])
 {
     ::testing::InitGoogleTest(&argc, argv);
