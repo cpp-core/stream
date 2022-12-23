@@ -11,7 +11,7 @@ static const size_t NumberSamples = 64;
 
 using namespace coro;
 
-using IntegralTypes = std::tuple<std::int32_t,std::int64_t,std::uint16_t,std::uint64_t>;
+using IntegralTypes = std::tuple<std::int32_t,std::int64_t,std::uint16_t,std::uint64_t,__int128_t>;
 using FloatingTypes = std::tuple<float,double>;
 
 TEST(CoroStream, Char)
