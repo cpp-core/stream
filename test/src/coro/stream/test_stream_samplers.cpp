@@ -2,6 +2,7 @@
 //
 
 #include <gtest/gtest.h>
+#include <bit>
 #include <deque>
 #include "coro/stream/stream.h"
 #include "core/mp/foreach.h"
@@ -11,7 +12,7 @@ static const size_t NumberSamples = 64;
 
 using namespace coro;
 
-using IntegralTypes = std::tuple<std::int32_t,std::int64_t,std::uint16_t,std::uint64_t,__int128_t>;
+using IntegralTypes = std::tuple<int32_t, int64_t, uint16_t, uint64_t, __int128_t>;
 using FloatingTypes = std::tuple<float,double>;
 
 TEST(CoroStream, Char)
@@ -73,6 +74,35 @@ TEST(CoroStream, Integral)
 	    for (auto elem : sampler<T>(min, max) | take(NumberSamples)) {
 		EXPECT_GE(elem, min);
 		EXPECT_LE(elem, max);
+	    }
+	});
+}
+
+TEST(CoroStream, LogNormalIntegral)
+{
+    core::mp::foreach<IntegralTypes>([]<class T>() {
+	    using U = std::make_unsigned_t<T>;
+	    size_t max_bits = sizeof(U) * CHAR_BIT;
+	    size_t big_count{0}, small_count{0};
+	    for (auto elem : log_normal_sampler<T>() | take(NumberSamples)) {
+		U magnitude = elem > 0 ? elem : -elem;
+		auto n = max_bits - std::countl_zero(magnitude);
+		
+		if (n > max_bits / 2) ++big_count;
+		else ++small_count;
+	    }
+	    EXPECT_GE(big_count, NumberSamples / 4);
+	    EXPECT_GE(small_count, NumberSamples / 4);
+	    
+	    auto rangeG = sampler<size_t>(0, sizeof(T) * CHAR_BIT);
+	    auto min = rangeG.sample();
+	    auto max = rangeG.sample();
+	    if (min > max)
+		std::swap(min, max);
+	    for (auto elem : log_normal_sampler<T>(min, max) | take(NumberSamples)) {
+		U magnitude = elem > 0 ? elem : -elem;
+		auto n = max_bits - std::countl_zero(magnitude);
+		EXPECT_LE(n, max);
 	    }
 	});
 }
