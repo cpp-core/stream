@@ -8,7 +8,7 @@ namespace coro {
 
 /// Return a generator that yields the elements from the supplied `generator` transformed
 /// by the given function `func` that maps **T** to **U**.
-template<Stream S, class F, class U = std::result_of_t<F&(stream_value_t<S>)>>
+template<Stream S, class F, class U = std::invoke_result_t<F, stream_value_t<S>>>
 Generator<U&&> transform(S source, F&& func) {
     for (auto&& elem : source)
 	co_yield func(elem);

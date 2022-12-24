@@ -2,7 +2,13 @@
 //
 
 #pragma once
+#if __clang_major__ >= 15
+#include <coroutine>
+#define CONAME(N) std::N
+#else
 #include <experimental/coroutine>
+#define CONAME(N) std::experimental::N
+#endif
 
 namespace coro {
 
@@ -14,12 +20,12 @@ public:
     using value_type = Value;
     using reference_type = Reference;
     
-    using always = std::experimental::suspend_always;
-    using never = std::experimental::suspend_never;
+    using always = CONAME(suspend_always);
+    using never = CONAME(suspend_never);
     
     class promise_type;
-    using handle_type = std::experimental::coroutine_handle<promise_type>;
-    using generic_handle_type = std::experimental::coroutine_handle<>;
+    using handle_type = CONAME(coroutine_handle<promise_type>);
+    using generic_handle_type = CONAME(coroutine_handle<>);
 
     class promise_type {
     public:
@@ -63,7 +69,7 @@ public:
 		    promise.root_or_leaf_->root_or_leaf_ = parent;
 		    return handle_type::from_promise(*parent);
 		}
-		return std::experimental::noop_coroutine();
+		return CONAME(noop_coroutine());
 	    }
 	    void await_resume() noexcept { }
 	};

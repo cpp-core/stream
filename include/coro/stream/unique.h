@@ -2,6 +2,7 @@
 //
 
 #pragma once
+#include <set>
 #include "coro/stream/util.h"
 
 namespace coro {
@@ -11,7 +12,7 @@ namespace coro {
 template<Stream S, class F>
 Generator<stream_yield_t<S>> unique(S source, F key) {
     using T = stream_value_t<S>;
-    using K = std::result_of_t<F(T)>;
+    using K = std::invoke_result_t<F, T>;
     std::set<K> s;
     for (auto&& element : source) {
 	auto k = key(element);

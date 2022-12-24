@@ -12,7 +12,7 @@ namespace coro {
 /// \tparam S An input source that satisfies the **Stream** concept.
 /// \tparam F A function that accepts a Stream element as input.
 template<Stream S, class F>
-size_t apply(S source, F function) {
+size_t sapply(S source, F function) {
     size_t count{0};
     for (auto&& value : source) {
 	function(value);
@@ -31,7 +31,7 @@ size_t apply(S source, F function) {
 template<class F>
 auto apply(F function) {
     return [=]<Stream S>(S&& source) {
-	return apply<S>(std::forward<S>(source), std::move(function));
+	return sapply<S>(std::forward<S>(source), std::move(function));
     };
 }
 
