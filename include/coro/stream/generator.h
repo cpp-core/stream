@@ -2,7 +2,7 @@
 //
 
 #pragma once
-#if __clang_major__ >= 15
+#if __cpp_lib_coroutine
 #include <coroutine>
 #define CONAME(N) std::N
 #else
