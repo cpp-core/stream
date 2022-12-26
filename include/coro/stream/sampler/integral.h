@@ -7,45 +7,65 @@
 
 namespace coro {
 
-template<class T>
-requires (std::is_integral_v<T> and sizeof(T) < 16)
+template<class T> requires std::is_integral_v<T>
 struct Sampler<T> {
-    using U = std::conditional_t<sizeof(T) < 4, uint32_t, T>;
-    coro::Generator<T> operator()(T min = std::numeric_limits<T>::min(),
-				  T max = std::numeric_limits<T>::max()) const {
+    Generator<T> operator()(T min = std::numeric_limits<T>::min(),
+			    T max = std::numeric_limits<T>::max()) const {
 	std::uniform_int_distribution<uint64_t> dist(min, max);
 	while (true)
 	    co_yield dist(coro::detail::rng());
 	co_return;
     }
-};
 
-template<class T>
-requires (std::is_integral_v<T> and sizeof(T) == 16)
-struct Sampler<T> {
-    coro::Generator<T> operator()(T min = std::numeric_limits<T>::min(),
-				  T max = std::numeric_limits<T>::max()) const {
-	__uint128_t range = max - min;
-	if (range <= std::numeric_limits<uint64_t>::max()) {
-	    std::uniform_int_distribution<uint64_t> dist(0, range);
-	    while (true) {
-		T value = min + (T)dist(coro::detail::rng());
-		co_yield value;
-	    }
-	} else {
-	    std::uniform_int_distribution<uint64_t> dist;
-	    while (true) {
-		T value = dist(coro::detail::rng());
-		value <<= 64;
-		value |= dist(coro::detail::rng());
-		value %= range;
-		value += min;
-		co_yield value;
-	    }
+    static size_t clamp(size_t n, size_t min, size_t max) {
+	return std::min(std::max(n, min), max);
+    }
+
+    using U = std::make_unsigned_t<T>;
+    static constexpr auto available_bits = sizeof(U) * CHAR_BIT;
+    
+    Generator<U> log_normal_magnitude(size_t min_bits, size_t max_bits) const {
+	if (min_bits > max_bits)
+	    std::swap(min_bits, max_bits);
+	max_bits = clamp(max_bits, 1ul, available_bits);
+	min_bits = clamp(min_bits, 1ul, available_bits);
+	
+	std::uniform_int_distribution<U> dist;
+	for (auto n : sampler<size_t>(min_bits, max_bits)) {
+	    auto mask = U{1} << (n - 1);
+	    mask |= mask - 1;
+	    co_yield dist(coro::detail::rng()) bitand mask;
 	}
-
 	co_return;
+    }
+
+    Generator<U> log_normal_magnitude(size_t max_bits) const {
+	return this->log_normal_magnitude(1ul, max_bits);
+    }
+
+    Generator<U> log_normal_magnitude() const {
+	return this->log_normal_magnitude(1ul, available_bits);
+    }
+
+    Generator<T> log_normal(size_t min_bits, size_t max_bits) const {
+	std::uniform_int_distribution<int> dist;
+	for (auto mag : this->log_normal_magnitude(min_bits, max_bits)) {
+	    if (std::is_signed_v<T> and dist(coro::detail::rng()) bitand 0x100) {
+		mag = ~mag;
+		mag += 1;
+	    }
+	    co_yield T(mag);
+	}
+	co_return;
+    }
+
+    Generator<T> log_normal() const {
+	return this->log_normal(1ul, available_bits);
+    }
+    
+    Generator<T> log_normal(size_t max_bits) const {
+	return this->log_normal(1ul, max_bits);
     }
 };
 
-}; // costr
+}; // coro

@@ -84,7 +84,7 @@ TEST(CoroStream, LogNormalIntegral)
 	    using U = std::make_unsigned_t<T>;
 	    size_t max_bits = sizeof(U) * CHAR_BIT;
 	    size_t big_count{0}, small_count{0};
-	    for (auto elem : log_normal_sampler<T>() | take(NumberSamples)) {
+	    for (auto elem : log_sampler<T>() | take(NumberSamples)) {
 		U magnitude = elem > 0 ? elem : -elem;
 		auto n = max_bits - std::countl_zero(magnitude);
 		
@@ -99,9 +99,35 @@ TEST(CoroStream, LogNormalIntegral)
 	    auto max = rangeG.sample();
 	    if (min > max)
 		std::swap(min, max);
-	    for (auto elem : log_normal_sampler<T>(min, max) | take(NumberSamples)) {
+	    for (auto elem : log_sampler<T>(min, max) | take(NumberSamples)) {
 		U magnitude = elem > 0 ? elem : -elem;
 		auto n = max_bits - std::countl_zero(magnitude);
+		EXPECT_LE(n, max);
+	    }
+	});
+}
+
+TEST(CoroStream, LogNormalMagnitudeIntegral)
+{
+    core::mp::foreach<IntegralTypes>([]<class T>() {
+	    using U = std::make_unsigned_t<T>;
+	    size_t max_bits = sizeof(U) * CHAR_BIT;
+	    size_t big_count{0}, small_count{0};
+	    for (auto elem : log_magnitude_sampler<T>() | take(NumberSamples)) {
+		auto n = max_bits - std::countl_zero(elem);
+		if (n > max_bits / 2) ++big_count;
+		else ++small_count;
+	    }
+	    EXPECT_GE(big_count, NumberSamples / 4);
+	    EXPECT_GE(small_count, NumberSamples / 4);
+	    
+	    auto rangeG = sampler<size_t>(0, sizeof(T) * CHAR_BIT);
+	    auto min = rangeG.sample();
+	    auto max = rangeG.sample();
+	    if (min > max)
+		std::swap(min, max);
+	    for (auto elem : log_magnitude_sampler<T>(min, max) | take(NumberSamples)) {
+		auto n = max_bits - std::countl_zero(elem);
 		EXPECT_LE(n, max);
 	    }
 	});
