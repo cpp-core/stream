@@ -31,7 +31,7 @@ Generator<T> log_sampler(Args&&... args) {
 // Return a generator that yields random **T's** with a log normally
 // sampled magnitude and positive sign().
 template<class T, class... Args>
-Generator<std::make_unsigned_t<T>> log_magnitude_sampler(Args&&... args) {
+auto log_magnitude_sampler(Args&&... args) {
     return Sampler<T>{}.log_normal_magnitude(std::forward<Args>(args)...);
 }
 
