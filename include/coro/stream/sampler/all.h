@@ -6,7 +6,6 @@
 #include "coro/stream/sampler/char.h"
 #include "coro/stream/sampler/container.h"
 #include "coro/stream/sampler/floating.h"
-#include "coro/stream/sampler/log_normal_integral.h"
 #include "coro/stream/sampler/integral.h"
 #include "coro/stream/sampler/pair.h"
 #include "coro/stream/sampler/string.h"
