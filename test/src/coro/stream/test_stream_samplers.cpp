@@ -1,4 +1,4 @@
-// Copyright 2021, 2022 by Mark Melton
+// Copyright 2021, 2022, 2023 by Mark Melton
 //
 
 #include <gtest/gtest.h>
@@ -12,7 +12,7 @@ static const size_t NumberSamples = 64;
 
 using namespace coro;
 
-using IntegralTypes = std::tuple<int32_t, int64_t, uint16_t, uint64_t, __int128_t>;
+using IntegralTypes = std::tuple<int32_t, int64_t, uint16_t, int64_t, __uint128_t>;
 using FloatingTypes = std::tuple<float,double>;
 
 TEST(CoroStream, Char)

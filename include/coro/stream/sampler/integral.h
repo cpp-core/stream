@@ -1,4 +1,4 @@
-// Copyright 2021, 2022 by Mark Melton
+// Copyright 2021, 2022, 2023 by Mark Melton
 //
 
 #pragma once
@@ -11,7 +11,7 @@ template<class T> requires std::is_integral_v<T>
 struct Sampler<T> {
     Generator<T> operator()(T min = std::numeric_limits<T>::min(),
 			    T max = std::numeric_limits<T>::max()) const {
-	std::uniform_int_distribution<uint64_t> dist(min, max);
+	std::uniform_int_distribution<T> dist(min, max);
 	while (true)
 	    co_yield dist(coro::detail::rng());
 	co_return;
