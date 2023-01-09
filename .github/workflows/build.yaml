@@ -31,8 +31,6 @@ jobs:
         export CXX=clang++-14
         mkdir stream/build && pushd stream/build
         cmake -DCMAKE_INSTALL_PREFIX=${GITHUB_WORKSPACE}/opt ..
-        make test_stream_samplers
-        ./bin/test_stream_samplers
         make check
         make install
         popd
