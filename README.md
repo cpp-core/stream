@@ -56,7 +56,7 @@ for (auto [x, y] : g);
 
 ## Installation
 
-	git clone https://github.com/cpp-core/stream
+	git clone git@github.com:cpp-core/stream
 	mkdir stream/build && cd stream/build
 	CC=clang-mp-14 CXX=clang++-mp-14 cmake -DCMAKE_INSTALL_PREFIX=$HOME/opt ..
 	make -j4 check     # Run tests
