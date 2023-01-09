@@ -56,8 +56,8 @@ for (auto [x, y] : g);
 
 ## Installation
 
-    git clone https://github.com/cpp-core/depends
-	mkdir depends/build && cd depends/build
-    CC=clang-mp-11 CXX=clang++-mp-11 cmake -DCMAKE_INSTALL_PREFIX=$HOME/opt -DCORE_FP_TEST=ON ..
-	make stream-check # Run tests
-	make stream       # Build and install
+	git clone https://github.com/cpp-core/stream
+	mkdir stream/build && cd stream/build
+	CC=clang-mp-14 CXX=clang++-mp-14 cmake -DCMAKE_INSTALL_PREFIX=$HOME/opt ..
+	make -j4 check     # Run tests
+	make install   # Build and install
