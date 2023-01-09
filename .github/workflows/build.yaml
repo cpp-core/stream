@@ -33,5 +33,6 @@ jobs:
         cmake -DCMAKE_INSTALL_PREFIX=${GITHUB_WORKSPACE}/opt ..
         make
         make check
+        ./bin/test_stream_samplers
         make install
         popd
