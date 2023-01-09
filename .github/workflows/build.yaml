@@ -17,7 +17,7 @@ jobs:
 
     steps:
     - name: Requirements
-      run: sudo apt-get install -y clang-11 libc++-11-dev libc++abi-11-dev
+      run: sudo apt-get install -y clang-14 libc++-14-dev libc++abi-14-dev
       
     - name: Checkout stream
       uses: actions/checkout@v2
@@ -27,8 +27,8 @@ jobs:
         
     - name: Build and run the tests
       run: |
-        export CC=clang-11
-        export CXX=clang++-11
+        export CC=clang-14
+        export CXX=clang++-14
         mkdir stream/build && pushd stream/build
         cmake -DCMAKE_INSTALL_PREFIX=${GITHUB_WORKSPACE}/opt ..
         make test_stream_samplers
