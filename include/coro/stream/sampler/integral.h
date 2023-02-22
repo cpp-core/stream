@@ -9,9 +9,20 @@ namespace coro {
 
 template<class T> requires std::is_integral_v<T>
 struct Sampler<T> {
+    template<class U> requires std::is_integral_v<T>
+    struct uniform_dist_type {
+	using type = U;
+    };
+    
+    template<>
+    struct uniform_dist_type<char> {
+	using type = int8_t;
+    };
+    
     Generator<T> operator()(T min = std::numeric_limits<T>::min(),
 			    T max = std::numeric_limits<T>::max()) const {
-	std::uniform_int_distribution<T> dist(min, max);
+	using U = typename uniform_dist_type<std::remove_cvref_t<T>>::type;
+	std::uniform_int_distribution<U> dist(min, max);
 	while (true)
 	    co_yield dist(coro::detail::rng());
 	co_return;
