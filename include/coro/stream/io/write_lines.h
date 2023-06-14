@@ -1,4 +1,4 @@
-// Copyright 2021, 2022 by Mark Melton
+// Copyright 2021, 2022, 2023 by Mark Melton
 //
 
 #pragma once
@@ -25,7 +25,7 @@ auto write_lines(Writeable auto& writeable) {
 
 /// Write lines from the supplied **Stream** `source` to the given `file` uncompressed.
 void write_lines_plain(Stream auto source, std::string_view file) {
-    std::ofstream ofs{file};
+    std::ofstream ofs{std::string{file}};
     for (const auto& line : source) {
 	ofs.write(line.data(), line.size());
 	ofs.write("\n", 1);

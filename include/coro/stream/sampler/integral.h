@@ -9,7 +9,7 @@ namespace coro {
 
 template<class T> requires std::is_integral_v<T>
 struct Sampler<T> {
-    template<class U> requires std::is_integral_v<T> struct uniform_dist_type { using type = U; };
+    template<class U> requires std::is_integral_v<U> struct uniform_dist_type { using type = U; };
     template<> struct uniform_dist_type<char> { using type = int8_t; };
     template<> struct uniform_dist_type<signed char> { using type = int8_t; };
     template<> struct uniform_dist_type<unsigned char> { using type = uint8_t; };

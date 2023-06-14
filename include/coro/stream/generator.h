@@ -6,8 +6,8 @@
 #include <coroutine>
 #define CONAME(N) std::N
 #else
-#include <experimental/coroutine>
-#define CONAME(N) std::experimental::N
+#include <coroutine>
+#define CONAME(N) std::N
 #endif
 
 namespace coro {
