@@ -62,6 +62,17 @@ TEST(CoroStream, Char)
     }
 }
 
+TEST(CoroStream, Bool)
+{
+    size_t count{};
+    for (auto elem : sampler<bool>() | take(NumberSamples)) {
+	if (elem)
+	    ++count;
+    }
+    EXPECT_GE(count, NumberSamples / 4);
+    EXPECT_LE(count, 3 * NumberSamples / 4);
+}
+
 TEST(CoroStream, Integral)
 {
     core::mp::foreach<IntegralTypes>([]<class T>() {
