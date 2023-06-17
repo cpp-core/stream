@@ -362,6 +362,14 @@ TEST(CoroStream, Array)
     }
 }
 
+TEST(CoroStream, Tuple)
+{
+    for (auto [i, s] : sampler<std::tuple<unsigned int,std::string>>() | take(NumberSamples)) {
+	EXPECT_GE(i, 0);
+	EXPECT_GE(s.size(), 0);
+    }
+}
+
 int main(int argc, char *argv[])
 {
     ::testing::InitGoogleTest(&argc, argv);

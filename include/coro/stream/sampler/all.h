@@ -10,4 +10,5 @@
 #include "coro/stream/sampler/integral.h"
 #include "coro/stream/sampler/pair.h"
 #include "coro/stream/sampler/string.h"
+#include "coro/stream/sampler/tuple.h"
 
