@@ -11,11 +11,11 @@ requires  is_same_template_v<T, std::pair>
 struct Sampler<T> {
     using G = coro::Generator<T>;
     
-    using First = typename T::first_type;
+    using First = std::decay_t<typename T::first_type>;
     using FirstRef = const First&;
     using FirstG = coro::Generator<First>;
     
-    using Second = typename T::second_type;
+    using Second = std::decay_t<typename T::second_type>;
     using SecondRef = const Second&;
     using SecondG = coro::Generator<Second>;
 
