@@ -6,8 +6,6 @@
 #include <coroutine>
 #include <stdexcept>
 
-#define CONAME(N) std::N
-
 namespace coro {
 
 // (possibly recusrive) Generator using symmetric transfer.
@@ -18,12 +16,12 @@ public:
     using value_type = Value;
     using reference_type = Reference;
     
-    using always = CONAME(suspend_always);
-    using never = CONAME(suspend_never);
+    using always = std::suspend_always;
+    using never = std::suspend_never;
     
     class promise_type;
-    using handle_type = CONAME(coroutine_handle<promise_type>);
-    using generic_handle_type = CONAME(coroutine_handle<>);
+    using handle_type = std::coroutine_handle<promise_type>;
+    using generic_handle_type = std::coroutine_handle<>;
 
     class promise_type {
     public:
@@ -67,7 +65,7 @@ public:
 		    promise.root_or_leaf_->root_or_leaf_ = parent;
 		    return handle_type::from_promise(*parent);
 		}
-		return CONAME(noop_coroutine());
+		return std::noop_coroutine();
 	    }
 	    void await_resume() noexcept { }
 	};
