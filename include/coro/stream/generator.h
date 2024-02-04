@@ -1,14 +1,12 @@
-// Copyright (C) 2017, 2018, 2019, 2021, 2022 by Mark Melton
+// Copyright (C) 2017, 2018, 2019, 2021, 2022, 2024 by Mark Melton
 //
 
 #pragma once
-#if __cpp_lib_coroutine
+
 #include <coroutine>
+#include <stdexcept>
+
 #define CONAME(N) std::N
-#else
-#include <coroutine>
-#define CONAME(N) std::N
-#endif
 
 namespace coro {
 
