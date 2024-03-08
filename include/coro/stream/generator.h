@@ -4,7 +4,7 @@
 #pragma once
 
 #include <coroutine>
-#include <stdexcept>
+#include <exception>
 
 namespace coro {
 
