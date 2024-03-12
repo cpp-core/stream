@@ -5,6 +5,7 @@
 
 #include <coroutine>
 #include <exception>
+#include <stdexcept>
 
 namespace coro {
 
