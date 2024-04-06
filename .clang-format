@@ -1,0 +1,12 @@
+
+# Spacing
+IndentWidth: 4
+AccessModifierOffset: -4
+ColumnLimit: 90
+
+# functions
+BinPackArguments: false
+BinPackParameters: false
+
+# templates
+AlwaysBreakTemplateDeclarations: Yes

@@ -1,19 +1,33 @@
-// Copyright 2021, 2022, 2023 by Mark Melton
+// Copyright 2021, 2022, 2023, 2024 by Mark Melton
 //
 
 #include <gtest/gtest.h>
 #include <bit>
 #include <deque>
+
 #include "coro/stream/stream.h"
 #include "core/mp/foreach.h"
-
 
 static const size_t NumberSamples = 64;
 
 using namespace coro;
+using namespace std::chrono_literals;
+
+using ChronoTypes = std::tuple<std::chrono::nanoseconds,
+			       std::chrono::microseconds,
+			       std::chrono::milliseconds,
+			       std::chrono::seconds,
+			       std::chrono::minutes,
+			       std::chrono::hours,
+			       std::chrono::days,
+			       std::chrono::weeks,
+			       std::chrono::months,
+			       std::chrono::years>;
 
 using IntegralTypes = std::tuple<int32_t, int64_t, uint16_t, int64_t, __uint128_t>;
+
 using FloatingTypes = std::tuple<float,double>;
+
 
 TEST(CoroStream, Char)
 {
@@ -60,6 +74,18 @@ TEST(CoroStream, Char)
 	auto alpha = elem >= 'A' and elem <= 'F';
 	EXPECT_TRUE(dec or alpha);
     }
+}
+
+TEST(CoroStream, Chrono) {
+    core::mp::foreach<ChronoTypes>([]<class T>() {
+	    size_t count{};
+	    for (auto nanos : sampler<T>(T{-100}, T{+100}) | take(NumberSamples)) {
+		++count;
+		EXPECT_GE(nanos, T{-100});
+		EXPECT_LE(nanos, T{+100});
+	    }
+	    EXPECT_EQ(count, NumberSamples);
+	});
 }
 
 TEST(CoroStream, Bool)
