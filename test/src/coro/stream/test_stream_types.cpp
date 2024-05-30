@@ -1,8 +1,9 @@
-// Copyright 2021, 2022 by Mark Melton
+// Copyright 2021, 2022, 2024 by Mark Melton
 //
 
 #include <gtest/gtest.h>
 #include <fmt/format.h>
+#include "coro/stream/optionalize.h"
 #include "coro/stream/stream.h"
 
 using namespace coro;
@@ -80,6 +81,12 @@ TEST(CoroStreamTypes, Once)
 {
     auto g = once(3);
     EXPECT_TRUE((std::is_same_v<decltype(g), Generator<int&&>>));
+}
+
+TEST(CoroStreamTypes, Optionalize)
+{
+    auto g = once(3) | optionalize(0.2);
+    EXPECT_TRUE((std::is_same_v<decltype(g), Generator<std::optional<int>&&>>));
 }
 
 TEST(CoroStreamTypes, Range)

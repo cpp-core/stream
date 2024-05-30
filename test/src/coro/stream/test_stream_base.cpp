@@ -1,4 +1,4 @@
-// Copyright 2021, 2022 by Mark Melton
+// Copyright 2021, 2022, 2024 by Mark Melton
 //
 
 #include <gtest/gtest.h>
@@ -180,6 +180,18 @@ TEST(CoroStream, IotaStart)
     ASSERT_EQ(c.size(), 10);
     for (auto i = 0; i < 10; ++i)
 	EXPECT_EQ(c[i], i + 10);
+}
+
+TEST(CoroStream, Optionalize)
+{
+    auto g = iota<int>(100) | optionalize(0.5);
+    size_t count{0};
+    for (auto&& elem : g) {
+	if (elem)
+	    ++count;
+    }
+    EXPECT_GE(count, 25);
+    EXPECT_LE(count, 75);
 }
 
 TEST(CoroStream, Range)

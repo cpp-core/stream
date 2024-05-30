@@ -1,4 +1,4 @@
-// Copyright (C) 2021, 2022 by Mark Melton
+// Copyright (C) 2021, 2022, 2024 by Mark Melton
 //
 
 #pragma once
@@ -17,6 +17,7 @@
 #include "coro/stream/io/write_lines.h"
 #include "coro/stream/iota.h"
 #include "coro/stream/once.h"
+#include "coro/stream/optionalize.h"
 #include "coro/stream/range.h"
 #include "coro/stream/reduce.h"
 #include "coro/stream/repeat.h"
